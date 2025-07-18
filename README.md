@@ -1,12 +1,35 @@
 
+## Pré-requis
+
+* [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
 ## Génération du package client en Python
 
+(pour référence, car le package client est déjà inclus dans le dépôt git)
+
 ```sh
 pip install openapi-python-client
-
 openapi-python-client generate --url  https://oudonner.api.efs.sante.fr/carto-api/v3/swagger.json
 ```
+
+## Récupération de tous les lieux de collecte
+
+A exécuter une seule fois pour récupérer tous les lieux de collecte de Bretagne, tous les fichiers seront stockés dans le répertoire `data` :
+
+```sh
+cd collecte-info
+uv run get_lieux_collecte.py
+```
+
+## Extraction de la liste des codes postaux
+
+Après exécution de l'étape précédente :
+
+```sh
+uv run get_codes_postaux.py
+```
+
+Le script retourne un ensemble de chaînes de caractères.
 
 
 # Utilisation de l'API collecte
@@ -63,3 +86,7 @@ Pour chaque collecte mobile, on retrouve :
   * La date et les créneaux horaires de collecte
   * Un lien direct d'inscription
   * Le nombre de places pour chaque type de prélèvement
+
+Si une collecte est sur plusieurs dates, les collectes des jours suivants apparaissent dans la liste `children` de la collecte correspondant au premier jour. Exemple pour les collectes de Liffré :
+
+https://oudonner.api.efs.sante.fr/carto-api/v3/samplingcollection/searchbycityname?CityName=liffr%C3%A9&UserLatitude=48&UserLongitude=-2

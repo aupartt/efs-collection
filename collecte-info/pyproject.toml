@@ -1,0 +1,12 @@
+[project]
+name = "collecte-info"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "api-carto-client",
+]
+
+[tool.uv.sources]
+api-carto-client = { path = "../api-carto-client", editable = true }
