@@ -40,6 +40,7 @@ The crawler returns a list of `EventCollection` objects with this structure:
             {
                 "date": "2025-10-13",
                 "slots": 86,
+                "type": "blood",
                 "schedules": {
                     "12h00": 1,
                     "12h05": 2,
@@ -57,6 +58,6 @@ The crawler returns a list of `EventCollection` objects with this structure:
   - `max_requests_per_crawl`: int = 10 - Maximum concurrent requests
   - `headless`: bool = True - Run browser in headless mode
   - `browser_type`: str = "firefox" - Browser to use ("firefox"|"chrome")
-  - `keep_alive`: bool = False - Keep browser open after crawling
-- `Event`/`EventCollection`: Data models (crawler/models.py)
+  - `keep_alive`: bool = False - Keep browser open after crawling (WIP)
+- `Event`/`LocationEvents`: Data models (crawler/models.py)
 
