@@ -1,0 +1,6 @@
+collecte-info/data/*.json
+
+__pycache__/
+.venv/
+.ruff_cache/
+.uv/
