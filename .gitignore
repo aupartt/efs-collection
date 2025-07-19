@@ -1,5 +1,9 @@
+# Data
 collecte-info/data/*.json
+crawler/storage/
+crawler/results.json
 
+# Cache & Co
 __pycache__/
 .venv/
 .ruff_cache/
