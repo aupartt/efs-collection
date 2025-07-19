@@ -68,7 +68,7 @@ async def process_date_collecte(date_collecte) -> Event:
     return Event(date=date, slots=slots, schedules=schedules)
 
 
-async def request_handler(context: PlaywrightCrawlingContext) -> EventCollection:
+async def request_handler(context: PlaywrightCrawlingContext):
     context.log.info(f"Processing {context.request.url} ...")
 
     await context.page.wait_for_load_state("networkidle")
@@ -83,8 +83,7 @@ async def request_handler(context: PlaywrightCrawlingContext) -> EventCollection
         events.append(event)
 
     data = EventCollection(url=context.request.url, events=events)
-    await context.push_data(data.__dict__)
-    return data
+    await context.push_data(data.model_dump())
 
 
 async def get_event_data(
