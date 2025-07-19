@@ -114,7 +114,11 @@ async def get_event_data(
 
 
 if __name__ == "__main__":
-    asyncio.run(get_event_data([
-            "https://efs.link/FNh76",
-            "https://efs.link/RE2rS",
-        ]))
+    asyncio.run(
+        get_event_data(
+            [
+                "https://efs.link/FNh76",
+                "https://efs.link/RE2rS",
+            ]
+        )
+    )
