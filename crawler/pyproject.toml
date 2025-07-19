@@ -1,0 +1,12 @@
+[project]
+name = "crawler"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "crawlee[all]>=0.6.11",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.4",
+]
