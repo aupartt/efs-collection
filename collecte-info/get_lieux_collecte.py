@@ -17,8 +17,10 @@ from api_carto_client.api.sampling_location import (
     get_carto_api_v3_samplinglocation_searchbygrouplocationcode as api_search_location,
 )
 
-FICHIER_GROUPEMENTS = Path("data/groupements.jsonl")
-FICHIER_LIEUX = Path("data/lieux.jsonl")
+
+GROUPS_FILE = Path("data/groups.jsonl")
+LOCATIONS_FILE = Path("data/locations.jsonl")
+REGION_NAME = "Bretagne"
 
 
 def with_api_client(func):
@@ -49,78 +51,81 @@ def get_region(client: Client, nom: str) -> SamplingRegionEntity:
 
 
 @with_api_client
-def get_groupements(client: Client, region: SamplingRegionEntity):
-    groupements: list[SamplingGroupEntity] = api_get_groupements.sync(
+def get_groups(client: Client, region: SamplingRegionEntity):
+    groups: list[SamplingGroupEntity] = api_get_groupements.sync(
         client=client, region_code=region.code
     )
-    return groupements
+    return groups
 
 
 @with_api_client
-def get_lieux_prelevement(client: Client, groupement: SamplingGroupEntity):
+def get_location_sampling(client: Client, groupement: SamplingGroupEntity):
     res: SamplingLocationEntity = api_search_location.sync(
         client=client, group_code=groupement.gr_code
     )
     return res.sampling_location_entities
 
 
-def charger_groupements_traites() -> set[SamplingGroupEntity]:
-    groupements_traites = set()
+def load_processed_groups() -> set[SamplingGroupEntity]:
+    processed_groups = set()
 
-    if not FICHIER_LIEUX.is_file():
-        return groupements_traites
+    if not LOCATIONS_FILE.is_file():
+        return processed_groups
 
-    with FICHIER_LIEUX.open("r", encoding="utf-8") as fp:
+    with LOCATIONS_FILE.open("r", encoding="utf-8") as fp:
         for line in fp:
             lieu = json.loads(line)
-            groupements_traites.add(lieu["groupCode"])
+            processed_groups.add(lieu["groupCode"])
 
-    return groupements_traites
+    logging.info(f"Groupements déjà traités chargés: {len(processed_groups)}")
+    return processed_groups
 
 
-def load_groupements() -> list[SamplingGroupEntity]:
-    groupements: list[SamplingGroupEntity] = []
+def load_groups() -> list[SamplingGroupEntity]:
+    groups: list[SamplingGroupEntity] = []
 
-    if FICHIER_GROUPEMENTS.is_file():
+    if GROUPS_FILE.is_file():
         logging.info("Chargement des groupements depuis le fichier")
-        with FICHIER_GROUPEMENTS.open("r", encoding="utf-8") as fp:
+        with GROUPS_FILE.open("r", encoding="utf-8") as fp:
             for line in fp:
-                groupement = SamplingGroupEntity.from_dict(json.loads(line))
-                groupements.append(groupement)
+                group = SamplingGroupEntity.from_dict(json.loads(line))
+                groups.append(group)
     else:
         logging.info("Chargement des groupements depuis l'API")
-        region_bretagne: SamplingRegionEntity = get_region(nom="Bretagne")
-        if region_bretagne is None:
+        region: SamplingRegionEntity = get_region(nom=REGION_NAME)
+
+        if region is None:
             logging.error(
                 "Impossible de télécharger l'identifiant de la région Bretagne"
             )
             exit(1)
-        with FICHIER_GROUPEMENTS.open("w", encoding="utf-8") as fp:
-            groupements = get_groupements(region=region_bretagne)
-            for groupement in groupements:
-                fp.write(json.dumps(groupement.to_dict(), indent=None))
-                fp.write("\n")
 
-    return groupements
+        with GROUPS_FILE.open("w", encoding="utf-8") as file:
+            groups = get_groups(region=region)
+            for group in groups:
+                file.write(json.dumps(group.to_dict(), indent=None))
+                file.write("\n")
+
+    return groups
 
 
 if __name__ == "__main__":
-    groupements = load_groupements()
-    groupements_traites = charger_groupements_traites()
+    groups = load_groups()
+    processed_groups = load_processed_groups()
 
-    with Path(FICHIER_LIEUX).open("a", encoding="utf-8") as fp_lieux:
-        for groupement in groupements:
-            if groupement.gr_code in groupements_traites:
+    with Path(LOCATIONS_FILE).open("a", encoding="utf-8") as file:
+        for group in groups:
+            if group.gr_code in processed_groups:
                 continue
-            logging.info(f"Téléchargement des lieux de {groupement.gr_code}")
-            lieux = get_lieux_prelevement(groupement=groupement)
-            for lieu in lieux:
-                if lieu.post_code[0:2] not in {"22", "29", "35", "56"}:
+            logging.info(f"Téléchargement des lieux de {group.gr_code}")
+            locations = get_location_sampling(groupement=group)
+            for location in locations:
+                if location.post_code[0:2] not in {"22", "29", "35", "56"}:
                     logging.warning(
-                        f"Code postal inattendu dans le groupement {groupement.gr_lib}: '{lieu.post_code}'"
+                        f"Code postal inattendu dans le groupement {group.gr_lib}: '{location.post_code}'"
                     )
                 else:
-                    fp_lieux.write(json.dumps(lieu.to_dict(), indent=None))
-                    fp_lieux.write("\n")
+                    file.write(json.dumps(location.to_dict(), indent=None))
+                    file.write("\n")
 
-    logging.info(f"Groupements en Bretagne: {len(groupements)}")
+    logging.info(f"Groupements en Bretagne: {len(groups)}")
