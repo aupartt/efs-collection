@@ -125,12 +125,12 @@ if __name__ == "__main__":
                 continue
             locations = get_location_sampling(groupement=group)
             for location in locations:
-                # if location.post_code[0:2] not in {"22", "29", "35", "56"}:
-                #     logger.warning(
-                #         f"Code postal inattendu dans le groupement {group.gr_lib}: '{location.post_code}'"
-                #     )
-                # else:
-                file.write(json.dumps(location.to_dict(), indent=None))
-                file.write("\n")
+                if location.post_code[0:2] not in {"22", "29", "35", "56", ""}:
+                    logger.warning(
+                        f"Code postal inattendu dans le groupement {group.gr_lib}: '{location.post_code}'"
+                    )
+                else:
+                    file.write(json.dumps(location.to_dict(), indent=None))
+                    file.write("\n")
 
     logger.info(f"Groupements en Bretagne: {len(groups)}")
