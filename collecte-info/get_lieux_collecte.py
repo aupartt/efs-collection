@@ -113,7 +113,7 @@ def load_groups() -> list[SamplingGroupEntity]:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.WARNING)
 
     groups = load_groups()
     processed_groups = load_processed_groups()
