@@ -45,10 +45,10 @@ def check_api(client: Client):
 
 
 @with_api_client
-def get_region(client: Client, nom: str) -> SamplingRegionEntity:
+def get_region(client: Client, name: str) -> SamplingRegionEntity:
     regions: list[SamplingRegionEntity] = api_get_regions.sync(client=client)
     for region in regions:
-        if region.libelle == nom:
+        if region.libelle == name:
             return region
     return None
 
@@ -95,7 +95,7 @@ def load_groups() -> list[SamplingGroupEntity]:
                 groups.append(group)
     else:
         logger.info("Chargement des groupements depuis l'API")
-        region: SamplingRegionEntity = get_region(nom=REGION_NAME)
+        region: SamplingRegionEntity = get_region(name=REGION_NAME)
 
         if region is None:
             logger.error(
@@ -125,10 +125,11 @@ if __name__ == "__main__":
                 continue
             locations = get_location_sampling(groupement=group)
             for location in locations:
-                if location.post_code[0:2] not in {"22", "29", "35", "56", ""}:
-                    logger.warning(
-                        f"Code postal inattendu dans le groupement {group.gr_lib}: '{location.post_code}'"
-                    )
+                if location.post_code[0:2] not in {"22", "29", "35", "56"}:
+                    # logger.warning(
+                    #     f"Code postal inattendu dans le groupement {group.gr_lib}: '{location.post_code}'"
+                    # )
+                    continue
                 else:
                     file.write(json.dumps(location.to_dict(), indent=None))
                     file.write("\n")
