@@ -2,7 +2,7 @@ import aio_pika
 import asyncio
 import json
 
-RABBITMQ_URL = "amqp://guest:guest@0.0.0.0:5672"
+from settings import settings
 
 async def consume_processed_data(channel: aio_pika.Channel):
     queue = await channel.get_queue("processed_data")
@@ -20,8 +20,13 @@ async def send_url(channel: aio_pika.Channel, url: str):
     )
 
 
-async def main(host: str="localhost", port: int=5672, login: str="guest", password: str = "guest"):
-    connection = await aio_pika.connect_robust(host=host, port=port, login=login, password=password)
+async def main():
+    connection = await aio_pika.connect_robust(
+        host=settings.RABBITMQ_HOST,
+        port=settings.RABBITMQ_PORT,
+        login=settings.RABBITMQ_USER,
+        password=settings.RABBITMQ_PASSWORD,
+    )
     channel = await connection.channel()
 
     tasks = [consume_processed_data(channel), send_url(channel, "https://dondesang.efs.sante.fr/trouver-une-collecte/138202/sang")]
@@ -30,4 +35,4 @@ async def main(host: str="localhost", port: int=5672, login: str="guest", passwo
     await connection.close()
 
 if __name__ == "__main__":
-    asyncio.run(main(host="localhost"))
+    asyncio.run(main())
