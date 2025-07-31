@@ -14,6 +14,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-install-project --no-dev
 
+RUN uvx playwright install
+
 # Then, add the rest of the project source code and install it
 ADD . /app
 RUN --mount=type=cache,target=/root/.cache/uv \
