@@ -2,12 +2,12 @@ import asyncio
 import aio_pika
 import argparse
 import logging
-
 from crawler import get_location_events
 from crawler.settings import settings
 from crawler.models import LocationEvents
 
-
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="Crawler for location events")
@@ -27,55 +27,30 @@ parser.add_argument(
 parser.add_argument(
     "--keep_alive", action="store_true", help="Keep the crawler alive after crawling"
 )
+
 args = parser.parse_args()
 
 
-def setup_rabbitmq(keep_alive: bool) -> tuple:
-    if not keep_alive:
-        return None, None
-
-    async def async_setup():
-        connection = await aio_pika.connect_robust(
-            host=settings.rabbitmq_host,
-            port=settings.rabbitmq_port,
-            login=settings.rabbitmq_user,
-            password=settings.rabbitmq_password,
-        )
-        channel = await connection.channel()
-
-        await channel.declare_queue(settings.rabbitmq_urls_queue, durable=True)
-        await channel.declare_queue(
-            settings.rabbitmq_processed_data_queue, durable=True
-        )
-
-        return connection, channel
-
-    # Use asyncio to run the asynchronous function synchronously
-    logger.info("RabbitMQ connection established.")
-    return asyncio.run(async_setup())
-
-
 if __name__ == "__main__":
-    connection, channel = setup_rabbitmq(args.keep_alive)
-
-    data: list[LocationEvents] = asyncio.run(
-        get_location_events(
-            args.urls,
-            max_requests_per_crawl=args.max_requests_per_crawl,
-            headless=args.headless,
-            browser_type=args.browser_type,
-            keep_alive=args.keep_alive,
-            connection=connection,
-            channel=channel,
+    logger.warning(f"Starting crawler with args: {args}")
+    try:
+        data: list[LocationEvents] = asyncio.run(
+            get_location_events(
+                args.urls,
+                max_requests_per_crawl=args.max_requests_per_crawl,
+                headless=args.headless,
+                browser_type=args.browser_type,
+                keep_alive=args.keep_alive
+            )
         )
-    )
 
-    if not args.keep_alive:
-        for location in data.items:
-            print("-------------------------")
-            print(location["url"])
-            for event in location["events"]:
-                print(event)
-            print("-------------------------")
-        print(f"Total locations: {len(data.items)}")
-        # print(data.items)
+        if not args.keep_alive:
+            for location in data.items:
+                print("-------------------------")
+                print(location["url"])
+                for event in location["events"]:
+                    print(event)
+                print("-------------------------")
+            print(f"Total locations: {len(data.items)}")
+    except Exception as e:
+        logger.error(f"An error occurred during crawling: {e}")
