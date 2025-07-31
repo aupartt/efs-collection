@@ -2,7 +2,9 @@
 collecte-info/data/*.json
 crawler/storage/
 crawler/results.json
-notebooks/data/*
+notebooks/data/*.json
+notebooks/data/*.jsonl
+notebooks/data/*.csv
 
 # Cache & Co
 __pycache__/
