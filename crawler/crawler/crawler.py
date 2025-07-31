@@ -13,7 +13,10 @@ from crawler.locators import process_by_type
 
 logger = logging.getLogger(__name__)
 
-async def request_handler(context: PlaywrightCrawlingContext, channel: aio_pika.Channel = None):
+
+async def request_handler(
+    context: PlaywrightCrawlingContext, channel: aio_pika.Channel = None
+):
     try:
         context.log.info(f"Processing {context.request.url} ...")
         await context.page.wait_for_load_state("networkidle")
@@ -22,11 +25,11 @@ async def request_handler(context: PlaywrightCrawlingContext, channel: aio_pika.
         if channel:
             await channel.default_exchange.publish(
                 aio_pika.Message(body=json.dumps(data.model_dump()).encode()),
-                routing_key=settings.rabbitmq_processed_data_queue,
+                routing_key=settings.RABBITMQ_DATA_QUEUE,
             )
         else:
             await context.push_data(data.model_dump())
-        
+
     except Exception as e:
         context.log.error(f"Error in request handler: {e}")
 
@@ -63,8 +66,11 @@ async def get_location_events(
         crawler.log.info(f"Extracted data: {data.items}")
         return data
 
+
 if __name__ == "__main__":
-    asyncio.run(get_location_events(
-        urls=['https://dondesang.efs.sante.fr/trouver-une-collecte/138202/sang'],
-        keep_alive=False
-    ))
+    asyncio.run(
+        get_location_events(
+            urls=["https://dondesang.efs.sante.fr/trouver-une-collecte/138202/sang"],
+            keep_alive=False,
+        )
+    )

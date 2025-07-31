@@ -4,6 +4,7 @@ import json
 
 from settings import settings
 
+
 async def consume_processed_data(channel: aio_pika.Channel):
     queue = await channel.get_queue("processed_data")
 
@@ -11,6 +12,7 @@ async def consume_processed_data(channel: aio_pika.Channel):
         async with message.process():
             data = json.loads(message.body.decode())
             print("Received data:", data, flush=True)
+
 
 async def send_url(channel: aio_pika.Channel, url: str):
     queue = await channel.get_queue("crawler_urls")
@@ -29,10 +31,14 @@ async def main():
     )
     channel = await connection.channel()
 
-    tasks = [consume_processed_data(channel), send_url(channel, "https://dondesang.efs.sante.fr/trouver-une-collecte/138202/sang")]
+    tasks = [
+        consume_processed_data(channel),
+        send_url(channel, "https://efs.link/5GiMN"),
+    ]
     await asyncio.gather(*tasks)
 
     await connection.close()
+
 
 if __name__ == "__main__":
     asyncio.run(main())
