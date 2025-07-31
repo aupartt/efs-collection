@@ -73,7 +73,7 @@ async def setup_rabbitmq(keep_alive: bool, rq: RequestQueue):
 async def main(args):
     rq = await RequestQueue.open()
 
-    _, channel = await setup_rabbitmq(args.keep_alive)
+    _, channel = await setup_rabbitmq(args.keep_alive, rq)
     data: LocationEvents = await get_location_events(
         urls=args.urls,
         keep_alive=args.keep_alive,
