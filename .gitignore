@@ -2,6 +2,7 @@
 collecte-info/data/*.json
 crawler/storage/
 crawler/results.json
+notebooks/data/*
 
 # Cache & Co
 __pycache__/
