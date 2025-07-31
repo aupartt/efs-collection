@@ -1,0 +1,32 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - crawler_network
+
+  crawler:
+    build: ./crawler/
+    command: python main.py --headless --keep_alive
+    depends_on:
+      - rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_HOST: rabbitmq
+    networks:
+      - crawler_network
+
+volumes:
+  rabbitmq_data:
+
+networks:
+  crawler_network:
+    driver: bridge
