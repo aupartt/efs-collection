@@ -7,7 +7,6 @@ from settings import settings
 
 async def consume_processed_data(channel: aio_pika.Channel):
     queue = await channel.get_queue("processed_data")
-
     async for message in queue:
         async with message.process():
             data = json.loads(message.body.decode())
