@@ -1,7 +1,10 @@
 import asyncio
-import aio_pika
 import argparse
 import logging
+import aio_pika
+
+from crawlee.storages import RequestQueue
+
 from crawler import get_location_events
 from crawler.settings import settings
 from crawler.models import LocationEvents
@@ -31,26 +34,60 @@ parser.add_argument(
 args = parser.parse_args()
 
 
+async def consume_urls(queue: aio_pika.Queue, rq: RequestQueue):
+    try:
+        async for message in queue:
+            try:
+                async with message.process():
+                    url = message.body.decode()
+                    await rq.add_request(url)
+            except Exception as e:
+                logger.error(f"Error processing message: {e}")
+    except Exception as e:
+        logger.error(f"Error in consume_urls: {e}")
+
+
+async def setup_rabbitmq(keep_alive: bool, rq: RequestQueue):
+    if not keep_alive:
+        return None, None
+    try:
+        connection = await aio_pika.connect_robust(
+            host=settings.rabbitmq_host,
+            port=settings.rabbitmq_port,
+            login=settings.rabbitmq_user,
+            password=settings.rabbitmq_password,
+        )
+        channel = await connection.channel()
+        urls_queue =await channel.declare_queue(settings.rabbitmq_urls_queue, durable=True)
+        await channel.declare_queue(settings.rabbitmq_processed_data_queue, durable=True)
+
+        asyncio.create_task(consume_urls(urls_queue, rq))
+
+        logger.info("RabbitMQ connection and channels established successfully.")
+        return connection, channel
+    except Exception as e:
+        logger.error(f"Error setting up RabbitMQ connection: {e}")
+        raise
+
+
+async def main(args):
+    rq = await RequestQueue.open()
+
+    _, channel = await setup_rabbitmq(args.keep_alive)
+    data: LocationEvents = await get_location_events(
+        urls=args.urls,
+        keep_alive=args.keep_alive,
+        max_requests_per_crawl=args.max_requests_per_crawl,
+        headless=args.headless,
+        browser_type=args.browser_type,
+        channel=channel,
+        request_queue=rq
+    )
+
+    if not args.keep_alive:
+        return data
+
+
 if __name__ == "__main__":
     logger.warning(f"Starting crawler with args: {args}")
-    try:
-        data: list[LocationEvents] = asyncio.run(
-            get_location_events(
-                args.urls,
-                max_requests_per_crawl=args.max_requests_per_crawl,
-                headless=args.headless,
-                browser_type=args.browser_type,
-                keep_alive=args.keep_alive
-            )
-        )
-
-        if not args.keep_alive:
-            for location in data.items:
-                print("-------------------------")
-                print(location["url"])
-                for event in location["events"]:
-                    print(event)
-                print("-------------------------")
-            print(f"Total locations: {len(data.items)}")
-    except Exception as e:
-        logger.error(f"An error occurred during crawling: {e}")
+    asyncio.run(main(args))

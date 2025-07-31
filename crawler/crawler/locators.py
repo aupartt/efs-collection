@@ -32,7 +32,7 @@ async def wait_for_loader(context: PlaywrightCrawlingContext):
             break
 
 
-async def process_by_type(context: PlaywrightCrawlingContext) -> EventType:
+async def process_by_type(context: PlaywrightCrawlingContext) -> LocationEvents:
     """Extract all collect events by type."""
     event_types = context.page.locator(
         ".map-timeslot__don-type__filters button:not(.disabled)"
