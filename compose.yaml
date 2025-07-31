@@ -18,8 +18,9 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      RABBITMQ_PORT: 5672
       RABBITMQ_HOST: rabbitmq
     networks:
       - crawler_network

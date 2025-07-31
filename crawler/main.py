@@ -1,11 +1,14 @@
 import asyncio
 import aio_pika
 import argparse
+import logging
 
 from crawler import get_location_events
 from crawler.settings import settings
 from crawler.models import LocationEvents
 
+
+logger = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="Crawler for location events")
 parser.add_argument("--urls", nargs="+", help="List of URLs to crawl")
@@ -48,9 +51,8 @@ def setup_rabbitmq(keep_alive: bool) -> tuple:
         return connection, channel
 
     # Use asyncio to run the asynchronous function synchronously
-    loop = asyncio.get_event_loop()
-    connection, channel = loop.run_until_complete(async_setup())
-    return connection, channel
+    logger.info("RabbitMQ connection established.")
+    return asyncio.run(async_setup())
 
 
 if __name__ == "__main__":

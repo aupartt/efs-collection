@@ -52,13 +52,8 @@ async def get_location_events(
         request_handler_timeout=timedelta(seconds=120),
     )
 
-    channel = None
     if keep_alive:
-        connection = await aio_pika.connect_robust("amqp://guest:guest@localhost/")
-        channel = await connection.channel()
-        urls_queue = await channel.declare_queue(settings.rabbitmq_urls_queue, durable=True)
-        await channel.declare_queue(settings.rabbitmq_processed_data_queue, durable=True)
-
+        urls_queue = await channel.get_queue(settings.rabbitmq_urls_queue)
         # Start consuming URLs from the queue
         asyncio.create_task(consume_urls(urls_queue, crawler, channel))
 
