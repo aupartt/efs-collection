@@ -14,10 +14,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-install-project --no-dev
 
-RUN uvx playwright install
+RUN uvx playwright install --with-deps
 
 # Then, add the rest of the project source code and install it
-ADD . /app
+ADD . .
+
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
@@ -25,7 +26,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Reset the entrypoint, don't invoke `uv`
-ENTRYPOINT []
+ENTRYPOINT ["python"]
 
 # Run the FastAPI application by default
-CMD ["python", "main.py", "--headless", "--keep_alive"]
+CMD ["main.py", "--headless", "--keep_alive"]

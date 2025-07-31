@@ -14,7 +14,7 @@ services:
 
   crawler:
     build: ./crawler/
-    command: python main.py --headless --keep_alive
+    command: main.py --headless --keep_alive
     depends_on:
       - rabbitmq
     environment:
