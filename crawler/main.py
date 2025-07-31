@@ -52,14 +52,16 @@ async def setup_rabbitmq(keep_alive: bool, rq: RequestQueue):
         return None, None
     try:
         connection = await aio_pika.connect_robust(
-            host=settings.rabbitmq_host,
-            port=settings.rabbitmq_port,
-            login=settings.rabbitmq_user,
-            password=settings.rabbitmq_password,
+            host=settings.RABBITMQ_HOST,
+            port=settings.RABBITMQ_PORT,
+            login=settings.RABBITMQ_USER,
+            password=settings.RABBITMQ_PASSWORD,
         )
         channel = await connection.channel()
-        urls_queue =await channel.declare_queue(settings.rabbitmq_urls_queue, durable=True)
-        await channel.declare_queue(settings.rabbitmq_processed_data_queue, durable=True)
+        urls_queue = await channel.declare_queue(
+            settings.RABBITMQ_URLS_QUEUE, durable=True
+        )
+        await channel.declare_queue(settings.RABBITMQ_DATA_QUEUE, durable=True)
 
         asyncio.create_task(consume_urls(urls_queue, rq))
 
@@ -81,7 +83,7 @@ async def main(args):
         headless=args.headless,
         browser_type=args.browser_type,
         channel=channel,
-        request_queue=rq
+        request_queue=rq,
     )
 
     if not args.keep_alive:
