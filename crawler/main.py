@@ -10,7 +10,7 @@ from crawler.settings import settings
 from crawler.models import LocationEvents
 
 # Set up logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 parser = argparse.ArgumentParser(description="Crawler for location events")
