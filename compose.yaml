@@ -72,6 +72,7 @@ services:
     depends_on:
       - api-carto-client
       - rabbitmq
+      - crawler
     restart: unless-stopped
     networks:
       - crawler_network
@@ -89,6 +90,7 @@ services:
     command: get_schedules.py
     depends_on:
       - rabbitmq
+      - crawler
 
   # ---------------------------------------------------------------------------
   # Scheduler Service

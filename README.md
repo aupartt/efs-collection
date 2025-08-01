@@ -1,92 +1,233 @@
+# Collectes EFS
 
-## Pré-requis
+A comprehensive data collection and analysis system for the French Blood Service (EFS) API. This project retrieves, processes, and stores EFS collection data to provide insights into blood donation schedules and locations across Brittany.
 
-* [uv](https://docs.astral.sh/uv/getting-started/installation/)
+> This **README** was optimized with **ClaudeAI** and may contain inaccuracies.
 
-## Génération du package client en Python
+## 🚀 Quick Start
 
-(pour référence, car le package client est déjà inclus dans le dépôt git)
+### Prerequisites
+- Docker and Docker Compose
+- Git
 
-```sh
-pip install openapi-python-client
-openapi-python-client generate --url  https://oudonner.api.efs.sante.fr/carto-api/v3/swagger.json
+### Installation & Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd collectes-efs
+   ```
+
+2. **Build all services**
+   ```bash
+   docker compose build
+   ```
+
+3. **Start the infrastructure**
+   ```bash
+   docker compose up -d rabbitmq
+   ```
+
+4. **Run data collection**
+   ```bash
+   # Collect all locations (run weekly)
+   docker compose run --rm get-locations
+   
+   # Collect collections data (run daily)
+   docker compose run --rm get-collections
+   
+   # Collect schedules (run twice daily)
+   docker compose run --rm get-schedules
+   ```
+
+5. **Start automated scheduling** *(optional)*
+   ```bash
+   docker compose up -d scheduler
+   ```
+
+## 📊 What This Project Does
+
+The system automatically:
+- 🗺️ **Discovers** blood donation locations across Brittany
+- 📅 **Retrieves** collection schedules and availability
+- 🕷️ **Crawls** detailed appointment data from EFS websites  
+- 💾 **Stores** everything in structured JSONL format
+- ⏰ **Schedules** regular updates to keep data fresh
+
+## 🏗️ Architecture
+
+
+<div align="center">
+  <img src="./Docs/lifecycle.png" width="700" alt="Data Collection Lifecycle">
+</div>
+
+### Core Components
+
+#### 🔌 **api-carto-client**
+Auto-generated Python client for the EFS API, providing type-safe access to:
+- Regional location data
+- Collection group information  
+- Sampling location details
+
+#### 🕷️ **crawler**
+Intelligent web scraper that processes collection URLs and extracts detailed schedule information.
+
+**Key Features:**
+- Headless browser automation (Firefox/Chromium)
+- RabbitMQ integration for scalable processing
+- Configurable request throttling
+- Persistent session management
+
+**Usage:**
+```bash
+# One-time crawl
+docker compose run --rm crawler main.py --urls "https://efs.link/example" --headless
+
+# Start as persistent service
+docker compose up -d crawler
 ```
 
-## Récupération de tous les lieux de collecte
+#### 📊 **collect-info**
+Collection of specialized data gathering scripts.
 
-A exécuter une seule fois pour récupérer tous les lieux de collecte de Bretagne, tous les fichiers seront stockés dans le répertoire `data` :
+## 📋 Data Collection Scripts
 
-```sh
-cd collecte-info
-uv run get_lieux_collecte.py
+### 🏥 `get_lieux_collecte.py`
+**Purpose:** Discovers and maps all blood donation locations in Brittany
+
+**Schedule:** Weekly (Sundays at 2 AM)
+
+**Arguments:**
+- `--force` - Bypass cache and refresh all location data
+
+**Output Files:**
+- `data/groups.jsonl` - Location groups/clusters
+- `data/locations.jsonl` - Individual donation sites
+
+**Sample Location:**
+```json
+{
+  "city": "PLOUZANE",
+  "fullAddress": "PARVIS BLAISE PASCAL 29280 PLOUZANE",
+  "name": "E.N.I.B.",
+  "postCode": "29280",
+  "giveBlood": 1,
+  "givePlasma": 0,
+  "latitude": 48.4025,
+  "longitude": -4.4744,
+  "samplingLocationCode": "12345"
+  ...
+}
 ```
 
-## Extraction de la liste des codes postaux
+### 🩸 `get_collectes.py`
+**Purpose:** Retrieves scheduled blood collection events from the EFS API
 
-Après exécution de l'étape précédente :
+**Schedule:** Daily (3 AM)
 
-```sh
-uv run get_codes_postaux.py
+**Output:** `data/collections.json`
+
+**Sample Collection:**
+```json
+{
+  "date": "2025-10-07T00:00:00",
+  "groupCode": "F50261",
+  "morningStartTime": "08:40:00",
+  "morningEndTime": "13:00:00",
+  "isPublic": true,
+  "availableSlots": 45,
+  "city": "PLOUZANE",
+  "address": "PARVIS BLAISE PASCAL"
+  ...
+}
 ```
 
-Le script retourne un ensemble de chaînes de caractères.
+### 📅 `get_schedules.py`
+**Purpose:** Extracts detailed appointment availability by crawling EFS booking pages
 
+**Schedule:** Twice daily (6 AM & 6 PM)
 
-# Utilisation de l'API collecte
+**Modes:**
+- **Producer mode** (default): Sends URLs to crawler via RabbitMQ
+- **Consumer mode** (`--listen`): Processes crawler results
 
-## Nomenclature
+**Arguments:**
+- `--listen` - Run in consumer mode to process crawler data
+- `--force` - Force refresh of all scheduling data
 
-| Anglais | Français | Description |
-|---|---|---|
-| Region | Région | 13 régions contenant un libellé, un acronyme à 4 lettres, un monogramme d'une seule lettre et un code à 3 chiffres stocké sous forme de string |
-| Group | Groupement | Groupement de lieux de collectes, par exemple une commune, une entreprise ou un lycée |
-| Location | Lieu de prélèvement | On peut avoir plusieurs lieux pour un même groupement (ex. Thorigné-Fouillard car la collecte a eu lieu dans différentes salles) |
+**Output:** `data/schedules.jsonl`
 
-## Recherche de lieux de prélèvement
+**Sample Schedule:**
+```json
+{
+  "url": "https://efs.link/S92Ti",
+  "location": "E.N.I.B. PLOUZANE",
+  "events": [
+    {
+      "date": "09/09/2025",
+      "type": "blood",
+      "totalSlots": 176,
+      "availableSlots": 23,
+      "schedules": {
+        "09h00": 1,
+        "09h15": 2,
+        "10h30": 0,
+        ...
+        "17h45": 2
+      }
+    },
+    ...
+  ]
+}
+```
 
-La recherche de lieux utilise l'endpoint `/samplinglocations/`.
+## ⏰ Automated Scheduling
 
-1. Lister toutes les régions
+The `scheduler` service automatically runs data collection tasks:
 
-https://oudonner.api.efs.sante.fr/carto-api/v3/samplinglocation/getregions
+| Task | Frequency | Purpose |
+|------|-----------|---------|
+| `get-locations` | Weekly (Sun 2 AM) | Update location database |
+| `get-collections` | Daily (3 AM) | Refresh collection events |
+| `get-schedules` | Twice daily (6 AM, 6 PM) | Update appointment availability |
 
-2. Lister tous les _groupements_ d'une région
+## 🛠️ Development
 
-Exemple pour la Bretagne : 
+### Manual Data Collection
 
-https://oudonner.api.efs.sante.fr/carto-api/v3/samplinglocation/getgroupements?RegionCode=016
+```bash
+# Force refresh all location data
+docker compose run --rm get-locations --force
 
-3. Lister tous les _lieux de collecte_ d'un groupement
+# Update collections for today
+docker compose run --rm get-collections
 
-Exemple pour Rennes-INSA :
+# Crawl schedules with consumer listening
+docker compose run -d get-schedules --listen  # Start consumer
+docker compose run --rm get-schedules         # Send crawl jobs
+```
 
-https://oudonner.api.efs.sante.fr/carto-api/v3/samplinglocation/searchbygrouplocationcode?GroupCode=F70318
+### Monitoring
 
-## Recherche d'une collecte
+```bash
+# View logs
+docker compose logs -f crawler
+docker compose logs -f consumer
 
-La recherche de collectes utilise l'endpoint `/samplingcollections/`.
+# Check RabbitMQ status
+open http://localhost:15672  # guest/guest
+```
 
-C'est _a priori impossible_ par groupement ou par lieu de collecte, il faut chercher :
-* par code postal
-* par ville
-* par coordonnées géographiques (autour d'un point ou dans un carré)
+### Data Location
 
-Exemple pour le code postal 35000 :
+All collected data is stored in the `./collecte-info/data/` directory:
+- `groups.jsonl` - Location groups
+- `locations.jsonl` - Individual sites  
+- `collections.json` - Scheduled events
+- `schedules.jsonl` - Detailed availability
 
-https://oudonner.api.efs.sante.fr/carto-api/v3/samplingcollection/searchbypostcode?PostCode=35000&UserLatitude=48&UserLongitude=-2
+## 🔧 Configuration
 
-L'API retourne :
-* Une liste des **lieux de collecte** fixes dans le champ `samplingLocationEntities_SF`
-* Une liste de collectes mobiles dans le champ `samplingLocationCollections`
-
-Pour chaque collecte mobile, on retrouve :
-* Le lieu de collecte
-* Une liste de collectes ayant chacune des métadonnes, notamment :
-  * Un ID unique
-  * La date et les créneaux horaires de collecte
-  * Un lien direct d'inscription
-  * Le nombre de places pour chaque type de prélèvement
-
-Si une collecte est sur plusieurs dates, les collectes des jours suivants apparaissent dans la liste `children` de la collecte correspondant au premier jour. Exemple pour les collectes de Liffré :
-
-https://oudonner.api.efs.sante.fr/carto-api/v3/samplingcollection/searchbycityname?CityName=liffr%C3%A9&UserLatitude=48&UserLongitude=-2
+Key environment variables in `compose.yaml`:
+- `RABBITMQ_HOST` - Message queue hostname
+- `COMPOSE_PROJECT_NAME` - Project prefix for Docker images
