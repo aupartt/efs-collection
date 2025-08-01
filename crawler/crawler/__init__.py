@@ -1,4 +1,4 @@
-from .crawler import get_location_events
+from .crawler import start_crawler
 
 
-__all__ = ["get_location_events"]
+__all__ = ["start_crawler"]

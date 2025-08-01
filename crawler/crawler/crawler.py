@@ -34,7 +34,7 @@ async def request_handler(
         context.log.error(f"Error in request handler: {e}")
 
 
-async def get_location_events(
+async def start_crawler(
     urls: list[str],
     max_requests_per_crawl: int = 10,
     headless: bool = True,
@@ -69,7 +69,7 @@ async def get_location_events(
 
 if __name__ == "__main__":
     asyncio.run(
-        get_location_events(
+        start_crawler(
             urls=["https://dondesang.efs.sante.fr/trouver-une-collecte/138202/sang"],
             keep_alive=False,
         )

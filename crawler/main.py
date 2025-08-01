@@ -5,7 +5,7 @@ import aio_pika
 
 from crawlee.storages import RequestQueue
 
-from crawler import get_location_events
+from crawler import start_crawler
 from crawler.settings import settings
 from crawler.models import LocationEvents
 
@@ -76,7 +76,7 @@ async def main(args):
     rq = await RequestQueue.open()
 
     _, channel = await setup_rabbitmq(args.keep_alive, rq)
-    data: LocationEvents = await get_location_events(
+    data: LocationEvents = await start_crawler(
         urls=args.urls,
         keep_alive=args.keep_alive,
         max_requests_per_crawl=args.max_requests_per_crawl,
