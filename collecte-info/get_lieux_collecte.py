@@ -2,6 +2,8 @@ import json
 from pathlib import Path
 import logging
 from tqdm import tqdm
+import argparse
+
 from api_carto_client import Client
 from api_carto_client.models.ping import Ping
 from api_carto_client.models.sampling_region_entity import SamplingRegionEntity
@@ -24,6 +26,13 @@ logger = logging.getLogger(__name__)
 GROUPS_FILE = Path("data/groups.jsonl")
 LOCATIONS_FILE = Path("data/locations.jsonl")
 REGION_NAME = "Bretagne"
+
+parser = argparse.ArgumentParser(description="CLI to retrieve collection locations")
+parser.add_argument(
+    "--force", action="store_true", help="Force refresh of cached data"
+)
+
+args = parser.parse_args()
 
 
 def with_api_client(func):
@@ -69,10 +78,10 @@ def get_location_sampling(client: Client, groupement: SamplingGroupEntity):
     return res.sampling_location_entities
 
 
-def load_processed_groups() -> set[SamplingGroupEntity]:
+def load_processed_groups(force: bool = False) -> set[SamplingGroupEntity]:
     processed_groups = set()
 
-    if not LOCATIONS_FILE.is_file():
+    if force or not LOCATIONS_FILE.is_file():
         return processed_groups
 
     with LOCATIONS_FILE.open("r", encoding="utf-8") as fp:
@@ -84,10 +93,10 @@ def load_processed_groups() -> set[SamplingGroupEntity]:
     return processed_groups
 
 
-def load_groups() -> list[SamplingGroupEntity]:
+def load_groups(force: bool = False) -> list[SamplingGroupEntity]:
     groups: list[SamplingGroupEntity] = []
 
-    if GROUPS_FILE.is_file():
+    if GROUPS_FILE.is_file() and not force:
         logger.info("Chargement des groupements depuis le fichier")
         with GROUPS_FILE.open("r", encoding="utf-8") as fp:
             for line in fp:
@@ -115,10 +124,12 @@ def load_groups() -> list[SamplingGroupEntity]:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)
 
-    groups = load_groups()
-    processed_groups = load_processed_groups()
+    groups = load_groups(args.force)
+    processed_groups = load_processed_groups(args.force)
 
-    with Path(LOCATIONS_FILE).open("a", encoding="utf-8") as file:
+    open_mode = "w" if args.force else "a"
+
+    with Path(LOCATIONS_FILE).open(open_mode, encoding="utf-8") as file:
         logger.info("Téléchargement des lieux de collecte:")
         for group in tqdm(groups):
             if group.gr_code in processed_groups:

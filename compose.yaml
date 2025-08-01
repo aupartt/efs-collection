@@ -82,13 +82,39 @@ services:
 
   get-lieux:
     <<: *get-service-base
-    command: get_lieux_collecte.py
+    command: get_lieux_collecte.py --force
 
   get-schedules:
     <<: *get-service-base
     command: get_schedules.py
     depends_on:
       - rabbitmq
+
+  # ---------------------------------------------------------------------------
+  # Scheduler Service
+  # ---------------------------------------------------------------------------
+
+  scheduler:
+    image: docker:27-cli
+    environment:
+      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-collectes-efs}
+    command: >
+      sh -c "
+        echo '# Collectes EFS Scheduler' > /tmp/crontab &&
+        echo '# Run get-lieux every week (Sunday at 2 AM)' >> /tmp/crontab &&
+        echo '0 2 * * 0 docker compose -f /compose/compose.yaml run --rm get-lieux' >> /tmp/crontab &&
+        echo '# Run get-collectes every day at 3 AM' >> /tmp/crontab &&
+        echo '0 3 * * * docker compose -f /compose/compose.yaml run --rm get-collectes' >> /tmp/crontab &&
+        echo '# Run get-schedules twice a day (6 AM and 6 PM)' >> /tmp/crontab &&
+        echo '0 6,18 * * * docker compose -f /compose/compose.yaml run --rm get-schedules' >> /tmp/crontab &&
+        crond -f -d 8 -c /tmp
+      "
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - .:/compose:ro
+    restart: unless-stopped
+    depends_on:
+      - api-carto-client
 
 # =============================================================================
 # Volumes & Networks
