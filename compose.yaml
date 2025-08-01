@@ -1,9 +1,41 @@
+# =============================================================================
+# Docker Compose Configuration for Collectes EFS
+# =============================================================================
+
+# Shared configuration templates
+x-common-environment: &common-environment
+  RABBITMQ_USER: guest
+  RABBITMQ_PASSWORD: guest
+  RABBITMQ_PORT: 5672
+  RABBITMQ_HOST: rabbitmq
+
+x-common-volumes: &common-volumes
+  - ./collecte-info/data:/app/data
+
+x-get-service-base: &get-service-base
+  build: 
+    context: ./collecte-info
+    args:
+      API_CARTO_CLIENT_IMAGE: ${COMPOSE_PROJECT_NAME:-collectes-efs}_api-carto-client
+  depends_on:
+    - api-carto-client
+  volumes: *common-volumes
+  environment: *common-environment
+
+# =============================================================================
+# Services
+# =============================================================================
+
 services:
+  # ---------------------------------------------------------------------------
+  # Infrastructure Services
+  # ---------------------------------------------------------------------------
+  
   rabbitmq:
     image: rabbitmq:4-management
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -13,22 +45,58 @@ services:
     networks:
       - crawler_network
 
+  # ---------------------------------------------------------------------------
+  # Application Services
+  # ---------------------------------------------------------------------------
+  
   crawler:
     build: ./crawler/
     command: main.py --headless --keep_alive
     depends_on:
       - rabbitmq
-    environment:
-      RABBITMQ_USER: guest
-      RABBITMQ_PASSWORD: guest
-      RABBITMQ_PORT: 5672
-      RABBITMQ_HOST: rabbitmq
+    environment: *common-environment
     restart: unless-stopped
     networks:
       - crawler_network
 
+  api-carto-client:
+    build: ./api-carto-client
+
+  # ---------------------------------------------------------------------------
+  # Data Collection Services
+  # ---------------------------------------------------------------------------
+  
+  consumer:
+    <<: *get-service-base
+    command: get_schedules.py --listen
+    depends_on:
+      - api-carto-client
+      - rabbitmq
+    restart: unless-stopped
+    networks:
+      - crawler_network
+
+  get-collectes:
+    <<: *get-service-base
+    command: get_collectes.py
+
+  get-lieux:
+    <<: *get-service-base
+    command: get_lieux_collecte.py
+
+  get-schedules:
+    <<: *get-service-base
+    command: get_schedules.py
+    depends_on:
+      - rabbitmq
+
+# =============================================================================
+# Volumes & Networks
+# =============================================================================
+
 volumes:
   rabbitmq_data:
+    driver: local
 
 networks:
   crawler_network:
