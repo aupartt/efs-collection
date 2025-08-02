@@ -36,7 +36,6 @@ async def request_handler(
 
 async def start_crawler(
     urls: list[str],
-    max_requests_per_crawl: int = 10,
     headless: bool = True,
     browser_type: str = "firefox",
     keep_alive: bool = False,
@@ -44,7 +43,6 @@ async def start_crawler(
     request_queue: RequestQueue | None = None,
 ) -> LocationEvents | None:
     crawler = PlaywrightCrawler(
-        max_requests_per_crawl=max_requests_per_crawl,
         headless=headless,
         browser_type=browser_type,
         keep_alive=keep_alive,

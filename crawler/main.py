@@ -18,12 +18,6 @@ logger = logging.getLogger(__name__)
 parser = argparse.ArgumentParser(description="Crawler for location events")
 parser.add_argument("--urls", nargs="+", help="List of URLs to crawl")
 parser.add_argument(
-    "--max_requests_per_crawl",
-    type=int,
-    default=10,
-    help="Maximum number of requests per crawl",
-)
-parser.add_argument(
     "--headless", action="store_true", help="Run browser in headless mode"
 )
 parser.add_argument(
@@ -84,7 +78,6 @@ async def main(args):
     data: LocationEvents = await start_crawler(
         urls=args.urls,
         keep_alive=args.keep_alive,
-        max_requests_per_crawl=args.max_requests_per_crawl,
         headless=args.headless,
         browser_type=args.browser_type,
         channel=channel,
