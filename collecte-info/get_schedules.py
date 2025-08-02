@@ -88,6 +88,10 @@ async def get_collections(channel: aio_pika.Channel):
 
 
 async def main():
+    if not COLLECTIONS_FILE.is_file():
+        logger.error(f"File {COLLECTIONS_FILE} not found")
+        return
+    
     connection = await aio_pika.connect_robust(
         host=settings.RABBITMQ_HOST,
         port=settings.RABBITMQ_PORT,

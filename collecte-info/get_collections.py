@@ -53,7 +53,10 @@ def get_collections(client: Client, post_code: str) -> list[SamplingCollectionEn
     return collections.sampling_location_collections
 
 
-def load_postal_codes() -> list[str]:
+def load_postal_codes() -> set[str]:
+    if not LOCATIONS_FILE.is_file():
+        logger.error(f"Le fichier {LOCATIONS_FILE} n'existe pas")
+        return set()
     with LOCATIONS_FILE.open("r", encoding="utf-8") as file:
         return {
             SamplingLocationEntity.from_dict(json.loads(line)).post_code
