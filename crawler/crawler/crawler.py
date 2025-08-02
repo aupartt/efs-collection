@@ -24,11 +24,11 @@ async def request_handler(
 
         if channel:
             await channel.default_exchange.publish(
-                aio_pika.Message(body=json.dumps(data.model_dump()).encode()),
+                aio_pika.Message(body=data.model_dump_json().encode()),
                 routing_key=settings.RABBITMQ_DATA_QUEUE,
             )
         else:
-            await context.push_data(data.model_dump())
+            await context.push_data(data.model_dump_json())
 
     except Exception as e:
         context.log.error(f"Error in request handler: {e}")
