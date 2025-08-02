@@ -14,11 +14,8 @@ x-common-volumes: &common-volumes
 
 x-get-service-base: &get-service-base
   build: 
-    context: ./collecte-info
-    args:
-      API_CARTO_CLIENT_IMAGE: ${COMPOSE_PROJECT_NAME:-collectes-efs}_api-carto-client
-  depends_on:
-    - api-carto-client
+    context: .
+    dockerfile: ./collecte-info/Dockerfile
   volumes: *common-volumes
   environment: *common-environment
 
@@ -59,9 +56,6 @@ services:
     networks:
       - crawler_network
 
-  api-carto-client:
-    build: ./api-carto-client
-
   # ---------------------------------------------------------------------------
   # Data Collection Services
   # ---------------------------------------------------------------------------
@@ -70,7 +64,6 @@ services:
     <<: *get-service-base
     command: get_schedules.py --listen
     depends_on:
-      - api-carto-client
       - rabbitmq
       - crawler
     restart: unless-stopped
@@ -115,8 +108,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - .:/compose:ro
     restart: unless-stopped
-    depends_on:
-      - api-carto-client
 
 # =============================================================================
 # Volumes & Networks
