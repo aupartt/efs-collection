@@ -1,7 +1,9 @@
 import asyncio
 import argparse
 import logging
+import sys
 import aio_pika
+from aio_pika.exceptions import AMQPConnectionError
 
 from crawlee.storages import RequestQueue
 
@@ -67,9 +69,12 @@ async def setup_rabbitmq(keep_alive: bool, rq: RequestQueue):
 
         logger.info("RabbitMQ connection and channels established successfully.")
         return connection, channel
+    except AMQPConnectionError as e:
+        logger.error(f"Error connecting to RabbitMQ: {e}")
+        await asyncio.sleep(5)
+        sys.exit(0)
     except Exception as e:
-        logger.error(f"Error setting up RabbitMQ connection: {e}")
-        raise
+        logger.error(f"Unexpected error setting up RabbitMQ: {e}")
 
 
 async def main(args):
@@ -91,5 +96,5 @@ async def main(args):
 
 
 if __name__ == "__main__":
-    logger.warning(f"Starting crawler with args: {args}")
+    logger.info("Starting crawler...")
     asyncio.run(main(args))

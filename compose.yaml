@@ -84,6 +84,8 @@ services:
     depends_on:
       - rabbitmq
       - crawler
+    networks:
+      - crawler_network
 
   # ---------------------------------------------------------------------------
   # Scheduler Service

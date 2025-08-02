@@ -5,6 +5,7 @@ from pathlib import Path
 import logging
 import re
 import argparse
+from aio_pika.exceptions import AMQPConnectionError
 
 from settings import settings
 
@@ -92,14 +93,21 @@ async def main():
         logger.error(f"File {COLLECTIONS_FILE} not found")
         return
     
-    connection = await aio_pika.connect_robust(
-        host=settings.RABBITMQ_HOST,
-        port=settings.RABBITMQ_PORT,
-        login=settings.RABBITMQ_USER,
-        password=settings.RABBITMQ_PASSWORD,
-    )
-    channel = await connection.channel()
-
+    try:
+        connection = await aio_pika.connect_robust(
+            host=settings.RABBITMQ_HOST,
+            port=settings.RABBITMQ_PORT,
+            login=settings.RABBITMQ_USER,
+            password=settings.RABBITMQ_PASSWORD,
+        )
+        channel = await connection.channel()
+    except AMQPConnectionError as e:
+        logger.error(f"Error connecting to RabbitMQ: {e}")
+        await asyncio.sleep(5)
+        return
+    except Exception as e:
+        logger.error(f"Unknown error with RabbitMQ: {e}")
+    
     try:
         if args.listen:
             logger.info("Listening for processed data...")
