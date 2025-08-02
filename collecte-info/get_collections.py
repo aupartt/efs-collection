@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 import logging
 from tqdm import tqdm
+import time
 
 from api_carto_client import Client
 from api_carto_client.models.ping import Ping
@@ -56,6 +57,7 @@ def get_collections(client: Client, post_code: str) -> list[SamplingCollectionEn
 def load_postal_codes() -> set[str]:
     if not LOCATIONS_FILE.is_file():
         logger.error(f"Le fichier {LOCATIONS_FILE} n'existe pas")
+        time.sleep(5)
         return set()
     with LOCATIONS_FILE.open("r", encoding="utf-8") as file:
         return {

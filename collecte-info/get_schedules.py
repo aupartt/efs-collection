@@ -88,11 +88,7 @@ async def get_collections(channel: aio_pika.Channel):
                 )
 
 
-async def main():
-    if not COLLECTIONS_FILE.is_file():
-        logger.error(f"File {COLLECTIONS_FILE} not found")
-        return
-    
+async def main():    
     try:
         connection = await aio_pika.connect_robust(
             host=settings.RABBITMQ_HOST,
@@ -113,6 +109,10 @@ async def main():
             logger.info("Listening for processed data...")
             await consume_processed_data(channel)
         else:
+            if not COLLECTIONS_FILE.is_file():
+                logger.error(f"File {COLLECTIONS_FILE} not found")
+                await asyncio.sleep(5)
+                return
             logger.info("Sending urls to crawler...")
             await get_collections(channel)
     except Exception as e:
