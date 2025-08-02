@@ -25,7 +25,9 @@ A comprehensive data collection and analysis system for the French Blood Service
 
 3. **Start the infrastructure**
    ```bash
-   docker compose up -d rabbitmq
+   docker compose up -d rabbitmq 
+   docker compose up -d crawler
+   docker compose up -d consumer
    ```
 
 4. **Run data collection**
