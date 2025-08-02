@@ -1,10 +1,10 @@
-import aio_pika
 import asyncio
 import json
 from pathlib import Path
 import logging
 import re
 import argparse
+import aio_pika
 from aio_pika.exceptions import AMQPConnectionError
 
 from settings import settings

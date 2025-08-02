@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime, timezone
 
 from crawlee.crawlers import PlaywrightCrawlingContext
 from crawler.models import LocationEvents, Event, EventType
@@ -55,4 +56,5 @@ async def process_by_type(context: PlaywrightCrawlingContext) -> LocationEvents:
         context.log.info(f"Processed {len(_events)} {type_name} events.")
         events.extend(_events)
 
-    return LocationEvents(url=context.request.url, events=events)
+    now = datetime.now(timezone.utc)
+    return LocationEvents(url=context.request.url, time=now, events=events)

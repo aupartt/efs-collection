@@ -1,3 +1,4 @@
+import datetime
 from pydantic import BaseModel
 from typing import Dict, Literal
 
@@ -15,4 +16,5 @@ class Event(BaseModel):
 
 class LocationEvents(BaseModel):
     url: str
+    time: datetime
     events: list[Event]
