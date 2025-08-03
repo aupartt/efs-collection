@@ -1,0 +1,25 @@
+# =============================================================================
+# Crontab for EFS Collections
+# =============================================================================
+# 
+# Installation:
+# 1. Update PROJECT_DIR path in run-collectes.sh
+# 2. chmod +x /path/to/run-collectes.sh
+# 3. crontab -e
+# 4. Add the lines below
+#
+
+# Collect locations every Sunday at 2 AM
+0 2 * * 0 /path/to/your/run-collectes.sh locations
+
+# Collect collections every day at 3 AM  
+0 3 * * * /path/to/your/run-collectes.sh collections
+
+# Collect schedules every 5 minutes
+*/5 * * * * /path/to/your/run-collectes.sh schedules
+
+# Alternative: Full collection once a day at 4 AM
+# 0 4 * * * /path/to/your/run-collectes.sh all
+
+# Clean old logs (keep 30 days)
+0 1 * * * find /path/to/your/collectes-efs/logs -name "*.log" -mtime +30 -delete

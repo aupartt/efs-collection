@@ -42,9 +42,22 @@ A comprehensive data collection and analysis system for the French Blood Service
    docker compose run --rm get-schedules
    ```
 
-5. **Start automated scheduling** *(optional)*
+5. **Setup automated scheduling** *(optional)*
    ```bash
-   docker compose up -d scheduler
+    # 1. Copy the script
+    sudo cp run-collectes.sh /usr/local/bin/
+    sudo chmod +x /usr/local/bin/run-collectes.sh
+
+    # 2. Update the path in the script
+    sudo nano /usr/local/bin/run-collectes.sh
+    # Change PROJECT_DIR="/path/to/your/collectes-efs"
+
+    # 3. Test the script
+    /usr/local/bin/run-collectes.sh schedules
+
+    # 4. Add to crontab
+    crontab -e
+    # Copy the lines from crontab-collectes file
    ```
 
 ## 📊 What This Project Does
