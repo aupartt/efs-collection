@@ -21,26 +21,24 @@ log() {
 run_task() {
     local task_name="$1"
     local log_file="$LOG_DIR/${task_name}_$(date '+%Y%m%d_%H%M%S').log"
-    
+   
     log "Starting $task_name"
-    
+   
     cd "$PROJECT_DIR" || {
         log "ERROR: Cannot access directory $PROJECT_DIR"
         exit 1
     }
-    
-    # Execute task with 30-minute timeout
-    timeout 1800 docker compose run --rm "$task_name" 2>&1 | tee "$log_file"
+   
+    # Execute task
+    docker compose run --rm "$task_name" 2>&1 | tee "$log_file"
     local exit_code=$?
-    
+   
     if [ $exit_code -eq 0 ]; then
         log "✅ $task_name completed successfully"
-    elif [ $exit_code -eq 124 ]; then
-        log "⏰ $task_name interrupted (30min timeout)"
     else
         log "❌ $task_name failed (code: $exit_code)"
     fi
-    
+   
     return $exit_code
 }
 
@@ -74,11 +72,10 @@ case "${1:-}" in
         ;;
     
     *)
-        echo "Usage: $0 {locations|collections|schedules|all}"
+        echo "Usage: $0 {locations|collections|schedules}"
         echo ""
         echo "Examples:"
         echo "  $0 schedules    # Run only get-schedules"
-        echo "  $0 all          # Run all collections"
         exit 1
         ;;
 esac
