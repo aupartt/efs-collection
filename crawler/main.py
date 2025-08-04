@@ -97,22 +97,22 @@ async def main(args):
     rq = await RequestQueue.open()
 
     _, channel = await setup_rabbitmq(args.keep_alive, rq)
-    data: LocationEvents = await start_crawler(
-        urls=args.urls,
-        keep_alive=args.keep_alive,
-        headless=args.headless,
-        browser_type=args.browser_type,
-        channel=channel,
-        request_queue=rq,
-        request_handled_timeout=args.request_handled_timeout,
-        system_info_interval=args.system_info_interval,
-        max_requests_per_crawl=args.max_requests_per_crawl,
-    )
 
-    if not args.keep_alive:
-        return data
-    elif data == "MAX_REQUESTS_REACHED":
-        await main(args)
+    while True:
+        data: LocationEvents = await start_crawler(
+            urls=args.urls,
+            keep_alive=args.keep_alive,
+            headless=args.headless,
+            browser_type=args.browser_type,
+            channel=channel,
+            request_queue=rq,
+            request_handled_timeout=args.request_handled_timeout,
+            system_info_interval=args.system_info_interval,
+            max_requests_per_crawl=args.max_requests_per_crawl,
+        )
+
+        if not args.keep_alive:
+            return data
 
 
 if __name__ == "__main__":
