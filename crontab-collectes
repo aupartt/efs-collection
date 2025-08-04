@@ -16,7 +16,7 @@
 0 3 * * * /path/to/your/run-collectes.sh collections
 
 # Collect schedules every 5 minutes
-* 6,18 * * * /path/to/your/run-collectes.sh schedules
+* 11,23 * * * /path/to/your/run-collectes.sh schedules
 
 # Clean old logs (keep 30 days)
 0 1 * * * find /path/to/your/collectes-efs/logs -name "*.log" -mtime +30 -delete
