@@ -19,7 +19,9 @@ SCHEDULES_FILE = Path("data/schedules.jsonl")
 
 parser = argparse.ArgumentParser(description="CLI to retrieve schedules")
 parser.add_argument(
-    "--listen", action="store_true", help="Start the consumer to listen for processed data"
+    "--listen",
+    action="store_true",
+    help="Start the consumer to listen for processed data",
 )
 
 args = parser.parse_args()
@@ -88,13 +90,16 @@ async def get_collections(channel: aio_pika.Channel):
                 )
 
 
-async def main():    
+async def main():
     try:
         connection = await aio_pika.connect_robust(
             host=settings.RABBITMQ_HOST,
             port=settings.RABBITMQ_PORT,
             login=settings.RABBITMQ_USER,
             password=settings.RABBITMQ_PASSWORD,
+            client_properties={
+                "connection_name": f"get_schedules{' --listen' if args.listen else ''}"
+            },
         )
         channel = await connection.channel()
     except AMQPConnectionError as e:
@@ -103,7 +108,7 @@ async def main():
         return
     except Exception as e:
         logger.error(f"Unknown error with RabbitMQ: {e}")
-    
+
     try:
         if args.listen:
             logger.info("Listening for processed data...")
@@ -121,7 +126,6 @@ async def main():
         await channel.close()
         await connection.close()
         logger.info("Channel closed")
-
 
 
 if __name__ == "__main__":

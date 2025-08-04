@@ -64,6 +64,7 @@ async def setup_rabbitmq(keep_alive: bool, rq: RequestQueue):
             port=settings.RABBITMQ_PORT,
             login=settings.RABBITMQ_USER,
             password=settings.RABBITMQ_PASSWORD,
+            client_properties={"connection_name": "crawler"},
         )
         channel = await connection.channel()
         urls_queue = await channel.declare_queue(
