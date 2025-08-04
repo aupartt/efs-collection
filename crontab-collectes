@@ -16,7 +16,7 @@
 0 3 * * * (/usr/local/bin/run-collectes.sh collections) 2>&1 | logger -t get-collections
 
 # Collect schedules every day at 11 AM and 11 PM
-* 11,23 * * * (/usr/local/bin/run-collectes.sh schedules) 2>&1 | logger -t get-schedules
+0 11,23 * * * (/usr/local/bin/run-collectes.sh schedules) 2>&1 | logger -t get-schedules
 
 # Clean old logs (keep 30 days)
 0 1 * * * (find /home/nuky/collectes-efs/logs -name "*.log" -mtime +30 -delete) 2>&1 | logger -t log-cleanup
