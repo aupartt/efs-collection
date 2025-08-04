@@ -26,6 +26,18 @@ parser.add_argument(
 parser.add_argument(
     "--keep-alive", action="store_true", help="Keep the crawler alive after crawling"
 )
+parser.add_argument(
+    "--request-handled-timeout",
+    type=int,
+    default=60 * 2,
+    help="Timeout for request handling in seconds",
+)
+parser.add_argument(
+    "--system-info-interval",
+    type=int,
+    default=60 * 30,
+    help="Interval for system info logging in seconds",
+)
 
 args = parser.parse_args()
 
@@ -82,6 +94,8 @@ async def main(args):
         browser_type=args.browser_type,
         channel=channel,
         request_queue=rq,
+        request_handled_timeout=args.request_handled_timeout,
+        system_info_interval=args.system_info_interval,
     )
 
     if not args.keep_alive:

@@ -41,12 +41,15 @@ async def start_crawler(
     keep_alive: bool = False,
     channel: aio_pika.Channel | None = None,
     request_queue: RequestQueue | None = None,
+    request_handled_timeout: timedelta = timedelta(seconds=60*2),
+    system_info_interval: timedelta = timedelta(seconds=60*30),
 ) -> LocationEvents | None:
     crawler = PlaywrightCrawler(
         headless=headless,
         browser_type=browser_type,
         keep_alive=keep_alive,
-        request_handler_timeout=timedelta(seconds=120),
+        request_handler_timeout=request_handled_timeout,
+        system_info_interval=system_info_interval,
         request_manager=request_queue,
     )
 

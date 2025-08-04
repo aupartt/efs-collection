@@ -96,6 +96,8 @@ Intelligent web scraper that processes collection URLs and extracts detailed sch
 - `--headless` - Run browser in headless mode
 - `--browser-type` - Browser type to use (firefox/chromium)
 - `--keep-alive` - Keep crawler running indefinitely (consuming urls from RabbitMQ queue)
+- `--request-handled-timeout` - Timeout for request handling in seconds
+- `--system-info-interval` - Interval for system info logging in seconds
 
 **Usage:**
 ```bash
