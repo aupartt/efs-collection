@@ -179,7 +179,7 @@ Collection of specialized data gathering scripts.
 ```json
 {
   "url": "https://efs.link/S92Ti",
-  "location": "E.N.I.B. PLOUZANE",
+  "time": "2025-08-03T21:14:19.471679Z", # Date of crawling
   "events": [
     {
       "date": "09/09/2025",
