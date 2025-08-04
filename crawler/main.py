@@ -4,8 +4,10 @@ import logging
 import sys
 import aio_pika
 from aio_pika.exceptions import AMQPConnectionError
+import uuid
 
 from crawlee.storages import RequestQueue
+from crawlee import Request
 
 from crawler import start_crawler
 from crawler.settings import settings
@@ -48,7 +50,8 @@ async def consume_urls(queue: aio_pika.Queue, rq: RequestQueue):
             try:
                 async with message.process():
                     url = message.body.decode()
-                    await rq.add_request(url)
+                    _id = f"{url}:{uuid.uuid4()}"
+                    await rq.add_request(Request.from_url(url, unique_key=_id))
             except Exception as e:
                 logger.error(f"Error processing message: {e}")
     except Exception as e:
