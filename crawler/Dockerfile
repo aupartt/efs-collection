@@ -29,4 +29,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 ENTRYPOINT ["python"]
 
 # Run the FastAPI application by default
-CMD ["main.py", "--headless", "--keep_alive"]
+CMD ["main.py", "--headless", "--keep-alive"]

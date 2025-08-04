@@ -2,8 +2,6 @@
 
 A comprehensive data collection and analysis system for the French Blood Service (EFS) API. This project retrieves, processes, and stores EFS collection data to provide insights into blood donation schedules and locations across Brittany.
 
-> This **README** was optimized with **ClaudeAI** and may contain inaccuracies.
-
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -93,13 +91,19 @@ Intelligent web scraper that processes collection URLs and extracts detailed sch
 - Configurable request throttling
 - Persistent session management
 
+**Arguments:**
+- `--urls` - List of URLs to crawl
+- `--headless` - Run browser in headless mode
+- `--browser-type` - Browser type to use (firefox/chromium)
+- `--keep-alive` - Keep crawler running indefinitely (consuming urls from RabbitMQ queue)
+
 **Usage:**
 ```bash
 # One-time crawl
 docker compose run --rm crawler main.py --urls "https://efs.link/example" --headless
 
 # Start as persistent service
-docker compose up -d crawler
+docker compose up -d crawler --keep-alive
 ```
 
 #### 📊 **collect-info**
@@ -168,7 +172,6 @@ Collection of specialized data gathering scripts.
 
 **Arguments:**
 - `--listen` - Run in consumer mode to process crawler data
-- `--force` - Force refresh of all scheduling data
 
 **Output:** `data/schedules.jsonl`
 
@@ -196,10 +199,11 @@ Collection of specialized data gathering scripts.
 }
 ```
 
-## ⏰ Automated Scheduling
+## ⏰ Automated Scheduling (optional)
 
-The `scheduler` service automatically runs data collection tasks:
+You can use `run-collectes.sh` and `crontab-collectes` to schedule automated data collection.
 
+### Default scheduled Tasks
 | Task | Frequency | Purpose |
 |------|-----------|---------|
 | `get-locations` | Weekly (Sun 2 AM) | Update location database |
@@ -240,9 +244,3 @@ All collected data is stored in the `./collecte-info/data/` directory:
 - `locations.jsonl` - Individual sites  
 - `collections.json` - Scheduled events
 - `schedules.jsonl` - Detailed availability
-
-## 🔧 Configuration
-
-Key environment variables in `compose.yaml`:
-- `RABBITMQ_HOST` - Message queue hostname
-- `COMPOSE_PROJECT_NAME` - Project prefix for Docker images
