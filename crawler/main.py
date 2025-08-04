@@ -23,7 +23,7 @@ parser.add_argument(
     "--headless", action="store_true", help="Run browser in headless mode"
 )
 parser.add_argument(
-    "--browser-type", type=str, default="firefox", help="Browser type to use"
+    "--browser-type", type=str, default="chromium", help="Browser type to use"
 )
 parser.add_argument(
     "--keep-alive", action="store_true", help="Keep the crawler alive after crawling"
