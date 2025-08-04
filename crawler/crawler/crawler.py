@@ -5,7 +5,6 @@ import logging
 
 from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext
 from crawlee.storages import RequestQueue
-from crawlee.configuration import Configuration
 
 from crawler.settings import settings
 from crawler.models import LocationEvents
@@ -41,21 +40,18 @@ async def start_crawler(
     keep_alive: bool = False,
     channel: aio_pika.Channel | None = None,
     request_queue: RequestQueue | None = None,
-    request_handled_timeout: int = 60*2,
-    system_info_interval: int = 60*30,
+    request_handled_timeout: int = 60 * 2,
+    system_info_interval: int = 60 * 30,
 ) -> LocationEvents | None:
-    config = Configuration.get_global_configuration()
-    config.system_info_interval = timedelta(seconds=system_info_interval)
-    
-    print("config:", config, flush=True)
-
-
     crawler = PlaywrightCrawler(
         headless=headless,
         browser_type=browser_type,
         keep_alive=keep_alive,
         request_handler_timeout=timedelta(seconds=request_handled_timeout),
-        request_manager=request_queue
+        request_manager=request_queue,
+        statistics_log_format="inline",
+        # Not implemented in Python version yet
+        # status_message_logging_interval=timedelta(seconds=system_info_interval),
     )
 
     @crawler.router.default_handler
