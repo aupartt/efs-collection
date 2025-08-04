@@ -1,7 +1,7 @@
 # =============================================================================
 # Crontab for EFS Collections
 # =============================================================================
-# 
+#
 # Installation:
 # 1. Update PROJECT_DIR path in run-collectes.sh
 # 2. chmod +x /path/to/run-collectes.sh
@@ -10,13 +10,13 @@
 #
 
 # Collect locations every Sunday at 2 AM
-0 2 * * 0 /path/to/your/run-collectes.sh locations
+0 2 * * 0 (/usr/local/bin/run-collectes.sh locations) 2>&1 | logger -t get-locations
 
-# Collect collections every day at 3 AM  
-0 3 * * * /path/to/your/run-collectes.sh collections
+# Collect collections every day at 3 AM
+0 3 * * * (/usr/local/bin/run-collectes.sh collections) 2>&1 | logger -t get-collections
 
-# Collect schedules every 5 minutes
-* 11,23 * * * /path/to/your/run-collectes.sh schedules
+# Collect schedules every day at 11 AM and 11 PM
+* 11,23 * * * (/usr/local/bin/run-collectes.sh schedules) 2>&1 | logger -t get-schedules
 
 # Clean old logs (keep 30 days)
-0 1 * * * find /path/to/your/collectes-efs/logs -name "*.log" -mtime +30 -delete
+0 1 * * * (find /home/nuky/collectes-efs/logs -name "*.log" -mtime +30 -delete) 2>&1 | logger -t log-cleanup
