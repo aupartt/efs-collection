@@ -31,6 +31,8 @@ async def request_handler(
 
     except Exception as e:
         context.log.error(f"Error in request handler: {e}")
+    finally:
+        await context.page.close()
 
 
 async def start_crawler(
@@ -42,7 +44,30 @@ async def start_crawler(
     request_queue: RequestQueue | None = None,
     request_handled_timeout: int = 60 * 2,
     system_info_interval: int = 60 * 30,
-) -> LocationEvents | None:
+    
+    # Add memory management configuration
+    browser_launch_options = {
+        'args': [
+            '--memory-pressure-off',
+            '--max_old_space_size=2048',  # Limit Node.js heap
+            '--disable-dev-shm-usage',   # Reduce shared memory usage
+            '--disable-extensions',
+            '--disable-plugins',
+            '--disable-background-networking',
+            '--disable-background-timer-throttling',
+            '--disable-renderer-backgrounding',
+        ]
+    }
+
+    
+    if browser_type == 'chromium':
+        browser_launch_options['args'].extend([
+            '--disable-web-security',
+            '--disable-blink-features=AutomationControlled',
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+        ])
+
     crawler = PlaywrightCrawler(
         headless=headless,
         browser_type=browser_type,
@@ -50,6 +75,7 @@ async def start_crawler(
         request_handler_timeout=timedelta(seconds=request_handled_timeout),
         request_manager=request_queue,
         statistics_log_format="inline",
+        browser_launch_options=browser_launch_options,
         # Not implemented in Python version yet
         # status_message_logging_interval=timedelta(seconds=system_info_interval),
     )
