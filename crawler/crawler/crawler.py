@@ -5,6 +5,7 @@ import logging
 
 from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext
 from crawlee.storages import RequestQueue
+from crawlee.configuration import Configuration
 
 from crawler.settings import settings
 from crawler.models import LocationEvents
@@ -46,6 +47,8 @@ async def start_crawler(
     system_info_interval: int = 60 * 30,
     max_requests_per_crawl: int = 100,
 ) -> LocationEvents | None | str:
+    config = Configuration.get_global_configuration()
+    config.available_memory_ratio = 0.33
     
     # Add memory management configuration
     browser_launch_options = {
