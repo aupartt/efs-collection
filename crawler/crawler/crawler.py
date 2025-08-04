@@ -55,8 +55,7 @@ async def start_crawler(
         browser_type=browser_type,
         keep_alive=keep_alive,
         request_handler_timeout=timedelta(seconds=request_handled_timeout),
-        request_manager=request_queue,
-        configuration=config
+        request_manager=request_queue
     )
 
     @crawler.router.default_handler
