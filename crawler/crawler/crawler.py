@@ -44,6 +44,8 @@ async def start_crawler(
     request_queue: RequestQueue | None = None,
     request_handled_timeout: int = 60 * 2,
     system_info_interval: int = 60 * 30,
+    max_requests_per_crawl: int = 100,
+) -> LocationEvents | None | str:
     
     # Add memory management configuration
     browser_launch_options = {
@@ -76,6 +78,7 @@ async def start_crawler(
         request_manager=request_queue,
         statistics_log_format="inline",
         browser_launch_options=browser_launch_options,
+        max_requests_per_crawl=max_requests_per_crawl,
         # Not implemented in Python version yet
         # status_message_logging_interval=timedelta(seconds=system_info_interval),
     )
@@ -85,7 +88,7 @@ async def start_crawler(
         await request_handler(context, channel)
 
     try:
-        await crawler.run(urls)
+        stats = await crawler.run(urls)
     except Exception as e:
         logger.error(f"Error during crawling: {e}")
 
@@ -93,6 +96,8 @@ async def start_crawler(
         data = await crawler.get_data()
         crawler.log.info(f"Extracted data: {data.items}")
         return data
+    elif stats.requests_total > max_requests_per_crawl:
+        return "MAX_REQUESTS_REACHED"
 
 
 if __name__ == "__main__":

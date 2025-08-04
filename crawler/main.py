@@ -40,6 +40,12 @@ parser.add_argument(
     default=60 * 30,
     help="Interval for system info logging in seconds",
 )
+parser.add_argument(
+    "--max-requests-per-crawl",
+    type=int,
+    default=100,
+    help="Maximum number of requests to process per crawl",
+)
 
 args = parser.parse_args()
 
@@ -100,10 +106,13 @@ async def main(args):
         request_queue=rq,
         request_handled_timeout=args.request_handled_timeout,
         system_info_interval=args.system_info_interval,
+        max_requests_per_crawl=args.max_requests_per_crawl,
     )
 
     if not args.keep_alive:
         return data
+    elif data == "MAX_REQUESTS_REACHED":
+        await main(args)
 
 
 if __name__ == "__main__":
