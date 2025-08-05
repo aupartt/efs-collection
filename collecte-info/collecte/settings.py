@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     RABBITMQ_URL: AmqpDsn = "amqp://guest:guest@localhost:5672/"
     RABBITMQ_DATA_QUEUE: str = "processed_data"
 
+    # Database
+    POSTGRES_URL: PostgresDsn = "postgres://postgres:postgres@localhost:5432/collecte"
+
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
 
 

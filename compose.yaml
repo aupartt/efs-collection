@@ -4,20 +4,15 @@
 
 # Shared configuration templates
 x-common-environment: &common-environment
-  RABBITMQ_USER: guest
-  RABBITMQ_PASSWORD: guest
-  RABBITMQ_PORT: 5672
-  RABBITMQ_HOST: rabbitmq
-
-x-common-volumes: &common-volumes
-  - ./collecte-info/data:/app/data
+  RABBITMQ_URL: amqp://efs_rq:rq_efs@rabbitmq:5672/
 
 x-get-service-base: &get-service-base
   build: 
     context: .
     dockerfile: ./collecte-info/Dockerfile
-  volumes: *common-volumes
   environment: *common-environment
+  volumes: 
+    - ./collecte-info/data:/app/data
 
 # =============================================================================
 # Services
@@ -34,8 +29,8 @@ services:
       - "5672:5672"   # AMQP port
       - "15672:15672" # Management UI
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: efs_rq
+      RABBITMQ_DEFAULT_PASS: rq_efs
     restart: unless-stopped
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
@@ -86,6 +81,35 @@ services:
       - crawler
     networks:
       - crawler_network
+
+  # ---------------------------------------------------------------------------
+  # Database Services
+  # ---------------------------------------------------------------------------
+  
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: efs_db
+      POSTGRES_USER: efs_user
+      POSTGRES_PASSWORD: efs_password
+    restart: always
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U efs_user -d efs_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    restart: always
+    depends_on:
+      - postgres
 
 # =============================================================================
 # Volumes & Networks
