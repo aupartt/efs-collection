@@ -28,7 +28,7 @@ args = parser.parse_args()
 
 
 async def consume_processed_data(channel: aio_pika.Channel):
-    queue = await channel.get_queue("processed_data")
+    queue = await channel.get_queue(settings.RABBITMQ_DATA_QUEUE)
     async for message in queue:
         async with message.process():
             data = message.body.decode()
@@ -93,10 +93,7 @@ async def get_collections(channel: aio_pika.Channel):
 async def main():
     try:
         connection = await aio_pika.connect_robust(
-            host=settings.RABBITMQ_HOST,
-            port=settings.RABBITMQ_PORT,
-            login=settings.RABBITMQ_USER,
-            password=settings.RABBITMQ_PASSWORD,
+            url=settings.RABBITMQ_URL,
             client_properties={
                 "connection_name": f"get_schedules{' --listen' if args.listen else ''}"
             },
