@@ -1,77 +1,71 @@
-from datetime import datetime
-
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Boolean,
-    DateTime,
-    Date,
-    Time,
-    Numeric,
-    ForeignKey,
-    Text,
-    Index,
-)
-from sqlalchemy.orm import relationship
-
-from collecte.schemas.base import Base
+from datetime import datetime, time
+from typing import Optional, List
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class Collection(Base):
-    __tablename__ = "collections"
+class CollectionSchema(BaseModel):
+    """Pydantic: Informations relative of a collection"""
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
-    id = Column(Integer, primary_key=True)  # EFS collection ID
-    group_code = Column(String(10), ForeignKey("groups.gr_code"), index=True)
-    sampling_location_code = Column(
-        String(20), ForeignKey("locations.sampling_location_code")
-    )
+    id: Optional[int] = None
+    group_code: str = Field(alias="groupCode")
+    # sampling_location_code: str = Field(alias="samplingLocationCode")
 
     # Date and timing
-    date = Column(Date, index=True)
-    morning_start_time = Column(Time)
-    morning_end_time = Column(Time)
-    afternoon_start_time = Column(Time)
-    afternoon_end_time = Column(Time)
+    date: datetime
+    morning_end_time: Optional[time] = Field(alias="morningEndTime")
+    morning_start_time: Optional[time] = Field(alias="morningStartTime")
+    afternoon_end_time: Optional[time] = Field(alias="afternoonEndTime")
+    afternoon_start_time: Optional[time] = Field(alias="afternoonStartTime")
 
     # Collection details
-    nature = Column(String(100))
-    lp_code = Column(String(10))
-    is_public = Column(Boolean, default=True)
-    is_publishable = Column(Boolean, default=True)
-    propose_planning_rdv = Column(Boolean, default=False)
+    nature: Optional[str] = None
+    lp_code: str = Field(alias="lpCode")
+    is_public: bool = Field(alias="isPublic")
+    is_publishable: bool = Field(alias="isPublishable")
+    propose_planning_rdv: bool = Field(alias="proposePlanningRdv")
 
     # Capacity info
-    taux_remplissage = Column(Numeric(5, 4))  # Fill rate
-    nb_places_restantes_st = Column(Integer)  # Blood remaining slots
-    nb_places_totales_st = Column(Integer)  # Blood total slots
-    nb_places_reservees_st = Column(Integer)  # Blood reserved slots
-    nb_places_restantes_pla = Column(Integer)  # Plasma remaining slots
-    nb_places_totales_pla = Column(Integer)  # Plasma total slots
-    nb_places_reservees_pla = Column(Integer)  # Plasma reserved slots
-    nb_places_restantes_cpa = Column(Integer)  # Platelet remaining slots
-    nb_places_totales_cpa = Column(Integer)  # Platelet total slots
-    nb_places_reservees_cpa = Column(Integer)  # Platelet reserved slots
+    taux_remplissage: Optional[float] = Field(alias="tauxRemplissage", default=None)
+    nb_places_restantes_st: Optional[int] = Field(
+        alias="nbPlacesRestantesST", default=None
+    )
+    nb_places_totales_st: Optional[int] = Field(alias="nbPlacesTotalesST", default=None)
+    nb_places_reservees_st: Optional[int] = Field(
+        alias="nbPlacesReserveesST", default=None
+    )
+    nb_places_restantes_pla: Optional[int] = Field(
+        alias="nbPlacesRestantesPLA", default=None
+    )
+    nb_places_totales_pla: Optional[int] = Field(
+        alias="nbPlacesTotalesPLA", default=None
+    )
+    nb_places_reservees_pla: Optional[int] = Field(
+        alias="nbPlacesReserveesPLA", default=None
+    )
+    nb_places_restantes_cpa: Optional[int] = Field(
+        alias="nbPlacesRestantesCPA", default=None
+    )
+    nb_places_totales_cpa: Optional[int] = Field(
+        alias="nbPlacesTotalesCPA", default=None
+    )
+    nb_places_reservees_cpa: Optional[int] = Field(
+        alias="nbPlacesReserveesCPA", default=None
+    )
 
     # URLs for booking
-    url_blood = Column(String(255))
-    url_plasma = Column(String(255))
-    url_platelet = Column(String(255))
+    url_blood: Optional[str] = Field(alias="urlBlood", default=None)
+    url_plasma: Optional[str] = Field(alias="urlPlasma", default=None)
+    url_platelet: Optional[str] = Field(alias="urlPlatelet", default=None)
 
     # Text descriptions
-    convocation_label_long = Column(Text)
-    convocation_label_sms = Column(Text)
-
-    # Metadata
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # Relationships
-    location = relationship("Location", back_populates="collections")
-    schedule_snapshots = relationship("ScheduleSnapshot", back_populates="collection")
-
-    # Indexes for common queries
-    __table_args__ = (
-        Index("ix_collections_date_group", "date", "group_code"),
-        Index("ix_collections_date_location", "date", "sampling_location_code"),
+    convocation_label_long: Optional[str] = Field(
+        alias="convocationLabelLong", default=None
     )
+    convocation_label_sms: Optional[str] = Field(
+        alias="convocationLabelSMS", default=None
+    )
+
+    # Handle children collections
+    children: Optional[List["CollectionSchema"]] = None
+

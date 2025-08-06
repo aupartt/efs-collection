@@ -1,40 +1,54 @@
-from typing import Optional
-from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from .base import BaseModel
+from .group import GroupModel
+from .collection import CollectionModel
 
 
 class LocationModel(BaseModel):
-    sampling_location_code: str = Field(alias="samplingLocationCode")
-    group_code: str = Field(alias="groupCode")
-    region_code: str = Field(alias="regionCode")
+    """SQLAlchemy: Location database model"""
+    __tablename__ = "locations"
 
-    name: str
-    city: Optional[str]
-    post_code: str = Field(alias="postCode")
-    full_address: str = Field(alias="fullAddress")
-    address1: Optional[str]
-    address2: Optional[str]
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    sampling_location_code: Mapped[str] = mapped_column(String(10), unique=True, index=True)
+    group_code: Mapped[str] = mapped_column(String(10), ForeignKey("groups.gr_code"), index=True)
+    region_code: Mapped[str] = mapped_column(String(10))
 
-    latitude: float
-    longitude: float
+    # Address info
+    name: Mapped[str]
+    city: Mapped[str]
+    post_code: Mapped[str] = mapped_column(String(10), index=True)  # Used for collections lookup
+    full_address: Mapped[str]
+    address1: Mapped[str]
+    address2: Mapped[str]
 
-    give_blood: bool = Field(alias="giveBlood")
-    give_plasma: bool = Field(alias="givePlasma")
-    give_platelet: bool = Field(alias="givePlatelet")
+    # Coordinates
+    latitude: Mapped[float]
+    longitude: Mapped[float]
 
-    # Optional fields stored as JSON
-    horaires: Optional[str] = None
-    infos: Optional[str] = None
-    metro: Optional[str] = None
-    bus: Optional[str] = None
-    tram: Optional[str] = None
-    parking: Optional[str] = None
-    debut_infos: Optional[str] = Field(alias="debutInfos", default=None)
-    fin_infos: Optional[str] = Field(alias="finInfos", default=None)
-    ville: Optional[str] = None
-    id: Optional[int] = None
-    phone: Optional[str] = None
-    url_blood: Optional[str] = Field(alias="urlBlood", default=None)
-    url_plasma: Optional[str] = Field(alias="urlPlasma", default=None)
-    url_platelets: Optional[str] = Field(alias="urlPlatelets", default=None)
+    # Services offered
+    give_blood: Mapped[bool] = mapped_column(default=False)
+    give_plasma: Mapped[bool] = mapped_column(default=False)
+    give_platelet: Mapped[bool] = mapped_column(default=False)
 
-    model_config = ConfigDict(populate_by_name=True)
+    # URLs
+    url_blood: Mapped[str]
+    url_plasma: Mapped[str]
+    url_platelets: Mapped[str]
+
+    # Additional information
+    horaires: Mapped[str]
+    infos: Mapped[str]
+    metro: Mapped[str]
+    bus: Mapped[str]
+    tram: Mapped[str]
+    parking: Mapped[str]
+    debut_infos: Mapped[str]
+    fin_infos: Mapped[str]
+    ville: Mapped[str]
+    phone: Mapped[str]
+
+    # Relationships
+    group: Mapped["GroupModel"] = relationship(back_populates="locations")
+    collections: Mapped[list["CollectionModel"]] = relationship(back_populates="location")

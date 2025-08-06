@@ -1,65 +1,71 @@
-from datetime import datetime, time
-from typing import Optional, List
-from pydantic import BaseModel, ConfigDict, Field
+from datetime import datetime, time, timezone
+from typing import Optional
+
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+
+from .base import BaseModel
+from .location import LocationModel
+from .schedule import ScheduleSnapshotModel
 
 
 class CollectionModel(BaseModel):
-    date: datetime
-    group_code: str = Field(alias="groupCode")
-    id: int
-    is_public: bool = Field(alias="isPublic")
-    is_publishable: bool = Field(alias="isPublishable")
-    lp_code: str = Field(alias="lpCode")
+    """SQLAlchemy: Collection database model"""
 
-    morning_end_time: Optional[time] = Field(alias="morningEndTime")
-    morning_start_time: Optional[time] = Field(alias="morningStartTime")
-    afternoon_end_time: Optional[time] = Field(alias="afternoonEndTime")
-    afternoon_start_time: Optional[time] = Field(alias="afternoonStartTime")
+    __tablename__ = "collections"
 
-    nature: Optional[str] = None
-    url_blood: Optional[str] = Field(alias="urlBlood", default=None)
-    url_plasma: Optional[str] = Field(alias="urlPlasma", default=None)
-    url_platelet: Optional[str] = Field(alias="urlPlatelet", default=None)
-
-    convocation_label_long: Optional[str] = Field(
-        alias="convocationLabelLong", default=None
+    id: Mapped[int] = mapped_column(primary_key=True)  # EFS id
+    group_code: Mapped[str] = mapped_column(
+        String(10), ForeignKey("groups.gr_code"), index=True
     )
-    convocation_label_sms: Optional[str] = Field(
-        alias="convocationLabelSMS", default=None
+    sampling_location_code: Mapped[str] = mapped_column(
+        String(10), ForeignKey("locations.sampling_location_code")
     )
 
-    taux_remplissage: Optional[float] = Field(alias="tauxRemplissage", default=None)
+    # Date and timing
+    date: Mapped[datetime] = mapped_column(index=True)
+    morning_start_time: Mapped[Optional[time]]
+    morning_end_time: Mapped[Optional[time]]
+    afternoon_start_time: Mapped[Optional[time]]
+    afternoon_end_time: Mapped[Optional[time]]
 
-    # Slot information
-    nb_places_restantes_st: Optional[int] = Field(
-        alias="nbPlacesRestantesST", default=None
-    )
-    nb_places_totales_st: Optional[int] = Field(alias="nbPlacesTotalesST", default=None)
-    nb_places_reservees_st: Optional[int] = Field(
-        alias="nbPlacesReserveesST", default=None
-    )
-    nb_places_restantes_pla: Optional[int] = Field(
-        alias="nbPlacesRestantesPLA", default=None
-    )
-    nb_places_totales_pla: Optional[int] = Field(
-        alias="nbPlacesTotalesPLA", default=None
-    )
-    nb_places_reservees_pla: Optional[int] = Field(
-        alias="nbPlacesReserveesPLA", default=None
-    )
-    nb_places_restantes_cpa: Optional[int] = Field(
-        alias="nbPlacesRestantesCPA", default=None
-    )
-    nb_places_totales_cpa: Optional[int] = Field(
-        alias="nbPlacesTotalesCPA", default=None
-    )
-    nb_places_reservees_cpa: Optional[int] = Field(
-        alias="nbPlacesReserveesCPA", default=None
+    # Collection details
+    nature: Mapped[str]
+    lp_code: Mapped[str] = mapped_column(String(10))
+    is_public: Mapped[bool]
+    is_publishable: Mapped[bool]
+    propose_planning_rdv: Mapped[bool]
+
+    # Capacity info
+    taux_remplissage: Mapped[float]  # Fill rate
+    nb_places_restantes_st: Mapped[int]  # Blood remaining slots
+    nb_places_totales_st: Mapped[int]  # Blood total slots
+    nb_places_reservees_st: Mapped[int]  # Blood reserved slots
+    nb_places_restantes_pla: Mapped[int]  # Plasma remaining slots
+    nb_places_totales_pla: Mapped[int]  # Plasma total slots
+    nb_places_reservees_pla: Mapped[int]  # Plasma reserved slots
+    nb_places_restantes_cpa: Mapped[int]  # Platelet remaining slots
+    nb_places_totales_cpa: Mapped[int]  # Platelet total slots
+    nb_places_reservees_cpa: Mapped[int]  # Platelet reserved slots
+
+    # URLs for booking
+    url_blood: Mapped[str]
+    url_plasma: Mapped[str]
+    url_platelet: Mapped[str]
+
+    # Text descriptions
+    convocation_label_long: Mapped[str]
+    convocation_label_sms: Mapped[str]
+
+    # Metadata
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(
+        default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc)
     )
 
-    propose_planning_rdv: bool = Field(alias="proposePlanningRdv")
-
-    # Handle children collections
-    children: Optional[List["CollectionModel"]] = None
-
-    model_config = ConfigDict(populate_by_name=True)
+    # Relationships
+    location: Mapped["LocationModel"] = relationship(back_populates="collections")
+    schedule_snapshots: Mapped[list["ScheduleSnapshotModel"]] = relationship(
+        back_populates="collection"
+    )

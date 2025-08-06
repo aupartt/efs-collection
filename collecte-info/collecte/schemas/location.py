@@ -1,40 +1,46 @@
-from sqlalchemy import Column, Integer, String, Boolean, Numeric, JSON, ForeignKey, Text
-from sqlalchemy.orm import relationship
-
-from collecte.schemas.base import Base
+from typing import Optional
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class Location(Base):
-    __tablename__ = "locations"
+class LocationSchema(BaseModel):
+    """Pydantic: Informations relative to a location where events can be scheduled"""
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    sampling_location_code = Column(String(20), unique=True, index=True)
-    group_code = Column(String(10), ForeignKey("groups.gr_code"), index=True)
-    region_code = Column(String(10))
+    id: Optional[int] = None
+    sampling_location_code: str = Field(alias="samplingLocationCode")
+    group_code: str = Field(alias="groupCode")
+    region_code: str = Field(alias="regionCode")
 
     # Address info
-    name = Column(String(255))
-    city = Column(String(100))
-    post_code = Column(String(10), index=True)  # Used for collections lookup
-    full_address = Column(Text)
-    address1 = Column(String(255))
-    address2 = Column(String(255))
+    name: str
+    city: Optional[str]
+    post_code: str = Field(alias="postCode")
+    full_address: str = Field(alias="fullAddress")
+    address1: Optional[str]
+    address2: Optional[str]
 
     # Coordinates
-    latitude = Column(Numeric(10, 8))
-    longitude = Column(Numeric(11, 8))
+    latitude: float
+    longitude: float
 
     # Services offered
-    give_blood = Column(Boolean, default=False)
-    give_plasma = Column(Boolean, default=False)
-    give_platelet = Column(Boolean, default=False)
+    give_blood: bool = Field(alias="giveBlood")
+    give_plasma: bool = Field(alias="givePlasma")
+    give_platelet: bool = Field(alias="givePlatelet")
 
-    # Additional info (JSON fields for flexibility)
-    transport_info = Column(JSON)  # metro, bus, tram, parking
-    schedule_info = Column(JSON)  # horaires, infos, debut/fin infos
-    contact_info = Column(JSON)  # phone, ville, id
-    urls = Column(JSON)  # urlBlood, urlPlasma, urlPlatelets
+    # URLs
+    url_blood: Optional[str] = Field(alias="urlBlood", default=None)
+    url_plasma: Optional[str] = Field(alias="urlPlasma", default=None)
+    url_platelets: Optional[str] = Field(alias="urlPlatelets", default=None)
 
-    # Relationships
-    group = relationship("Group", back_populates="locations")
-    collections = relationship("Collection", back_populates="location")
+    # Additional information
+    horaires: Optional[str] = None
+    infos: Optional[str] = None
+    metro: Optional[str] = None
+    bus: Optional[str] = None
+    tram: Optional[str] = None
+    parking: Optional[str] = None
+    debut_infos: Optional[str] = Field(alias="debutInfos", default=None)
+    fin_infos: Optional[str] = Field(alias="finInfos", default=None)
+    ville: Optional[str] = None
+    phone: Optional[str] = None
