@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, Dict, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ScheduleEventModel(BaseModel):
@@ -9,8 +9,7 @@ class ScheduleEventModel(BaseModel):
     event_type: str = Field(alias="type")
     schedules: Dict[str, int]  # {"09h00": 1, "09h15": 2, ...}
 
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class ScheduleSnapshotModel(BaseModel):
@@ -18,5 +17,4 @@ class ScheduleSnapshotModel(BaseModel):
     time: Optional[datetime] = None  # Crawl timestamp
     events: List[ScheduleEventModel]
 
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)

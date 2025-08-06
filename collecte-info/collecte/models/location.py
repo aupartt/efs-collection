@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class LocationModel(BaseModel):
@@ -37,5 +37,4 @@ class LocationModel(BaseModel):
     url_plasma: Optional[str] = Field(alias="urlPlasma", default=None)
     url_platelets: Optional[str] = Field(alias="urlPlatelets", default=None)
 
-    class Config:
-        allow_population_by_field_name = True
+    model_config = ConfigDict(populate_by_name=True)
