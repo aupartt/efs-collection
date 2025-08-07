@@ -24,12 +24,16 @@ def with_api_client(func):
     return wrapper
 
 @with_api_client
-def check_api(client: Client):
-    ping_resp: Ping = api_ping.sync(client=client)
-    if ping_resp.version != "v3":
-        raise Exception(
-            f"Le serveur exécute l'API en {ping_resp.version}, mais seule la v3 est supportée"
-        )
+def check_api(client: Client) -> bool:
+    try:
+        ping_resp: Ping = api_ping.sync(client=client)
+        if ping_resp.version != "v3":
+            logger.error(f"The server is running API in {ping_resp.version}, but only v3 is supported.")
+            return False
+        return True
+    except Exception as e:
+        logger.error(f"API check failed: {e}")
+        return False
 
 def api_to_pydantic(api_models: list, pydantic_model: BaseModel) -> list[BaseModel]:
     """Convert an API model to a Pydantic model"""
