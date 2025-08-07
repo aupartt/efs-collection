@@ -1,9 +1,12 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
-from .group import GroupModel
-from .collection import CollectionModel
+if TYPE_CHECKING:
+    from .group import GroupModel
+    from .collection import CollectionModel
 
 
 class LocationModel(BaseModel):

@@ -1,13 +1,14 @@
 from datetime import datetime, time, timezone
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 from .base import BaseModel
-from .location import LocationModel
-from .schedule import ScheduleSnapshotModel
+if TYPE_CHECKING:
+    from .location import LocationModel
+    from .schedule import ScheduleSnapshotModel
 
 
 class CollectionModel(BaseModel):
