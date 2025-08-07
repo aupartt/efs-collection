@@ -50,4 +50,4 @@ async def update_groups() -> None:
     region: SamplingRegionEntity = _retrieve_region(settings.REGION_NAME)
     groups: list[GroupSchema] = _retrieve_groups(region)
 
-    await save_groups(groups[:50])
+    await save_groups(groups)
