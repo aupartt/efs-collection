@@ -1,13 +1,13 @@
-from .groups import get_groups, set_groups
-from .locations import get_locations, set_locations
-from .collections import get_collections, set_collections
+from .groups import load_groups, save_groups
+from .locations import load_locations, save_locations
+from .collections import load_collections, save_collections
 
 
 __all__ = [
-    "get_groups",
-    "set_groups",
-    "get_locations",
-    "set_locations",
-    "get_collections",
-    "set_collections",
+    "load_groups",
+    "save_groups",
+    "load_locations",
+    "save_locations",
+    "load_collections",
+    "save_collections",
 ]
