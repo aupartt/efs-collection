@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     # Database
     POSTGRES_URL: PostgresDsn = "postgresql+asyncpg://postgres:postgres@localhost:5432/collecte"
 
+    REGION_NAME: str = "Bretagne"
+
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
 
 
