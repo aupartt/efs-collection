@@ -52,32 +52,61 @@ def sqlalchemy_to_pydantic(sqlalchemy_models: list[SQLAlchemyBaseModel], pydanti
     """Convert a SQLAlchemy model to a Pydantic model"""
     return [pydantic_model.model_validate(sqlalchemy_model) for sqlalchemy_model in sqlalchemy_models]
 
-async def update_all(db_schema, items: list):
-    """Update/Create all items in database"""
-    if len(items) == 0:
+async def update_all(items: list, db_schema: SQLAlchemyBaseModel):
+    """Update or create all items in the database asynchronously.
+
+    Args:
+        items: A list of items to update or create in the database.
+        db_schema: The SQLAlchemy model class representing the table schema.
+    """
+    if not items:
         return
+
+    # Convert items to SQLAlchemy models if necessary
     if isinstance(items[0], BaseModel):
         items = pydantic_to_sqlalchemy(items, db_schema)
     elif not isinstance(items[0], SQLAlchemyBaseModel):
         items = api_to_sqlalchemy(items, db_schema)
 
-    async def _update_item(session: AsyncSession, item: SQLAlchemyBaseModel) -> None:
-        try:
-            db_item = await session.get(db_schema, item.gr_code)
-            pk_name = inspect(item).primary_key[0].name
-            if not db_item:
-                await session.add(item)
-                logger.debug(f"Added a new object in table {item.__tablename__}")
-            if db_item == item:
-                return
-            await db_item.update(item)
-            logger.debug(f"Updated object {item.__dict__[pk_name]} in table {item.__tablename__}")
-        except Exception as e:
-            pk_value = item.__dict__[pk_name] if item.__dict__[pk_name] else "UnknownPK"
-            logger.error(f"Error updating {pk_value} in table {item.__tablename__}: {e}")
-            return
-    
-    async with get_db() as session:
-        tasks = [_update_item(session, item) for item in items]
-        await asyncio.gather(*tasks)
-        await session.commit()
+    async def _update_item(item: SQLAlchemyBaseModel) -> None:
+        async with get_db() as session:
+            try:
+                # Get the primary key from the model class
+                primary_key = inspect(item.__class__).primary_key
+                if not primary_key:
+                    logger.error("No primary key found for the item.")
+                    return
+
+                # Assuming single primary key for simplicity
+                pk_name = primary_key[0].name
+                pk_value = getattr(item, pk_name, None)
+                
+                db_item = await session.get(db_schema, pk_value)
+
+                # Add new item
+                if not db_item:
+                    session.add(item)
+                    await session.commit()
+                    logger.debug(f"Added a new object in table {item.__tablename__}")
+                    return
+
+                # Item exists, and hasn't changed
+                if db_item == item:
+                    return
+
+                # Item exists, update it
+                for key, value in item.__dict__.items():
+                    setattr(db_item, key, value)
+                await session.commit()
+                logger.debug(
+                    f"Updated object {pk_value} in table {item.__tablename__}"
+                )
+            except Exception as e:
+                await session.rollback()  # Rollback in case of error
+                logger.error(
+                    f"Error updating {pk_value} in table {item.__tablename__}: {e}"
+                )
+            
+
+    tasks = [_update_item(item) for item in items]
+    await asyncio.gather(*tasks)
