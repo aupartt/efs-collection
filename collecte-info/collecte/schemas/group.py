@@ -1,8 +1,7 @@
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field
 
-if TYPE_CHECKING:
-    from .location import LocationSchema
+from .location import LocationSchema
 
 class GroupSchema(BaseModel):
     """Pydantic: Informations relative to a group of locations"""
@@ -13,4 +12,4 @@ class GroupSchema(BaseModel):
     gr_lib: str = Field(alias="grLib")
     gr_desd: Optional[str] = Field(alias="grDesd")
 
-    locations: Optional[list["LocationSchema"]] = None
+    locations: Optional[list["LocationSchema"]] = []
