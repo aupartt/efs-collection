@@ -1,6 +1,9 @@
 import re
+from datetime import datetime
 
 from crawler.models import Event, EventType, Schedules
+
+
 
 
 def parse_event_type(event_title) -> EventType:
@@ -41,6 +44,7 @@ async def parse_event_schedules(event_locator) -> Schedules:
 
 async def parse_event(event_locator, _type: EventType) -> Event:
     date = await event_locator.get_attribute("data-date")
+    date = datetime.strptime(date, "%d/%m/%Y")
     slots = await parse_event_slots(event_locator)
     schedules = await parse_event_schedules(event_locator)
 
