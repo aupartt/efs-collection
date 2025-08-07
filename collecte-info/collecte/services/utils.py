@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import asyncio
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.inspection import inspect
 
 from api_carto_client import Client
 from api_carto_client.models.ping import Ping
@@ -51,25 +52,29 @@ def sqlalchemy_to_pydantic(sqlalchemy_models: list[SQLAlchemyBaseModel], pydanti
     """Convert a SQLAlchemy model to a Pydantic model"""
     return [pydantic_model.model_validate(sqlalchemy_model) for sqlalchemy_model in sqlalchemy_models]
 
-async def update_all(db_schema, items: list[BaseModel]):
+async def update_all(db_schema, items: list):
     """Update/Create all items in database"""
+    if len(items) == 0:
+        return
     if isinstance(items[0], BaseModel):
         items = pydantic_to_sqlalchemy(items, db_schema)
-    elif not isinstance(items[0], BaseModel):
+    elif not isinstance(items[0], SQLAlchemyBaseModel):
         items = api_to_sqlalchemy(items, db_schema)
 
     async def _update_item(session: AsyncSession, item: SQLAlchemyBaseModel) -> None:
         try:
             db_item = await session.get(db_schema, item.gr_code)
+            pk_name = inspect(item).primary_key[0].name
             if not db_item:
                 await session.add(item)
-                logger.debug(f"Added {item.gr_code} to database")
+                logger.debug(f"Added a new object in table {item.__tablename__}")
             if db_item == item:
                 return
             await db_item.update(item)
-            logger.debug(f"Updated {item.gr_code} in database")
+            logger.debug(f"Updated object {item.__dict__[pk_name]} in table {item.__tablename__}")
         except Exception as e:
-            logger.error(f"Error updating {item.gr_code}: {e}")
+            pk_value = item.__dict__[pk_name] if item.__dict__[pk_name] else "UnknownPK"
+            logger.error(f"Error updating {pk_value} in table {item.__tablename__}: {e}")
             return
     
     async with get_db() as session:
