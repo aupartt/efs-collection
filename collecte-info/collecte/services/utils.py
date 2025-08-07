@@ -24,33 +24,53 @@ def with_api_client(func):
 
     return wrapper
 
+
 @with_api_client
 def check_api(client: Client) -> bool:
     try:
         ping_resp: Ping = api_ping.sync(client=client)
         if ping_resp.version != "v3":
-            logger.error(f"The server is running API in {ping_resp.version}, but only v3 is supported.")
+            logger.error(
+                f"The server is running API in {ping_resp.version}, but only v3 is supported."
+            )
             return False
         return True
     except Exception as e:
         logger.error(f"API check failed: {e}")
         return False
 
+
 def api_to_pydantic(api_models: list, pydantic_model: BaseModel) -> list[BaseModel]:
     """Convert an API model to a Pydantic model"""
     return [pydantic_model(**api_model.to_dict()) for api_model in api_models]
 
-def api_to_sqlalchemy(api_models: list, sqlalchemy_model: SQLAlchemyBaseModel) -> list[SQLAlchemyBaseModel]:
+
+def api_to_sqlalchemy(
+    api_models: list, sqlalchemy_model: SQLAlchemyBaseModel
+) -> list[SQLAlchemyBaseModel]:
     """Convert an API model to a Pydantic model"""
     return [sqlalchemy_model(**api_model.to_dict()) for api_model in api_models]
 
-def pydantic_to_sqlalchemy(pydantic_models: list[BaseModel], sqlalchemy_model: SQLAlchemyBaseModel) -> list[SQLAlchemyBaseModel]:
-    """Convert a Pydantic model to an API model"""
-    return [sqlalchemy_model(**pydantic_model.model_dump()) for pydantic_model in pydantic_models]
 
-def sqlalchemy_to_pydantic(sqlalchemy_models: list[SQLAlchemyBaseModel], pydantic_model) -> list[BaseModel]:
+def pydantic_to_sqlalchemy(
+    pydantic_models: list[BaseModel], sqlalchemy_model: SQLAlchemyBaseModel
+) -> list[SQLAlchemyBaseModel]:
+    """Convert a Pydantic model to an API model"""
+    return [
+        sqlalchemy_model(**pydantic_model.model_dump())
+        for pydantic_model in pydantic_models
+    ]
+
+
+def sqlalchemy_to_pydantic(
+    sqlalchemy_models: list[SQLAlchemyBaseModel], pydantic_model: BaseModel
+) -> list[BaseModel]:
     """Convert a SQLAlchemy model to a Pydantic model"""
-    return [pydantic_model.model_validate(sqlalchemy_model) for sqlalchemy_model in sqlalchemy_models]
+    return [
+        pydantic_model(**sqlalchemy_model.__dict__)
+        for sqlalchemy_model in sqlalchemy_models
+    ]
+
 
 async def update_all(items: list, db_schema: SQLAlchemyBaseModel):
     """Update or create all items in the database asynchronously.
