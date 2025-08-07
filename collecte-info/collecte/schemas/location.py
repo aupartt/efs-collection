@@ -1,6 +1,8 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
+if TYPE_CHECKING:
+    from .collection import CollectionDBSchema
 
 class LocationSchema(BaseModel):
     """Pydantic: Informations relative to a location where events can be scheduled"""
@@ -44,3 +46,5 @@ class LocationSchema(BaseModel):
     fin_infos: Optional[str] = Field(alias="finInfos", default=None)
     ville: Optional[str] = None
     phone: Optional[str] = None
+
+    collections: Optional[list[CollectionDBSchema]] = None

@@ -1,13 +1,13 @@
-from .collection import CollectionSchema
 from .group import GroupSchema
 from .location import LocationSchema
-from .schedule import ScheduleSnapshotSchema, ScheduleEventSchema
+from .collection import CollectionSchema, CollectionDBSchema
+from .snapshot import SnapshotSchedulesSchema, SnapshotCollectionSchema
 
 
 __all__ = [
-    "CollectionSchema",
     "GroupSchema",
     "LocationSchema",
-    "ScheduleSnapshotSchema",
-    "ScheduleEventSchema",
+    "CollectionSchema",
+    "CollectionDBSchemaSnapshotSchedulesSchema",
+    "SnapshotCollectionSchema",
 ]
