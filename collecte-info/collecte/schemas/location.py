@@ -29,9 +29,9 @@ class LocationSchema(BaseModel):
     give_platelet: bool = Field(alias="givePlatelet")
 
     # URLs
-    url_blood: Optional[str] = Field(alias="urlBlood", default=None)
-    url_plasma: Optional[str] = Field(alias="urlPlasma", default=None)
-    url_platelets: Optional[str] = Field(alias="urlPlatelets", default=None)
+    # url_blood: Optional[str] = Field(alias="urlBlood", default=None)
+    # url_plasma: Optional[str] = Field(alias="urlPlasma", default=None)
+    # url_platelets: Optional[str] = Field(alias="urlPlatelets", default=None)
 
     # Additional information
     horaires: Optional[str] = None
