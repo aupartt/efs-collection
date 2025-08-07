@@ -2,8 +2,7 @@ from datetime import datetime, time
 from typing import TYPE_CHECKING, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
-if TYPE_CHECKING:
-    from .snapshot import SnapshotCollectionSchema
+from .snapshot import SnapshotCollectionSchema
 
 
 class CollectionSchema(BaseModel):
@@ -109,4 +108,4 @@ class CollectionDBSchema(BaseModel):
         alias="convocationLabelSMS", default=None
     )
 
-    snapshots: Optional[list["SnapshotCollectionSchema"]]
+    snapshots: Optional[list["SnapshotCollectionSchema"]] = []

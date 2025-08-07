@@ -61,4 +61,4 @@ class SnapshotCollectionSchema(BaseModel):
         alias="nbPlacesReserveesCPA", default=None
     )
 
-    schedules: Optional[SnapshotSchedulesSchema] = Field(default=None)
+    schedules: Optional[SnapshotSchedulesSchema] = []
