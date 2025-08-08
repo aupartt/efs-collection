@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import UniqueConstraint, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
@@ -14,10 +14,20 @@ class LocationModel(BaseModel):
     """SQLAlchemy: Location database model"""
 
     __tablename__ = "locations"
+    __table_args__ = (
+        UniqueConstraint(
+            "name",
+            "full_address",
+            "latitude",
+            "longitude",
+            "sampling_location_code",
+            name="unique_location",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     sampling_location_code: Mapped[str] = mapped_column(String(10))
-    region_code: Mapped[str] = mapped_column(String(10))
+    region_code: Mapped[Optional[str]] = mapped_column(String(10))
 
     # Address info
     name: Mapped[Optional[str]]
