@@ -2,8 +2,8 @@ import logging
 from sqlalchemy import select
 
 from collecte.core.database import get_db
-from collecte.models import LocationModel
-from collecte.schemas import LocationSchema
+from collecte.models.location import LocationModel
+from collecte.schemas.location import LocationSchema
 from .utils import sqlalchemy_to_pydantic, update_all
 
 logger = logging.getLogger(__name__)

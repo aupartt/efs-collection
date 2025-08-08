@@ -9,20 +9,9 @@ from api_carto_client.api.sampling_collection import (
     get_carto_api_v3_samplingcollection_searchbypostcode as api_search_collection,
 )
 
-from collecte.core.database import get_db
-from collecte.schemas import (
+from collecte.schemas.collection import (
     CollectionSchema,
-    CollectionDBSchema,
-    SnapshotCollectionSchema,
-)
-from collecte.models import CollectionModel, SnapshotCollectionModel
-from collecte.services.utils import (
-    api_to_pydantic,
-    update_all,
-    with_api_client,
-    check_api,
-)
-from .locations import get_postal_codes
+from collecte.models.location import LocationModel
 
 logger = logging.getLogger(__name__)
 

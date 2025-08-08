@@ -8,7 +8,7 @@ from api_carto_client.api.sampling_location import (
     get_carto_api_v3_samplinglocation_searchbygrouplocationcode as api_search_location,
 )
 
-from collecte.schemas import LocationSchema
+from collecte.schemas.location import LocationSchema
 from collecte.services.utils import api_to_pydantic, with_api_client, check_api
 from collecte.services import load_groups, save_locations
 

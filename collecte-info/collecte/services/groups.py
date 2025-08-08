@@ -4,8 +4,8 @@ from sqlalchemy import select
 
 from collecte.services.utils import update_all
 from collecte.core.database import get_db
-from collecte.models import GroupModel
-from collecte.schemas import GroupSchema
+from collecte.models.group import GroupModel
+from collecte.schemas.group import GroupSchema
 
 from .utils import sqlalchemy_to_pydantic
 

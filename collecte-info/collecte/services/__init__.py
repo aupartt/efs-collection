@@ -1,6 +1,6 @@
 from .groups import load_groups, save_groups
 from .locations import load_locations, save_locations
-from .collections import load_collections, save_collections
+# from .collections import load_collections, save_collections
 
 
 __all__ = [
@@ -8,6 +8,4 @@ __all__ = [
     "save_groups",
     "load_locations",
     "save_locations",
-    "load_collections",
-    "save_collections",
 ]
