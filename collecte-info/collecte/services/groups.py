@@ -18,7 +18,7 @@ async def load_groups() -> list[GroupSchema]:
         results = await session.execute(select(GroupModel))
         groups = results.scalars().all()
 
-        return sqlalchemy_to_pydantic(groups, GroupSchema)
+        return await sqlalchemy_to_pydantic(groups, GroupSchema)
 
 
 async def save_groups(groups: list[GroupSchema]) -> None:

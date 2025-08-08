@@ -39,19 +39,19 @@ async def check_api(client: Client) -> bool:
         return False
 
 
-def api_to_pydantic(api_models: list, pydantic_model: BaseModel) -> list[BaseModel]:
+async def api_to_pydantic(api_models: list, pydantic_model: BaseModel) -> list[BaseModel]:
     """Convert an API model to a Pydantic model"""
     return [pydantic_model(**api_model.to_dict()) for api_model in api_models]
 
 
-def api_to_sqlalchemy(
+async def api_to_sqlalchemy(
     api_models: list, sqlalchemy_model: SQLAlchemyBaseModel
 ) -> list[SQLAlchemyBaseModel]:
     """Convert an API model to a Pydantic model"""
     return [sqlalchemy_model(**api_model.to_dict()) for api_model in api_models]
 
 
-def pydantic_to_sqlalchemy(
+async def pydantic_to_sqlalchemy(
     pydantic_models: list[BaseModel], sqlalchemy_model: SQLAlchemyBaseModel
 ) -> list[SQLAlchemyBaseModel]:
     """Convert a Pydantic model to an API model"""
@@ -61,7 +61,7 @@ def pydantic_to_sqlalchemy(
     ]
 
 
-def sqlalchemy_to_pydantic(
+async def sqlalchemy_to_pydantic(
     sqlalchemy_models: list[SQLAlchemyBaseModel], pydantic_model: BaseModel
 ) -> list[BaseModel]:
     """Convert a SQLAlchemy model to a Pydantic model"""
@@ -83,9 +83,9 @@ async def update_all(items: list, db_schema: SQLAlchemyBaseModel):
 
     # Convert items to SQLAlchemy models if necessary
     if isinstance(items[0], BaseModel):
-        items = pydantic_to_sqlalchemy(items, db_schema)
+        items = await pydantic_to_sqlalchemy(items, db_schema)
     elif not isinstance(items[0], SQLAlchemyBaseModel):
-        items = api_to_sqlalchemy(items, db_schema)
+        items = await api_to_sqlalchemy(items, db_schema)
 
     async def _update_item(item: SQLAlchemyBaseModel) -> None:
         async with get_db() as session:

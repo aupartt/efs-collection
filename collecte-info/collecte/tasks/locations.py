@@ -1,5 +1,5 @@
 import logging
-from sqlalchemy import select
+import asyncio
 
 from api_carto_client import Client
 from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
@@ -16,12 +16,14 @@ logger = logging.getLogger(__name__)
 
 
 @with_api_client
-async def _retrieve_location_sampling(client: Client, groupement: SamplingGroupEntity):
+async def _retrieve_location_sampling(
+    client: Client, groupement: SamplingGroupEntity
+) -> list[LocationSchema]:
     """Retrieve all locations from API"""
     res: SamplingLocationEntity = await api_search_location.asyncio(
         client=client, group_code=groupement.gr_code
     )
-    return api_to_pydantic(res.sampling_location_entities, LocationSchema)
+    return await api_to_pydantic(res.sampling_location_entities, LocationSchema)
 
 
 async def update_locations():
@@ -30,9 +32,8 @@ async def update_locations():
         return
 
     groups = await load_groups()
-    locations = []
-    for group in groups:
-        _locations = await _retrieve_location_sampling(groupement=group)
-        locations.extend(_locations)
+    tasks = [_retrieve_location_sampling(groupement=group) for group in groups]
+    _locations = await asyncio.gather(*tasks)
+    locations = [location for collection in _locations for location in collection]
 
     await save_locations(locations)

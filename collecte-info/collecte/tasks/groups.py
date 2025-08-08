@@ -39,7 +39,7 @@ async def _retrieve_groups(client: Client, region: SamplingRegionEntity) -> list
     groups: list[SamplingGroupEntity] = await api_get_groupements.asyncio(
         client=client, region_code=region.code
     )
-    return api_to_pydantic(groups, GroupSchema)
+    return await api_to_pydantic(groups, GroupSchema)
 
 
 async def update_groups() -> None:
