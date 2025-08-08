@@ -28,9 +28,7 @@ LOCATIONS_FILE = Path("data/locations.jsonl")
 REGION_NAME = "Bretagne"
 
 parser = argparse.ArgumentParser(description="CLI to retrieve collection locations")
-parser.add_argument(
-    "--force", action="store_true", help="Force refresh of cached data"
-)
+parser.add_argument("--force", action="store_true", help="Force refresh of cached data")
 
 args = parser.parse_args()
 

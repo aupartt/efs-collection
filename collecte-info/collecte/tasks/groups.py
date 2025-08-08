@@ -34,7 +34,9 @@ async def _retrieve_region(client: Client, name: str) -> SamplingRegionEntity:
 
 
 @with_api_client
-async def _retrieve_groups(client: Client, region: SamplingRegionEntity) -> list[GroupSchema]:
+async def _retrieve_groups(
+    client: Client, region: SamplingRegionEntity
+) -> list[GroupSchema]:
     """Retrieve groups for a region from API"""
     groups: list[SamplingGroupEntity] = await api_get_groupements.asyncio(
         client=client, region_code=region.code

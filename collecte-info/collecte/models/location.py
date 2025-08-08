@@ -4,6 +4,7 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
+
 if TYPE_CHECKING:
     from .group import GroupModel
     from .collection import CollectionModel
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
 
 class LocationModel(BaseModel):
     """SQLAlchemy: Location database model"""
+
     __tablename__ = "locations"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -20,7 +22,9 @@ class LocationModel(BaseModel):
     # Address info
     name: Mapped[Optional[str]]
     city: Mapped[Optional[str]]
-    post_code: Mapped[str] = mapped_column(String(10), index=True)  # Used for collections lookup
+    post_code: Mapped[str] = mapped_column(
+        String(10), index=True
+    )  # Used for collections lookup
     full_address: Mapped[str]
     address1: Mapped[Optional[str]]
     address2: Mapped[Optional[str]]
@@ -47,6 +51,10 @@ class LocationModel(BaseModel):
     phone: Mapped[Optional[str]]
 
     # Relationships
-    group_code: Mapped[str] = mapped_column(String(10), ForeignKey("groups.gr_code"), index=True)
+    group_code: Mapped[str] = mapped_column(
+        String(10), ForeignKey("groups.gr_code"), index=True
+    )
     group: Mapped["GroupModel"] = relationship(back_populates="locations")
-    collections: Mapped[list["CollectionModel"]] = relationship(back_populates="location")
+    collections: Mapped[list["CollectionModel"]] = relationship(
+        back_populates="location"
+    )

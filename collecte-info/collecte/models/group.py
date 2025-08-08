@@ -4,11 +4,14 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
+
 if TYPE_CHECKING:
     from . import LocationModel
 
+
 class GroupModel(BaseModel):
     """SQLAlchemy: Group database model"""
+
     __tablename__ = "groups"
 
     gr_code: Mapped[str] = mapped_column(String(10), primary_key=True)

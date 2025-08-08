@@ -39,7 +39,9 @@ async def check_api(client: Client) -> bool:
         return False
 
 
-async def api_to_pydantic(api_models: list, pydantic_model: BaseModel) -> list[BaseModel]:
+async def api_to_pydantic(
+    api_models: list, pydantic_model: BaseModel
+) -> list[BaseModel]:
     """Convert an API model to a Pydantic model"""
     return [pydantic_model(**api_model.to_dict()) for api_model in api_models]
 
@@ -99,7 +101,7 @@ async def update_all(items: list, db_schema: SQLAlchemyBaseModel):
                 # Assuming single primary key for simplicity
                 pk_name = primary_key[0].name
                 pk_value = getattr(item, pk_name, None)
-                
+
                 db_item = None
                 if pk_value:
                     db_item = await session.get(db_schema, pk_value)
@@ -119,15 +121,12 @@ async def update_all(items: list, db_schema: SQLAlchemyBaseModel):
                 for key, value in item.__dict__.items():
                     setattr(db_item, key, value)
                 await session.commit()
-                logger.debug(
-                    f"Updated object {pk_value} in table {item.__tablename__}"
-                )
+                logger.debug(f"Updated object {pk_value} in table {item.__tablename__}")
             except Exception as e:
                 await session.rollback()  # Rollback in case of error
                 logger.error(
                     f"Error updating {pk_value} in table {item.__tablename__}: {e}"
                 )
-            
 
     tasks = [_update_item(item) for item in items]
     await asyncio.gather(*tasks)

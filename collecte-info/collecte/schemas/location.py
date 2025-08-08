@@ -1,10 +1,11 @@
 from typing import TYPE_CHECKING, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
-from .collection import CollectionDBSchema
+
 
 class LocationSchema(BaseModel):
     """Pydantic: Informations relative to a location where events can be scheduled"""
+
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
     id: Optional[int] = None

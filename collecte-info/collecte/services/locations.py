@@ -16,6 +16,7 @@ async def load_locations() -> list[LocationSchema]:
         locations = results.scalars().all()
         return await sqlalchemy_to_pydantic(locations, LocationSchema)
 
+
 async def get_postal_codes() -> list[str]:
     """Return all unique postal code from database"""
     async with get_db() as session:
