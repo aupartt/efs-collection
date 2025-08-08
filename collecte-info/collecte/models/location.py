@@ -7,7 +7,7 @@ from .base import BaseModel
 
 if TYPE_CHECKING:
     from .group import GroupModel
-    from .collection import CollectionModel
+    from .collection import CollectionGroupModel
 
 
 class LocationModel(BaseModel):
@@ -55,6 +55,6 @@ class LocationModel(BaseModel):
         String(10), ForeignKey("groups.gr_code"), index=True
     )
     group: Mapped["GroupModel"] = relationship(back_populates="locations")
-    collections: Mapped[list["CollectionModel"]] = relationship(
+    collections: Mapped[list["CollectionGroupModel"]] = relationship(
         back_populates="location"
     )

@@ -1,18 +1,105 @@
 from datetime import datetime, time
+import re
 from typing import TYPE_CHECKING, Optional
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
-from .snapshot import SnapshotCollectionSchema
+
+class CollectionGroupSnapshotSchema(BaseModel):
+    """Pydantic: Snapshot of stats for an collection group"""
+
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+    id: Optional[int]
+
+    taux_remplissage: Optional[float] = None
+
+    # Blood slots
+    nb_places_restantes_st: Optional[int] = None
+    nb_places_totales_st: Optional[int] = None
+    nb_places_reservees_st: Optional[int] = None
+
+    # Plasma slots
+    nb_places_restantes_pla: Optional[int] = None
+    nb_places_totales_pla: Optional[int] = None
+    nb_places_reservees_pla: Optional[int] = None
+
+    # Platelet slots
+    nb_places_restantes_cpa: Optional[int] = None
+    nb_places_totales_cpa: Optional[int] = None
+    nb_places_reservees_cpa: Optional[int] = None
+
+
+class CollectionEventSchema(BaseModel):
+    """Pydantic: Single event information"""
+
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+    id: int
+    lp_code: str
+
+    date: datetime
+
+    morning_start_time: Optional[time] = None
+    morning_end_time: Optional[time] = None
+    afternoon_start_time: Optional[time] = None
+    afternoon_end_time: Optional[time] = None
+
+
+class CollectionGroupSchema(BaseModel):
+    """Pydantic: Global data for a group of events"""
+
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+    id: Optional[int] = None
+    efs_id: Optional[int] = None
+
+    # Date
+    start_date: datetime = None
+    end_date: datetime = None
+
+    # Details
+    nature: Optional[str]
+    is_public: bool
+    is_publishable: bool
+    propose_planning_rdv: bool
+
+    # URLs
+    url_blood: Optional[str] = None
+    url_plasma: Optional[str] = None
+    url_platelet: Optional[str] = None
+
+    # Text descriptions
+    convocation_label_long: Optional[str] = None
+    convocation_label_sms: Optional[str] = None
+
+    events: list[CollectionEventSchema] = []
+    snapshots: list[CollectionGroupSnapshotSchema] = []
+
+    @property
+    def url(self) -> str:
+        """Return the first available url for booking"""
+        url = None
+
+        if self.url_blood:
+            url = self.url_blood
+        elif self.url_plasma:
+            url = self.url_plasma
+        elif self.url_platelet:
+            url = self.url_platelet
+
+        if url and not re.match(r"https?://", url):
+            url = f"https://{url}"
+
+        return url
 
 
 class CollectionSchema(BaseModel):
-    """Pydantic: Informations relative of a collection"""
+    """Pydantic: Main collection information"""
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
     id: Optional[int] = None
     group_code: str = Field(alias="groupCode")
-    sampling_location_code: str = Field(alias="samplingLocationCode")
 
     # Date and timing
     date: datetime
@@ -70,42 +157,73 @@ class CollectionSchema(BaseModel):
     )
 
     # Handle children collections
-    children: Optional[list["CollectionSchema"]] = None
+    children: Optional[list["CollectionSchema"]] = []
 
+    @property
+    def url(self) -> str:
+        """Return the first available url for booking"""
+        url = None
 
-class CollectionDBSchema(BaseModel):
-    """Pydantic: Database Collection schema"""
+        if self.url_blood:
+            url = self.url_blood
+        elif self.url_plasma:
+            url = self.url_plasma
+        elif self.url_platelet:
+            url = self.url_platelet
 
-    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+        if url and not re.match(r"https?://", url):
+            url = f"https://{url}"
 
-    id: Optional[int] = None
-    efs_id: Optional[int] = None  # ID from the url
+        return url
 
-    # Date and timing
-    date_start: datetime
-    date_end: datetime
-    morning_end_time_min_max: Optional[time]
-    morning_start_time: Optional[time]
-    afternoon_end_time_min: Optional[time]
-    afternoon_start_time_max: Optional[time]
+    def get_dates(self) -> str:
+        """Return the last available date for booking"""
+        dates = []
+        if self.date:
+            dates.append(self.date)
+        if self.children:
+            child_dates = [child.date for child in self.children if child.date]
+            dates.extend(child_dates)
+        return dates
 
-    # Collection details
-    nature: Optional[str] = None
-    is_public: bool = Field(alias="isPublic")
-    is_publishable: bool = Field(alias="isPublishable")
-    propose_planning_rdv: bool = Field(alias="proposePlanningRdv")
+    def snapshot(self, from_db=False) -> CollectionGroupSnapshotSchema:
+        """Generate a snapshot for the collection"""
+        snapshot = CollectionGroupSnapshotSchema.model_validate(self)
+        if not from_db:
+            # Make sure to not take an event ID as PK
+            snapshot.id = None
+        return snapshot
 
-    # URLs for booking
-    url_blood: Optional[str] = Field(alias="urlBlood", default=None)
-    url_plasma: Optional[str] = Field(alias="urlPlasma", default=None)
-    url_platelet: Optional[str] = Field(alias="urlPlatelet", default=None)
+    def event(self, data) -> CollectionEventSchema:
+        """Generate an event from the given data"""
+        event = CollectionEventSchema.model_validate(data)
+        return event
 
-    # Text descriptions
-    convocation_label_long: Optional[str] = Field(
-        alias="convocationLabelLong", default=None
-    )
-    convocation_label_sms: Optional[str] = Field(
-        alias="convocationLabelSMS", default=None
-    )
+    def events(self, from_db=False) -> list[CollectionEventSchema]:
+        """Generate all events from a collection"""
+        events = []
+        main_event = self.event(self)
+        events.append(main_event)
 
-    snapshots: Optional[list["SnapshotCollectionSchema"]] = []
+        if self.children:
+            child_events = [self.event(child) for child in self.children]
+            events.extend(child_events)
+
+        return events
+
+    def as_group(self, from_db=False) -> CollectionGroupSchema:
+        """Return the collection as a group"""
+        dates = self.get_dates()
+        snapshot = self.snapshot(from_db)
+        events = self.events(from_db)
+        group = CollectionGroupSchema(
+            **self.model_dump(),
+            snapshots=[snapshot],
+            events=events,
+            start_date=min(dates),
+            end_date=max(dates),
+        )
+        if not from_db:
+            # Make sure to not take an event ID as PK
+            group.id = None
+        return group

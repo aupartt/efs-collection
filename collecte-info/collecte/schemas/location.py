@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, Union
 from pydantic import BaseModel, ConfigDict, Field
 
+from .collection import CollectionSchema, CollectionGroupSchema
 
 
 class LocationSchema(BaseModel):
@@ -11,10 +12,10 @@ class LocationSchema(BaseModel):
     id: Optional[int] = None
     sampling_location_code: str = Field(alias="samplingLocationCode")
     group_code: str = Field(alias="groupCode")
-    region_code: str = Field(alias="regionCode")
+    region_code: Optional[str] = Field(alias="regionCode")
 
     # Address info
-    name: str
+    name: Optional[str]
     city: Optional[str]
     post_code: str = Field(alias="postCode")
     full_address: str = Field(alias="fullAddress")
@@ -30,11 +31,6 @@ class LocationSchema(BaseModel):
     give_plasma: bool = Field(alias="givePlasma")
     give_platelet: bool = Field(alias="givePlatelet")
 
-    # URLs
-    # url_blood: Optional[str] = Field(alias="urlBlood", default=None)
-    # url_plasma: Optional[str] = Field(alias="urlPlasma", default=None)
-    # url_platelets: Optional[str] = Field(alias="urlPlatelets", default=None)
-
     # Additional information
     horaires: Optional[str] = None
     infos: Optional[str] = None
@@ -47,4 +43,4 @@ class LocationSchema(BaseModel):
     ville: Optional[str] = None
     phone: Optional[str] = None
 
-    collections: Optional[list["CollectionDBSchema"]] = []
+    collections: Optional[list[Union["CollectionSchema", "CollectionGroupSchema"]]] = []
