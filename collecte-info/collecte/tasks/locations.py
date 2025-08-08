@@ -31,9 +31,15 @@ async def update_locations():
     if not await check_api():
         return
 
+    logger.info(f"Start updating locations...")
+
     groups = await load_groups()
     tasks = [_retrieve_location_sampling(groupement=group) for group in groups]
     _locations = await asyncio.gather(*tasks)
     locations = [location for sublist in _locations for location in sublist]
 
+    logger.info(f"{len(locations)} locations retrieved from API")
+
     await save_locations(locations)
+
+    logger.info(f"Locations updated !")

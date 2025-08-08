@@ -49,7 +49,13 @@ async def update_groups() -> None:
     if not await check_api():
         return
 
+    logger.info(f"Start updating groups...")
+
     region: SamplingRegionEntity = await _retrieve_region(settings.REGION_NAME)
     groups: list[GroupSchema] = await _retrieve_groups(region)
 
+    logger.info(f"{len(groups)} Groups retrieved from API for region {region.libelle}")
+
     await save_groups(groups)
+
+    logger.info(f"Groups updated !")
