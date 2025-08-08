@@ -6,15 +6,20 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "aio-pika>=9.5.5",
+    "aiohttp>=3.12.15",
     "alembic>=1.16.4",
     "api-carto-client",
     "asyncpg>=0.30.0",
     "pydantic>=2.11.7",
     "pydantic-settings>=2.10.1",
-    "requests>=2.32.4",
     "sqlalchemy>=2.0.42",
     "tqdm>=4.67.1",
 ]
 
 [tool.uv.sources]
 api-carto-client = { path = "../api-carto-client", editable = true }
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.30.1",
+]

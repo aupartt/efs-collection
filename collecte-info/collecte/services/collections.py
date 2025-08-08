@@ -2,19 +2,44 @@ import logging
 from sqlalchemy import select
 
 from collecte.core.database import get_db
-from collecte.schemas import CollectionDBSchema
-from collecte.models import CollectionModel
-from .utils import sqlalchemy_to_pydantic, update_all
+from collecte.schemas.collection import CollectionGroupSchema
+from collecte.models.collection import (
+    CollectionGroupModel,
+)
+from collecte.models.location import LocationModel
+from .utils import sqlalchemy_to_pydantic
 
 logger = logging.getLogger(__name__)
 
 
-async def load_collections() -> list[CollectionDBSchema]:
+async def load_collection_groups() -> list[CollectionGroupSchema]:
     async with get_db() as session:
-        results = await session.execute(select(CollectionModel))
+        results = await session.execute(select(CollectionGroupModel))
         collections = results.scalars().all()
-        return sqlalchemy_to_pydantic(collections, CollectionDBSchema)
+        return sqlalchemy_to_pydantic(collections, CollectionGroupSchema)
 
 
-async def save_collections(collcetions: list[CollectionDBSchema]):
-    await update_all(CollectionModel, collcetions)
+async def save_collection_group(
+    collection_group_data: CollectionGroupSchema, location: LocationModel
+) -> None:
+    async with get_db() as session:
+        results = await session.execute(
+            select(CollectionGroupModel).filter_by(efs_id=collection_group_data.efs_id)
+        )
+        collection_group = results.scalars().first()
+
+        # CollectionGroup doesn't exist, create it
+        if not collection_group:
+            collection_group_db = CollectionGroupModel(
+                **collection_group_data.model_dump(), location=location
+            )
+            session.add(collection_group_db)
+            await session.commit()
+            await session.refresh(collection_group_db)
+            return collection_group_db
+
+        session.merge(collection_group)
+
+        await session.commit()
+        await session.refresh(collection_group_db)
+        return collection_group_db
