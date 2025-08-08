@@ -34,6 +34,6 @@ async def update_locations():
     groups = await load_groups()
     tasks = [_retrieve_location_sampling(groupement=group) for group in groups]
     _locations = await asyncio.gather(*tasks)
-    locations = [location for collection in _locations for location in collection]
+    locations = [location for sublist in _locations for location in sublist]
 
     await save_locations(locations)
