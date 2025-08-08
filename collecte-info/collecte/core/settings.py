@@ -8,7 +8,9 @@ class Settings(BaseSettings):
     RABBITMQ_DATA_QUEUE: str = "processed_data"
 
     # Database
-    POSTGRES_URL: PostgresDsn = "postgresql+asyncpg://postgres:postgres@localhost:5432/collecte"
+    POSTGRES_URL: PostgresDsn = (
+        "postgresql+asyncpg://postgres:postgres@localhost:5432/collecte"
+    )
 
     REGION_NAME: str = "Bretagne"
 
