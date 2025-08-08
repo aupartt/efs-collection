@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 @with_api_client
-def _retrieve_location_sampling(client: Client, groupement: SamplingGroupEntity):
+async def _retrieve_location_sampling(client: Client, groupement: SamplingGroupEntity):
     """Retrieve all locations from API"""
-    res: SamplingLocationEntity = api_search_location.sync(
+    res: SamplingLocationEntity = await api_search_location.asyncio(
         client=client, group_code=groupement.gr_code
     )
     return api_to_pydantic(res.sampling_location_entities, LocationSchema)
@@ -26,15 +26,13 @@ def _retrieve_location_sampling(client: Client, groupement: SamplingGroupEntity)
 
 async def update_locations():
     """Retrieve all locations from API and store them in database"""
-    logging.basicConfig(level=logging.INFO)
-
-    if not check_api():
+    if not await check_api():
         return
 
     groups = await load_groups()
     locations = []
     for group in groups:
-        _locations = _retrieve_location_sampling(groupement=group)
+        _locations = await _retrieve_location_sampling(groupement=group)
         locations.extend(_locations)
 
     await save_locations(locations)

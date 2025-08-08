@@ -2,7 +2,6 @@ import logging
 from pydantic import BaseModel
 import asyncio
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.inspection import inspect
 
 from api_carto_client import Client
@@ -17,18 +16,18 @@ logger = logging.getLogger(__name__)
 
 
 def with_api_client(func):
-    def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs):
         client = Client(base_url="https://oudonner.api.efs.sante.fr/")
-        with client as cli:
-            return func(cli, *args, **kwargs)
+        async with client as cli:
+            return await func(cli, *args, **kwargs)
 
     return wrapper
 
 
 @with_api_client
-def check_api(client: Client) -> bool:
+async def check_api(client: Client) -> bool:
     try:
-        ping_resp: Ping = api_ping.sync(client=client)
+        ping_resp: Ping = await api_ping.asyncio(client=client)
         if ping_resp.version != "v3":
             logger.error(
                 f"The server is running API in {ping_resp.version}, but only v3 is supported."

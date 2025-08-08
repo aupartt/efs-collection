@@ -72,17 +72,19 @@ def _get_esf_id(url: str) -> str:
 
 
 async def _get_collections() -> list[CollectionSchema]:
-    """Retrieve collections for all post_codes from api"""
-    if not check_api():
+    if not await check_api():
         return []
 
     postal_codes = await get_postal_codes()
     collections = []
     for postal_code in postal_codes:
-        api_collections = _retrieve_collections(postal_code)
+        api_collections = await _retrieve_collections(postal_code)
         collections.extend(api_collections)
     return collections
 
 
 async def update_collections():
+    collections = await _get_collections()
+
+
     pass
