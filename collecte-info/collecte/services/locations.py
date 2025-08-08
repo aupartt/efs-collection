@@ -5,7 +5,8 @@ from sqlalchemy import select
 from collecte.core.database import get_db
 from collecte.models.location import LocationModel
 from collecte.schemas.location import LocationSchema
-from .utils import sqlalchemy_to_pydantic, update_all
+from collecte.services.groups import group_exists
+from .utils import sqlalchemy_to_pydantic
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,12 @@ async def get_location(location: LocationSchema) -> LocationModel:
 
         if existing_location:
             return existing_location
-
+        
+        # Ensure the group exists before creating the location
+        if not await group_exists(gr_code=location.group_code):
+            logger.warning(f"Group {location.group_code} does not exist for location: {location.city} {location.post_code}")
+            return None
+        
         # If location doesn't exist, create it
         session.add(location_db)
         await session.commit()
