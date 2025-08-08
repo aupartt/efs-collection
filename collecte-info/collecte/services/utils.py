@@ -100,7 +100,9 @@ async def update_all(items: list, db_schema: SQLAlchemyBaseModel):
                 pk_name = primary_key[0].name
                 pk_value = getattr(item, pk_name, None)
                 
-                db_item = await session.get(db_schema, pk_value)
+                db_item = None
+                if pk_value:
+                    db_item = await session.get(db_schema, pk_value)
 
                 # Add new item
                 if not db_item:
