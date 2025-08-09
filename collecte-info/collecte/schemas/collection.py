@@ -100,18 +100,16 @@ class CollectionGroupSchema(BaseModel):
             url = f"https://{url}"
 
         return url
-    
+
     def update_ids(self, _id: int):
         for snapshot in self.snapshots:
             snapshot.collection_group_id = _id
-        
+
         for event in self.events:
             event.collection_group_id = _id
 
     def info(self) -> str:
         return f"{str(self.efs_id):>6} - {str(self.url):22} - {self.nature}"
-
-    
 
 
 class CollectionSchema(BaseModel):

@@ -78,7 +78,9 @@ async def _handle_collection(
             # Don't handle collection without efs_id
             # This is usually because the collection is not already available
             if not collection.efs_id:
-                logger.warning(f"Couldn't get efs_id for collection {collection.info()}")
+                logger.warning(
+                    f"Couldn't get efs_id for collection {collection.info()}"
+                )
                 return
 
             collection_db = await get_collection(session, collection)
@@ -149,7 +151,7 @@ async def save_location_collections(
     # Check and update events
     events = [event for items in items_groups if items for event in items[0]]
     tasks = [_handle_event(event) for event in events]
-    
+
     await asyncio.gather(*tasks)
 
     # Add all snapshots

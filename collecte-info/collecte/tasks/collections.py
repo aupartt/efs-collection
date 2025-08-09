@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 api_semaphore = asyncio.Semaphore(10)
 
+
 @with_api_client
 async def retrieve_sampling_collections(
     client: Client, post_code: str
@@ -53,7 +54,7 @@ async def get_esf_id(url: str) -> str | None:
     """Retrieve ESF id from url"""
     if not url:
         return
-    
+
     async with api_semaphore:
         async with aiohttp.ClientSession() as session:
             try:
@@ -65,9 +66,7 @@ async def get_esf_id(url: str) -> str | None:
                 logger.error(f"Timeout while retrieving ESF id from {url}")
                 return None
             except Exception as e:
-                logger.error(
-                    f"Error while retrieving ESF id from {url}: {e}"
-                )
+                logger.error(f"Error while retrieving ESF id from {url}: {e}")
 
 
 async def _get_collections_locations() -> list[LocationSchema]:
@@ -115,7 +114,9 @@ async def update_collections():
     # Get all locations with active collections
     locations = await _get_collections_locations()
 
-    logger.info(f"Retrieved {len(locations)} locations with active collections from API")
+    logger.info(
+        f"Retrieved {len(locations)} locations with active collections from API"
+    )
 
     # Set efs_id for all collections within a location
     tasks = [_handle_location(location) for location in locations]
@@ -127,5 +128,7 @@ async def update_collections():
 
     # Save all collections to database
     collections, events, snapshots = await save_location_collections(locations)
-    
-    logger.info(f"Processed {collections} collections, {events} events, {snapshots} snapshots")
+
+    logger.info(
+        f"Processed {collections} collections, {events} events, {snapshots} snapshots"
+    )

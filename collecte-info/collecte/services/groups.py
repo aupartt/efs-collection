@@ -53,6 +53,7 @@ async def add_group(group: GroupSchema) -> GroupModel | None:
                 logger.error(f"Error adding group {group.gr_code}: {e}")
                 await session.rollback()
 
+
 async def save_groups(groups: list[GroupSchema]) -> None:
     """ADD/UPDATE all groups to database"""
     tasks = [add_group(group) for group in groups]
