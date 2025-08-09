@@ -40,6 +40,6 @@ async def update_locations():
 
     logger.info(f"{len(locations)} locations retrieved from API")
 
-    await save_locations(locations)
+    added_locations = await save_locations(locations)
 
-    logger.info(f"Locations updated !")
+    logger.info(f"{len(added_locations)} Locations updated !")
