@@ -59,4 +59,3 @@ async def save_locations(locations: list[LocationSchema]):
     """Retrieve all locations from API and store them in database"""
     tasks = [get_location(location) for location in locations]
     await asyncio.gather(*tasks)
-    logger.info(f"Saved {len(locations)} locations")
