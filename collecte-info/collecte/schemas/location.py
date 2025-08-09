@@ -11,16 +11,15 @@ class LocationSchema(BaseModel):
 
     id: Optional[int] = None
     sampling_location_code: str = Field(alias="samplingLocationCode")
-    group_code: str = Field(alias="groupCode")
     region_code: Optional[str] = Field(alias="regionCode")
 
     # Address info
-    name: Optional[str]
-    city: Optional[str]
+    name: Optional[str] = ""
+    city: Optional[str] = ""
     post_code: str = Field(alias="postCode")
     full_address: str = Field(alias="fullAddress")
-    address1: Optional[str]
-    address2: Optional[str]
+    address1: Optional[str] = ""
+    address2: Optional[str] = ""
 
     # Coordinates
     latitude: float
@@ -43,4 +42,9 @@ class LocationSchema(BaseModel):
     ville: Optional[str] = None
     phone: Optional[str] = None
 
+    # Relations
+    group_code: str = Field(alias="groupCode")
     collections: Optional[list[Union["CollectionSchema", "CollectionGroupSchema"]]] = []
+
+    def info(self) -> str:
+        return f"{str(self.group_code):>6} - {str(self.post_code):>5} - {str(self.city):>20} - {self.name}"

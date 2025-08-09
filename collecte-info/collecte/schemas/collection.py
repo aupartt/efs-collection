@@ -101,6 +101,11 @@ class CollectionGroupSchema(BaseModel):
 
         return url
 
+    def info(self) -> str:
+        return f"{str(self.efs_id):>6} - {str(self.url):22} - {self.nature}"
+
+    
+
 
 class CollectionSchema(BaseModel):
     """Pydantic: Main collection information"""
