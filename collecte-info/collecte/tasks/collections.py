@@ -54,7 +54,7 @@ async def get_esf_id(url: str) -> str | None:
         try:
             async with session.head(url, allow_redirects=True) as resp:
                 reg = r"trouver-une-collecte/([0-9]+)/"
-                match = re.search(reg, resp.url)
+                match = re.search(reg, resp.url.raw_path)
                 return match.group(1) if match else None
         except asyncio.TimeoutError:
             logger.error(f"Timeout while retrieving ESF id from {url}")
@@ -81,7 +81,10 @@ async def get_collections_locations() -> list[LocationSchema]:
 
 async def _handle_collection(collection: CollectionSchema, location_db: LocationModel):
     """Handle a single collection"""
-    efs_id = await get_esf_id(collection.url)
+    url = collection.url
+    if not url:
+        logger.warning(f"No URL found for collection {collection.model_dump(include={"nature", "url_blood", "url_plasma", "url_platelets"})}")
+    efs_id = await get_esf_id(url)
     group_collection: CollectionGroupSchema = collection.as_group(from_db=False)
     group_collection.efs_id = efs_id
     await save_collection_group(group_collection, location_db)
@@ -90,12 +93,13 @@ async def _handle_collection(collection: CollectionSchema, location_db: Location
 async def _handle_location(location: LocationSchema) -> LocationModel:
     """Handle a single location"""
     location_db = await get_location(location)
+
     return location_db
 
 
 async def update_collections():
     """Update all collections for all locations"""
-    logger.info(f"Start updating locations...")
+    logger.info("Start updating collections...")
 
     locations = await get_collections_locations()
 
@@ -103,6 +107,8 @@ async def update_collections():
 
     for location in locations:
         location_db = await _handle_location(location)
+        if not location_db:
+            continue
         try:
             collections: list[CollectionSchema] = location.collections
             tasks = [
