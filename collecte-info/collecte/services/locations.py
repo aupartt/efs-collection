@@ -27,7 +27,9 @@ async def get_postal_codes() -> list[str]:
         return results.scalars().all()
 
 
-async def get_location(session: AsyncSession, location: LocationSchema) -> LocationModel | None:
+async def get_location(
+    session: AsyncSession, location: LocationSchema
+) -> LocationModel | None:
     """Return the id of the location object in the database"""
     stmt = select(LocationModel).where(
         LocationModel.name == location.name,
@@ -38,28 +40,34 @@ async def get_location(session: AsyncSession, location: LocationSchema) -> Locat
     )
     result = await session.execute(stmt)
     return result.scalar_one_or_none()
-    
-        
+
+
 async def add_location(location: LocationSchema) -> LocationModel | None:
     """Add a location to database"""
     async with db_samaphore:
         async with get_db() as session:
-            location_db = await get_location(session, location)
-            if location_db:
-                return location_db
+            try:
+                location_db = await get_location(session, location)
+                if location_db:
+                    return location_db
 
-            # Ensure the group exists before creating the location
-            if not await get_group(session, gr_code=location.group_code):
-                logger.warning(
-                    f"Group {location.group_code} does not exist for location: {location.city} {location.post_code}"
+                # Ensure the group exists before creating the location
+                if not await get_group(session, gr_code=location.group_code):
+                    logger.warning(
+                        f"Group {location.group_code} does not exist for location: {location.info()}"
+                    )
+                    return None
+
+                location_db = LocationModel(**location.model_dump())
+                session.add(location_db)
+                await session.commit()
+                await session.refresh(location_db)
+                return location_db
+            except Exception as e:
+                logger.error(
+                    f"Error adding location: (city={location.city} post_code={location.post_code} name={location.name} group_code={location.group_code}) - {e}"
                 )
-                return None
-            
-            location_db = LocationModel(**location.model_dump())
-            session.add(location_db)
-            await session.commit()
-            await session.refresh(location_db)
-            return location_db
+                await session.rollback()
 
 
 async def save_locations(locations: list[LocationSchema]) -> list[LocationModel | None]:
