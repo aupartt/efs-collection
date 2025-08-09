@@ -4,10 +4,10 @@ from sqlalchemy import UniqueConstraint, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import BaseModel
+from .collection import CollectionGroupModel
 
 if TYPE_CHECKING:
     from .group import GroupModel
-    from .collection import CollectionGroupModel
 
 
 class LocationModel(BaseModel):
