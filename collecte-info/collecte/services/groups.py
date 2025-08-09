@@ -47,6 +47,8 @@ async def add_group(group: GroupSchema) -> GroupModel | None:
                     session.add(existing_group)
 
                 await session.commit()
+                await session.refresh(existing_group)
+                return existing_group
             except Exception as e:
                 logger.error(f"Error adding group {group.gr_code}: {e}")
                 await session.rollback()
