@@ -24,8 +24,8 @@ from collecte.schemas.collection import (
 from collecte.models.collection import CollectionGroupModel
 from collecte.models.location import LocationModel
 from collecte.services.utils import with_api_client, check_api
-from collecte.services.locations import get_location, get_postal_codes
-from collecte.services.collections import save_collection_group
+from collecte.services.locations import get_postal_codes
+from collecte.services.collections import save_location_collections
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ async def get_esf_id(url: str) -> str | None:
                 )
 
 
-async def get_collections_locations() -> list[LocationSchema]:
+async def _get_collections_locations() -> list[LocationSchema]:
     """Retrieve all collection locations from the API with post_codes and flatten the list"""
     if not await check_api():
         return []
@@ -85,47 +85,47 @@ async def get_collections_locations() -> list[LocationSchema]:
     return locations
 
 
-async def _handle_collection(collection: CollectionSchema, location_db: LocationModel):
-    """Handle a single collection"""
-    url = collection.url
-    if not url:
-        logger.warning(f"No URL found for collection {collection.model_dump(include={"nature", "url_blood", "url_plasma", "url_platelets"})}")
-    efs_id = await get_esf_id(url)
-    group_collection: CollectionGroupSchema = collection.as_group(from_db=False)
-    group_collection.efs_id = efs_id
-    await save_collection_group(group_collection, location_db)
-
-
-async def _handle_location(location: LocationSchema) -> LocationModel:
+async def _handle_location(location: LocationSchema) -> None:
     """Handle a single location"""
-    location_db = await get_location(location)
 
-    return location_db
+    async def _add_efs_id(collection: CollectionSchema) -> None:
+        """Add efs_id to a collection"""
+        efs_id = await get_esf_id(collection.url)
+        collection.efs_id = efs_id
+
+    tasks = [_add_efs_id(collection) for collection in location.collections]
+    await asyncio.gather(*tasks)
+
+
+async def _transform_location_collections(location: LocationSchema) -> None:
+    """Transform collections to group collections"""
+
+    async def _collection_to_group(collection: CollectionSchema) -> None:
+        group_collection: CollectionGroupSchema = collection.as_group(from_db=False)
+        return group_collection
+
+    tasks = [_collection_to_group(collection) for collection in location.collections]
+    location.collections = await asyncio.gather(*tasks)
 
 
 async def update_collections():
     """Update all collections for all locations"""
     logger.info("Start updating collections...")
 
-    locations = await get_collections_locations()
+    # Get all locations with active collections
+    locations = await _get_collections_locations()
 
-    logger.info(f"{len(locations)} locations retrieved from API")
+    logger.info(f"Retrieved {len(locations)} locations with active collections from API")
 
-    for location in locations:
-        location_db = await _handle_location(location)
-        if not location_db:
-            continue
-        try:
-            collections: list[CollectionSchema] = location.collections
-            tasks = [
-                _handle_collection(collection, location_db)
-                for collection in collections
-            ]
-            await asyncio.gather(*tasks)
-        except Exception as e:
-            logger.error(
-                f"Error while updating collections for location {location.name}: {e}"
-            )
-            continue
+    # Set efs_id for all collections within a location
+    tasks = [_handle_location(location) for location in locations]
+    await asyncio.gather(*tasks)
 
-    logger.info(f"{len(locations)} Collections updated")
+    # Transform collections to group collections
+    tasks = [_transform_location_collections(location) for location in locations]
+    await asyncio.gather(*tasks)
+
+    # Save all collections to database
+    collections, events, snapshots = await save_location_collections(locations)
+    
+    logger.info(f"Processed {collections} collections, {events} events, {snapshots} snapshots")

@@ -1,13 +1,30 @@
+import asyncio
 import logging
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from collecte.core.database import get_db
-from collecte.schemas.collection import CollectionGroupSchema
+from collecte.core.database import get_db, db_samaphore
+
+# Schemas
+from collecte.schemas.collection import (
+    CollectionEventSchema,
+    CollectionGroupSchema,
+    CollectionGroupSnapshotSchema,
+)
+from collecte.schemas.location import LocationSchema
+
+# Models
 from collecte.models.collection import (
     CollectionGroupModel,
+    CollectionEventModel,
+    CollectionGroupSnapshotModel,
 )
 from collecte.models.location import LocationModel
+
+# Services
 from collecte.services.groups import get_group
+from collecte.services.locations import get_location
+
 from .utils import sqlalchemy_to_pydantic
 
 logger = logging.getLogger(__name__)
@@ -20,35 +37,124 @@ async def load_collection_groups() -> list[CollectionGroupSchema]:
         return sqlalchemy_to_pydantic(collections, CollectionGroupSchema)
 
 
-async def save_collection_group(
-    collection_group_data: CollectionGroupSchema, location: LocationModel
-) -> None:
-    async with get_db() as session:
-        results = await session.execute(
-            select(CollectionGroupModel).filter_by(efs_id=collection_group_data.efs_id)
-        )
-        collection_group = results.scalars().first()
+async def get_collection(
+    session: AsyncSession, collection: CollectionGroupSchema
+) -> CollectionGroupModel | None:
+    stmt = select(CollectionGroupModel).filter_by(
+        efs_id=collection.efs_id,
+        nature=collection.nature,
+    )
+    results = await session.execute(stmt)
+    return results.scalar_one_or_none()
 
-        # Check if group exists in database
-        if not await get_group(session, collection_group_data.gr_code):
-            logger.warning(
-                f"Group {collection_group_data.gr_code} not found in database for the location: {location.city} {location.post_code}"
-            )
-            return
 
-        # CollectionGroup doesn't exist, create it
-        if not collection_group:
-            collection_group_db = CollectionGroupModel(
-                **collection_group_data.model_dump(), location=location
-            )
+async def get_event(session: AsyncSession, event_id: int):
+    stmt = select(CollectionEventModel).filter_by(event_id=event_id)
+    results = await session.execute(stmt)
+    return results.scalar_one_or_none()
 
-            session.add(collection_group_db)
+
+async def _handle_location(location: LocationSchema) -> list[CollectionGroupModel]:
+    async with db_samaphore:
+        async with get_db() as session:
+            location_db = await get_location(session, location)
+            if not location_db:
+                logger.warning(f"Location {location.info()} not found")
+                return
+
+            collections = []
+            for collection in location.collections:
+                collection.location_id = location_db.id
+                collections.append(collection)
+
+            return collections
+
+
+async def _handle_collection(
+    collection: CollectionGroupSchema,
+) -> tuple[list[CollectionGroupSnapshotModel], list[CollectionEventModel]] | None:
+    async with db_samaphore:
+        async with get_db() as session:
+            # Don't handle collection without efs_id
+            # This is usually because the collection is not already available
+            if not collection.efs_id:
+                logger.warning(f"Couldn't get efs_id for collection {collection.info()}")
+                return
+
+            collection_db = await get_collection(session, collection)
+
+            # Collection does not exist, create it
+            if not collection_db:
+                collection_db = CollectionGroupModel(**collection.model_dump())
+                session.add(collection_db)
+                await session.commit()
+                return
+
+            # Collection does exist, update the values
+            for key, value in collection.model_dump(
+                exclude={"location_id", "events", "snapshots"}
+            ).items():
+                setattr(collection_db, key, value)
+
+            # Update the ids of the events and snapshots
+            collection.update_ids(collection_db.id)
+
             await session.commit()
-            await session.refresh(collection_group_db)
-            return collection_group_db
 
-        session.merge(collection_group)
+            return collection.events, collection.snapshots
 
-        await session.commit()
-        await session.refresh(collection_group_db)
-        return collection_group_db
+
+async def _handle_event(event: CollectionEventSchema):
+    async with db_samaphore:
+        async with get_db() as session:
+            event_db = await get_event(session, event.id)
+
+            # Collection does not exist, create it
+            if not event_db:
+                event_db = CollectionEventModel(**event.model_dump())
+
+            # Collection does exist, update the values
+            for key, value in event.model_dump().items():
+                setattr(event_db, key, value)
+
+            await session.commit()
+
+
+async def _handle_snapshot(snapshot: CollectionGroupSnapshotSchema):
+    async with db_samaphore:
+        async with get_db() as session:
+            session.add(CollectionGroupSnapshotModel(**snapshot.model_dump()))
+            await session.commit()
+
+
+async def save_location_collections(
+    locations: list[LocationSchema],
+) -> tuple[int, int, int]:
+    # Add a good docstring for this function
+    """Save the collections of a list of locations in the database."""
+
+    # Add location.id to each collection
+    tasks = [_handle_location(location) for location in locations]
+    collections_groups = await asyncio.gather(*tasks)
+
+    # Check and update collections groups
+    tasks = [
+        _handle_collection(collection)
+        for collections in collections_groups
+        if collections
+        for collection in collections
+    ]
+    items_groups = await asyncio.gather(*tasks)
+
+    # Check and update events
+    events = [event for items in items_groups if items for event in items[0]]
+    tasks = [_handle_event(event) for event in events]
+    
+    await asyncio.gather(*tasks)
+
+    # Add all snapshots
+    snapshots = [snapshot for items in items_groups if items for snapshot in items[1]]
+    tasks = [_handle_snapshot(snapshot) for snapshot in snapshots]
+    await asyncio.gather(*tasks)
+
+    return len(items_groups), len(events), len(snapshots)
