@@ -19,4 +19,6 @@ class GroupModel(BaseModel):
     gr_desd: Mapped[str] = mapped_column(nullable=True)
 
     # Relationships
-    locations: Mapped[list["LocationModel"]] = relationship(back_populates="group")
+    locations: Mapped[list["LocationModel"]] = relationship(
+        back_populates="group", cascade="all, delete-orphan"
+    )

@@ -66,5 +66,5 @@ class LocationModel(BaseModel):
     )
     group: Mapped["GroupModel"] = relationship(back_populates="locations")
     collections: Mapped[list["CollectionGroupModel"]] = relationship(
-        back_populates="location"
+        back_populates="location", cascade="all, delete-orphan"
     )

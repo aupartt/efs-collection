@@ -66,7 +66,7 @@ class CollectionGroupModel(BaseModel):
 
     # Relationships
     events: Mapped[list["CollectionEventModel"]] = relationship(
-        back_populates="collection_group"
+        back_populates="collection_group", cascade="all, delete-orphan"
     )
     snapshots: Mapped[list["CollectionGroupSnapshotModel"]] = relationship(
         back_populates="collection_group", cascade="all, delete-orphan"
