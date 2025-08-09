@@ -64,6 +64,7 @@ class CollectionGroupModel(BaseModel):
     )
 
     # Relationships
+    group_code: Mapped[str] = mapped_column(ForeignKey("groups.gr_code"))
     events: Mapped[list["CollectionEventModel"]] = relationship(
         back_populates="collection_group", cascade="all, delete-orphan"
     )

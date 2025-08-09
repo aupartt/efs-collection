@@ -28,6 +28,9 @@ class CollectionGroupSnapshotSchema(BaseModel):
     nb_places_totales_cpa: Optional[int] = None
     nb_places_reservees_cpa: Optional[int] = None
 
+    # Relations
+    collection_group_id: Optional[int] = None
+
 
 class CollectionEventSchema(BaseModel):
     """Pydantic: Single event information"""
@@ -43,6 +46,9 @@ class CollectionEventSchema(BaseModel):
     morning_end_time: Optional[time] = None
     afternoon_start_time: Optional[time] = None
     afternoon_end_time: Optional[time] = None
+
+    # Relations
+    collection_group_id: Optional[int] = None
 
 
 class CollectionGroupSchema(BaseModel):
@@ -72,6 +78,9 @@ class CollectionGroupSchema(BaseModel):
     convocation_label_long: Optional[str] = None
     convocation_label_sms: Optional[str] = None
 
+    # Relations
+    group_code: Optional[str] = None
+    location_id: Optional[int] = None
     events: list[CollectionEventSchema] = []
     snapshots: list[CollectionGroupSnapshotSchema] = []
 
@@ -99,6 +108,7 @@ class CollectionSchema(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
     id: Optional[int] = None
+    efs_id: Optional[str] = None
     group_code: Optional[str] = Field(alias="groupCode")
 
     # Date and timing
