@@ -23,14 +23,14 @@ async def load_groups() -> list[GroupSchema]:
         return await sqlalchemy_to_pydantic(groups, GroupSchema)
 
 
-async def get_group(session: AsyncSession, gr_code: str) -> GroupSchema | None:
+async def get_group(session: AsyncSession, gr_code: str) -> GroupModel | None:
     """Return a group from database"""
     stmt = select(GroupModel).filter_by(gr_code=gr_code)
     results = await session.execute(stmt)
     return results.scalar_one_or_none()
 
 
-async def add_group(group: GroupSchema) -> GroupModel:
+async def add_group(group: GroupSchema) -> GroupModel | None:
     """Add a group to database"""
     async with db_samaphore:
         async with get_db() as session:
@@ -38,12 +38,14 @@ async def add_group(group: GroupSchema) -> GroupModel:
                 stmt = select(GroupModel).where(GroupModel.gr_code == group.gr_code)
                 result = await session.execute(stmt)
                 existing_group = result.scalar_one_or_none()
+
                 if existing_group:
-                    for key, value in group.model_dump().items():
+                    for key, value in group.model_dump(exclude="locations").items():
                         setattr(existing_group, key, value)
                 else:
-                    session.add(GroupModel(**group.model_dump()))
-            
+                    existing_group = GroupModel(**group.model_dump())
+                    session.add(existing_group)
+
                 await session.commit()
             except Exception as e:
                 logger.error(f"Error adding group {group.gr_code}: {e}")
