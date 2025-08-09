@@ -20,12 +20,14 @@ async def load_groups() -> list[GroupSchema]:
 
         return await sqlalchemy_to_pydantic(groups, GroupSchema)
 
+
 async def group_exists(gr_code: str) -> GroupSchema | None:
     """Return a group from database by gr_code, gr_lib or gr_desd"""
     async with get_db() as session:
         stmt = select(exists().where(GroupModel.gr_code == gr_code))
         results = await session.execute(stmt)
         return results.scalars()
+
 
 async def save_groups(groups: list[GroupSchema]) -> None:
     """Retrieve groups from API and add them to database"""

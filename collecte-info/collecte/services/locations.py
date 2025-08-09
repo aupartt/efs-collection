@@ -43,12 +43,14 @@ async def get_location(location: LocationSchema) -> LocationModel:
 
             if existing_location:
                 return existing_location
-            
+
             # Ensure the group exists before creating the location
             if not await group_exists(gr_code=location.group_code):
-                logger.warning(f"Group {location.group_code} does not exist for location: {location.city} {location.post_code}")
+                logger.warning(
+                    f"Group {location.group_code} does not exist for location: {location.city} {location.post_code}"
+                )
                 return None
-            
+
             # If location doesn't exist, create it
             session.add(location_db)
             await session.commit()
@@ -56,7 +58,7 @@ async def get_location(location: LocationSchema) -> LocationModel:
             return location_db
 
 
-async def save_locations(locations: list[LocationSchema]):
+async def save_locations(locations: list[LocationSchema]) -> list[LocationModel | None]:
     """Retrieve all locations from API and store them in database"""
     tasks = [get_location(location) for location in locations]
     return await asyncio.gather(*tasks)
