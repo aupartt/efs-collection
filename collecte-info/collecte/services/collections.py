@@ -7,7 +7,7 @@ from collecte.models.collection import (
     CollectionGroupModel,
 )
 from collecte.models.location import LocationModel
-from collecte.services.groups import group_exists
+from collecte.services.groups import get_group
 from .utils import sqlalchemy_to_pydantic
 
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ async def save_collection_group(
         collection_group = results.scalars().first()
 
         # Check if group exists in database
-        if not await group_exists(collection_group_data.gr_code):
+        if not await get_group(session, collection_group_data.gr_code):
             logger.warning(
                 f"Group {collection_group_data.gr_code} not found in database for the location: {location.city} {location.post_code}"
             )

@@ -1,7 +1,8 @@
 import asyncio
 import logging
 
-from sqlalchemy import exists, select
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from collecte.core.database import get_db, db_samaphore
 from collecte.models.group import GroupModel
@@ -15,18 +16,18 @@ logger = logging.getLogger(__name__)
 async def load_groups() -> list[GroupSchema]:
     """Return all groups from database"""
     async with get_db() as session:
-        results = await session.execute(select(GroupModel))
+        stmt = select(GroupModel)
+        results = await session.execute(stmt)
         groups = results.scalars().all()
 
         return await sqlalchemy_to_pydantic(groups, GroupSchema)
 
 
-async def group_exists(gr_code: str) -> GroupSchema | None:
-    """Return a group from database by gr_code, gr_lib or gr_desd"""
-    async with get_db() as session:
-        stmt = select(exists().where(GroupModel.gr_code == gr_code))
-        results = await session.execute(stmt)
-        return results.scalars()
+async def get_group(session: AsyncSession, gr_code: str) -> GroupSchema | None:
+    """Return a group from database"""
+    stmt = select(GroupModel).filter_by(gr_code=gr_code)
+    results = await session.execute(stmt)
+    return results.scalar_one_or_none()
 
 
 async def add_group(group: GroupSchema) -> GroupModel:
