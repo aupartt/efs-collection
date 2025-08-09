@@ -99,7 +99,7 @@ class CollectionSchema(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
     id: Optional[int] = None
-    group_code: str = Field(alias="groupCode")
+    group_code: Optional[str] = Field(alias="groupCode")
 
     # Date and timing
     date: datetime
