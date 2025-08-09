@@ -29,6 +29,7 @@ from collecte.services.collections import save_collection_group
 
 logger = logging.getLogger(__name__)
 
+api_semaphore = asyncio.Semaphore(10)
 
 @with_api_client
 async def retrieve_sampling_collections(
@@ -50,18 +51,23 @@ async def retrieve_sampling_collections(
 
 async def get_esf_id(url: str) -> str | None:
     """Retrieve ESF id from url"""
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.head(url, allow_redirects=True) as resp:
-                reg = r"trouver-une-collecte/([0-9]+)/"
-                match = re.search(reg, resp.url.raw_path)
-                return match.group(1) if match else None
-        except asyncio.TimeoutError:
-            logger.error(f"Timeout while retrieving ESF id from {url}")
-            return None
-        except Exception as e:
-            logger.error(f"Error while retrieving ESF id from {url}: {e}")
-            return None
+    if not url:
+        return
+    
+    async with api_semaphore:
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.head(url, allow_redirects=True) as resp:
+                    reg = r"trouver-une-collecte/([0-9]+)/"
+                    match = re.search(reg, resp.url.raw_path)
+                    return match.group(1) if match else None
+            except asyncio.TimeoutError:
+                logger.error(f"Timeout while retrieving ESF id from {url}")
+                return None
+            except Exception as e:
+                logger.error(
+                    f"Error while retrieving ESF id from {url}: {e}"
+                )
 
 
 async def get_collections_locations() -> list[LocationSchema]:
