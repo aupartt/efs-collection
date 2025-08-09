@@ -6,7 +6,6 @@ from collecte.models.base import BaseModel
 
 if TYPE_CHECKING:
     from .location import LocationModel
-    from .snapshot import SnapshotCollectionModel
 
 
 class CollectionGroupModel(BaseModel):
