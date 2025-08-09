@@ -36,7 +36,7 @@ class CollectionGroupModel(BaseModel):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    efs_id: Mapped[Optional[int]] = mapped_column(
+    efs_id: Mapped[Optional[str]] = mapped_column(
         unique=True, nullable=True, index=True
     )
 

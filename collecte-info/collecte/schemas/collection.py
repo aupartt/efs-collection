@@ -51,7 +51,7 @@ class CollectionGroupSchema(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
     id: Optional[int] = None
-    efs_id: Optional[int] = None
+    efs_id: Optional[str] = None
 
     # Date
     start_date: datetime = None
