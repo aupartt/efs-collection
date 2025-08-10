@@ -42,7 +42,7 @@ class TestGetCollection:
         mock_session.execute.return_value = mock_results
 
         result = await collection_services.get_collection(
-            mock_session, mock_grp_col.schemas[0]
+            mock_session, mock_grp_col.schemas[0].efs_id
         )
 
         mock_session.execute.assert_awaited()
@@ -56,7 +56,7 @@ class TestGetCollection:
         mock_session.execute.return_value = mock_results
 
         result = await collection_services.get_collection(
-            mock_session, mock_grp_col.schemas[0]
+            mock_session, mock_grp_col.schemas[0].efs_id
         )
 
         mock_session.execute.assert_awaited()

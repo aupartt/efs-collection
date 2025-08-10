@@ -36,11 +36,10 @@ async def load_collection_groups() -> list[CollectionGroupSchema]:
 
 
 async def get_collection(
-    session: AsyncSession, collection: CollectionGroupSchema
+    session: AsyncSession, efs_id: str
 ) -> CollectionGroupModel | None:
     stmt = select(CollectionGroupModel).filter_by(
-        efs_id=collection.efs_id,
-        nature=collection.nature,
+        efs_id=efs_id
     )
     results = await session.execute(stmt)
     return results.scalar_one_or_none()
@@ -70,7 +69,7 @@ async def _handle_location(location: LocationSchema) -> list[CollectionGroupSche
 
                 return collections
             except Exception as e:
-                logger.error(f"Couldn't handle location {location.info()} : {e}")
+                logger.error(f"Error while handling location {location.info()} : {e}")
                 return []
 
 
@@ -111,7 +110,7 @@ async def _handle_collection(
 
                 return collection.events, collection.snapshots
             except Exception as e:
-                logger.error(f"Couldn't handle collection {collection.info()} : {e}")
+                logger.error(f"Error while handling collection {collection.info()} : {e}")
 
 
 async def _handle_event(event: CollectionEventSchema) -> CollectionEventModel:
@@ -133,7 +132,7 @@ async def _handle_event(event: CollectionEventSchema) -> CollectionEventModel:
                 await session.refresh(event_db)
                 return event_db
             except Exception as e:
-                logger.error(f"Couldn't handle event {event.id} : {e}")
+                logger.error(f"Error while handling event {event.id} : {e}")
 
 
 async def _handle_snapshot(
