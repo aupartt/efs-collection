@@ -5,6 +5,7 @@ from collecte.models.collection import (
     CollectionEventModel,
     CollectionGroupSnapshotModel,
 )
+from collecte.models.schedules import ScheduleModel
 
 __all__ = [
     "GroupModel",
@@ -12,4 +13,5 @@ __all__ = [
     "CollectionGroupModel",
     "CollectionEventModel",
     "CollectionGroupSnapshotModel",
+    "ScheduleModel",
 ]
