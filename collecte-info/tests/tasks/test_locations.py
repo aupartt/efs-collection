@@ -1,0 +1,128 @@
+import pytest
+from unittest.mock import MagicMock
+
+import collecte.tasks.locations as tasks_locations
+from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
+from api_carto_client.models.sampling_location_result import SamplingLocationResult
+from collecte.schemas.location import LocationSchema
+
+
+@pytest.mark.asyncio
+async def test_retrieve_location_sampling(mocker, mock_grp, mock_loc):
+    mock_grp_api = mock_grp.api[0]
+    mock_sampling_loc_res = SamplingLocationResult(
+        sampling_location_entities=mock_loc.api
+    )
+
+    mock_api_search_location = mocker.patch(
+        "collecte.tasks.locations.api_search_location.asyncio",
+        return_value=mock_sampling_loc_res,
+    )
+    mock_api_to_pydantic = mocker.patch(
+        "collecte.tasks.locations.api_to_pydantic", return_value=mock_loc.schemas
+    )
+
+    result = await tasks_locations._retrieve_location_sampling(mock_grp_api)
+
+    mock_api_search_location.assert_awaited_with(
+        client=mocker.ANY, group_code=mock_grp_api.gr_code
+    )
+    mock_api_to_pydantic.assert_awaited_with(mock_loc.api, LocationSchema)
+    assert result == mock_loc.schemas
+
+
+@pytest.mark.asyncio
+async def test_update_locations_success(mocker, mock_grp, mock_loc):
+    mock_check_api = mocker.patch(
+        "collecte.tasks.locations.check_api", return_value=True
+    )
+
+    mock_groups = mock_grp.api[:2]
+    mock__locations = [mock_loc.schemas[:2], mock_loc.schemas[2:]]
+    mock_locations = mock_loc.schemas
+
+    # Retrieve locations
+    mock_load_groups = mocker.patch(
+        "collecte.tasks.locations.load_groups", return_value=mock_groups
+    )
+    mocker.patch(
+        "collecte.tasks.locations._retrieve_location_sampling",
+        side_effect=mock__locations,
+    )
+
+    # Save locations
+    mock_save_locations = mocker.patch(
+        "collecte.tasks.locations.save_locations", return_value=mock_locations
+    )
+
+    await tasks_locations.update_locations()
+
+    mock_check_api.assert_awaited()
+    mock_load_groups.assert_awaited()
+    mock_save_locations.assert_awaited_with(mock_locations)
+
+
+@pytest.mark.asyncio
+async def test_update_locations_api_check_fails(mocker):
+    mock_check_api = mocker.patch(
+        "collecte.tasks.locations.check_api", return_value=False
+    )
+    mock_load_groups = mocker.patch("collecte.tasks.locations.load_groups")
+    mock_save_locations = mocker.patch("collecte.tasks.locations.save_locations")
+
+    await tasks_locations.update_locations()
+
+    mock_check_api.assert_awaited()
+    mock_load_groups.assert_not_awaited()
+    mock_save_locations.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_update_locations_empty_groups(mocker):
+    mock_check_api = mocker.patch(
+        "collecte.tasks.locations.check_api", return_value=True
+    )
+
+    mock_groups = []
+    mock__locations = []
+
+    mock_load_groups = mocker.patch(
+        "collecte.tasks.locations.load_groups", return_value=mock_groups
+    )
+    mock_save_locations = mocker.patch(
+        "collecte.tasks.locations.save_locations", return_value=mock__locations
+    )
+
+    await tasks_locations.update_locations()
+
+    mock_check_api.assert_awaited()
+    mock_load_groups.assert_awaited()
+    mock_save_locations.assert_awaited_with([])
+
+
+@pytest.mark.asyncio
+async def test_update_locations_no_locations_found(mocker, mock_grp):
+    mock_check_api = mocker.patch(
+        "collecte.tasks.locations.check_api", return_value=True
+    )
+
+    mock_groups = mock_grp.api
+    mock__locations = []
+    mock_locations = []
+
+    mock_load_groups = mocker.patch(
+        "collecte.tasks.locations.load_groups", return_value=mock_groups
+    )
+    mocker.patch(
+        "collecte.tasks.locations._retrieve_location_sampling",
+        return_value=mock__locations,
+    )
+    mock_save_locations = mocker.patch(
+        "collecte.tasks.locations.save_locations", return_value=mock_locations
+    )
+
+    await tasks_locations.update_locations()
+
+    mock_check_api.assert_awaited()
+    mock_load_groups.assert_awaited()
+    mock_save_locations.assert_awaited_with([])

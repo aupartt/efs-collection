@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock
 from pathlib import Path
 
 from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
+from api_carto_client.models.sampling_location_entity import SamplingLocationEntity
 
 from collecte.models import (
     GroupModel,
@@ -59,6 +60,7 @@ def mock_loc():
     class main:
         schemas = [LocationSchema(**location) for location in locations]
         models = [LocationModel(**shema.model_dump()) for shema in schemas]
+        api = [SamplingLocationEntity.from_dict(location) for location in locations]
 
     return main
 
