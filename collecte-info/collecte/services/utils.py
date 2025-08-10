@@ -1,15 +1,12 @@
 import logging
-from pydantic import BaseModel
-import asyncio
-
-from sqlalchemy.inspection import inspect
+from pydantic import BaseModel as PydanticBaseModel
 
 from api_carto_client import Client
 from api_carto_client.models.ping import Ping
 from api_carto_client.api.ping import get_carto_api_v3_ping as api_ping
 
 from collecte.core.database import get_db
-from collecte.models.base import BaseModel as SQLAlchemyBaseModel
+from collecte.models.base import Base as SQLAlchemyBaseModel
 
 
 logger = logging.getLogger(__name__)
@@ -40,14 +37,14 @@ async def check_api(client: Client) -> bool:
 
 
 async def api_to_pydantic(
-    api_models: list, pydantic_model: BaseModel
-) -> list[BaseModel]:
+    api_models: list, pydantic_model: PydanticBaseModel
+) -> list[PydanticBaseModel]:
     """Convert an API model to a Pydantic model"""
     return [pydantic_model(**api_model.to_dict()) for api_model in api_models]
 
 
 async def pydantic_to_sqlalchemy(
-    pydantic_models: list[BaseModel], sqlalchemy_model: SQLAlchemyBaseModel
+    pydantic_models: list[PydanticBaseModel], sqlalchemy_model: SQLAlchemyBaseModel
 ) -> list[SQLAlchemyBaseModel]:
     """Convert a Pydantic model to an API model"""
     return [
@@ -57,8 +54,8 @@ async def pydantic_to_sqlalchemy(
 
 
 async def sqlalchemy_to_pydantic(
-    sqlalchemy_models: list[SQLAlchemyBaseModel], pydantic_model: BaseModel
-) -> list[BaseModel]:
+    sqlalchemy_models: list[SQLAlchemyBaseModel], pydantic_model: PydanticBaseModel
+) -> list[PydanticBaseModel]:
     """Convert a SQLAlchemy model to a Pydantic model"""
     return [
         pydantic_model(**sqlalchemy_model.__dict__)

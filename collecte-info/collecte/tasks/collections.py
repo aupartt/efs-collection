@@ -1,28 +1,21 @@
 import asyncio
 import logging
 import aiohttp
-import requests
 import re
 from api_carto_client import Client
 from api_carto_client.models.sampling_location_collections_entity import (
     SamplingLocationCollectionsEntity,
 )
-from api_carto_client.models.sampling_collection_entity import SamplingCollectionEntity
-from api_carto_client.models.sampling_collection_result import SamplingCollectionResult
 from api_carto_client.api.sampling_collection import (
     get_carto_api_v3_samplingcollection_searchbypostcode as api_search_collection,
 )
 
-# Schemas
-from collecte.schemas.location import LocationSchema
-from collecte.schemas.collection import (
+from collecte.schemas import (
+    LocationSchema,
     CollectionSchema,
     CollectionGroupSchema,
 )
 
-# DB Models
-from collecte.models.collection import CollectionGroupModel
-from collecte.models.location import LocationModel
 from collecte.services.utils import with_api_client, check_api
 from collecte.services.locations import get_postal_codes
 from collecte.services.collections import save_location_collections

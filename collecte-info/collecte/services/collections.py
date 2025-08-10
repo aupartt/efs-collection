@@ -6,15 +6,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from collecte.core.database import get_db, db_samaphore
 
 # Schemas
-from collecte.schemas.collection import (
-    CollectionEventSchema,
+from collecte.schemas import (
     CollectionGroupSchema,
+    CollectionEventSchema,
     CollectionGroupSnapshotSchema,
 )
 from collecte.schemas.location import LocationSchema
 
 # Models
-from collecte.models.collection import (
+from collecte.models import (
     CollectionGroupModel,
     CollectionEventModel,
     CollectionGroupSnapshotModel,

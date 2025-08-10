@@ -2,13 +2,13 @@ from datetime import datetime, time, timezone
 from typing import Optional, TYPE_CHECKING
 from sqlalchemy import DateTime, ForeignKey, UniqueConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from collecte.models.base import BaseModel
+from collecte.models.base import Base
 
 if TYPE_CHECKING:
     from .location import LocationModel
 
 
-class CollectionGroupModel(BaseModel):
+class CollectionGroupModel(Base):
     """SQLAlchemy: Global data for a group of events"""
 
     def __init__(self, **kw):
@@ -75,7 +75,7 @@ class CollectionGroupModel(BaseModel):
     location: Mapped["LocationModel"] = relationship(back_populates="collections")
 
 
-class CollectionEventModel(BaseModel):
+class CollectionEventModel(Base):
     """SQLAlchemy: Single event information"""
 
     __tablename__ = "collection_events"
@@ -102,7 +102,7 @@ class CollectionEventModel(BaseModel):
     )
 
 
-class CollectionGroupSnapshotModel(BaseModel):
+class CollectionGroupSnapshotModel(Base):
     """SQLAlchemy: Snapshot of stats for an collection group"""
 
     __tablename__ = "collection_group_snapshots"

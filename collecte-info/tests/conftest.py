@@ -3,18 +3,16 @@ import json
 from unittest.mock import AsyncMock
 from pathlib import Path
 
-from collecte.models.group import GroupModel
-from collecte.schemas.group import GroupSchema
-
-from collecte.models.location import LocationModel
-from collecte.schemas.location import LocationSchema
-
-from collecte.models.collection import (
+from collecte.models import (
+    GroupModel,
+    LocationModel,
     CollectionGroupModel,
     CollectionEventModel,
     CollectionGroupSnapshotModel,
 )
-from collecte.schemas.collection import (
+from collecte.schemas import (
+    GroupSchema,
+    LocationSchema,
     CollectionSchema,
     CollectionGroupSchema,
 )

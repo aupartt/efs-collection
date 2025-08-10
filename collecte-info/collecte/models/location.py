@@ -3,14 +3,14 @@ from typing import TYPE_CHECKING, Optional
 from sqlalchemy import UniqueConstraint, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .base import BaseModel
+from collecte.models.base import Base
 from .collection import CollectionGroupModel
 
 if TYPE_CHECKING:
     from .group import GroupModel
 
 
-class LocationModel(BaseModel):
+class LocationModel(Base):
     """SQLAlchemy: Location database model"""
 
     __tablename__ = "locations"
