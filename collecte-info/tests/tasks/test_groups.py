@@ -54,7 +54,9 @@ async def test_retrieve_groups(mocker, mock_regions, mock_grp):
     region = mock_regions[1]
     result = await tasks_groups._retrieve_groups(region)
 
-    mock_api_get_groupements.assert_awaited_with(client=mocker.ANY, region_code=region.code)
+    mock_api_get_groupements.assert_awaited_with(
+        client=mocker.ANY, region_code=region.code
+    )
     mock_api_to_pydantic.assert_awaited_with(mock_grp.api, GroupSchema)
     assert result == mock_grp.schemas
 

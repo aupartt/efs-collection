@@ -147,7 +147,7 @@ class TestTransformLocationCollections:
         location = mock_loc_col.schemas[0]
 
         await tasks_collections._transform_location_collections(location)
-        
+
         for collection in location.collections:
             assert isinstance(collection, CollectionGroupSchema)
 

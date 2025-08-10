@@ -1,8 +1,6 @@
 import pytest
-from unittest.mock import MagicMock
 
 import collecte.tasks.locations as tasks_locations
-from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
 from api_carto_client.models.sampling_location_result import SamplingLocationResult
 from collecte.schemas.location import LocationSchema
 

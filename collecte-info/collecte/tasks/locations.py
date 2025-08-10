@@ -15,6 +15,7 @@ from collecte.services.groups import load_groups
 
 logger = logging.getLogger(__name__)
 
+
 @with_api_client
 async def _retrieve_location_sampling(
     client: Client, groupement: SamplingGroupEntity
@@ -32,7 +33,7 @@ async def update_locations():
         return
 
     logger.info(f"Start updating locations...")
-    
+
     # Retrieve locations
     groups = await load_groups()
     tasks = [_retrieve_location_sampling(groupement=group) for group in groups]

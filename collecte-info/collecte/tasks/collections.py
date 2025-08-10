@@ -3,6 +3,7 @@ import logging
 import aiohttp
 import re
 from api_carto_client import Client
+from api_carto_client.models.sampling_collection_result import SamplingCollectionResult
 from api_carto_client.models.sampling_location_collections_entity import (
     SamplingLocationCollectionsEntity,
 )
@@ -30,7 +31,7 @@ async def retrieve_sampling_collections(
     client: Client, post_code: str
 ) -> list[SamplingLocationCollectionsEntity]:
     """Retrieve collections from the API"""
-    collections = await api_search_collection.asyncio(
+    collections: SamplingCollectionResult = await api_search_collection.asyncio(
         client=client,
         post_code=post_code,
         hide_non_publiable_collects=True,
@@ -55,9 +56,6 @@ async def get_esf_id(url: str) -> str | None:
                     reg = r"trouver-une-collecte/([0-9]+)/"
                     match = re.search(reg, resp.url.raw_path)
                     return match.group(1) if match else None
-            except asyncio.TimeoutError:
-                logger.error(f"Timeout while retrieving ESF id from {url}")
-                return None
             except Exception as e:
                 logger.error(f"Error while retrieving ESF id from {url}: {e}")
 
@@ -66,14 +64,17 @@ async def _get_collections_locations() -> list[LocationSchema]:
     """Retrieve all collection locations from the API with post_codes and flatten the list"""
     if not await check_api():
         return []
+
     postal_codes = await get_postal_codes()
     tasks = [retrieve_sampling_collections(postal_code) for postal_code in postal_codes]
     _locations = await asyncio.gather(*tasks)
+
     locations = [
         LocationSchema(**collection.to_dict())
         for sublist in _locations
         for collection in sublist
     ]
+
     return locations
 
 

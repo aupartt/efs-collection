@@ -52,8 +52,12 @@ def mock_grp():
 
     class main:
         schemas: list[GroupSchema] = [GroupSchema(**group) for group in groups]
-        models: list[GroupModel] = [GroupModel(**shema.model_dump()) for shema in schemas]
-        api: list[SamplingGroupEntity] = [SamplingGroupEntity.from_dict(group) for group in groups]
+        models: list[GroupModel] = [
+            GroupModel(**shema.model_dump()) for shema in schemas
+        ]
+        api: list[SamplingGroupEntity] = [
+            SamplingGroupEntity.from_dict(group) for group in groups
+        ]
 
     return main
 
@@ -63,9 +67,15 @@ def mock_loc():
     locations = get_data_from_json("locations.json")
 
     class main:
-        schemas: list[LocationSchema] = [LocationSchema(**location) for location in locations]
-        models: list[LocationModel] = [LocationModel(**shema.model_dump()) for shema in schemas]
-        api: list[SamplingLocationEntity] = [SamplingLocationEntity.from_dict(location) for location in locations]
+        schemas: list[LocationSchema] = [
+            LocationSchema(**location) for location in locations
+        ]
+        models: list[LocationModel] = [
+            LocationModel(**shema.model_dump()) for shema in schemas
+        ]
+        api: list[SamplingLocationEntity] = [
+            SamplingLocationEntity.from_dict(location) for location in locations
+        ]
 
     return main
 
