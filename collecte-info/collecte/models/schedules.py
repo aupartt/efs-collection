@@ -25,6 +25,8 @@ class ScheduleModel(Base):
     total_slots: Mapped[int]
     collecte_type: Mapped[str]
     schedules: Mapped[dict]
+    schedule_min: Mapped[datetime]
+    schedule_max: Mapped[datetime]
 
     # Relationships
     event_id: Mapped[int] = mapped_column(ForeignKey("collection_events.id"))

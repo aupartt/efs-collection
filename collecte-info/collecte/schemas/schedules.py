@@ -20,6 +20,17 @@ class ScheduleSchema(BaseModel):
     total_slots: int
     collecte_type: str
     schedules: dict[time, int]
+    
+    @property
+    def schedule_min(self):
+        return min(self.schedules.keys())
+    
+    @property
+    def schedule_max(self):
+        return max(self.schedules.keys())
+
+    def info(self):
+        return f"{self.efs_id:>6} - {datetime.strftime('%d/%m/%Y')}"
 
     @field_validator('date', mode='before')
     def convert_date(cls, value):
@@ -29,15 +40,15 @@ class ScheduleSchema(BaseModel):
 
     @field_validator('schedules', mode='before')
     def convert_schedules_keys(cls, value):
-        if isinstance(value, dict):
-            new_schedules = {}
-            for k, v in value.items():
-                if isinstance(k, str):
-                    new_schedules[datetime.strptime(k, "%Hh%M").time()] = v
-                else:
-                    new_schedules[k] = v
-            return new_schedules
-        return value
+        if not isinstance(value, dict):
+            return {}
+        new_schedules = {}
+        for k, v in value.items():
+            if isinstance(k, str):
+                new_schedules[datetime.strptime(k, "%Hh%M").time()] = v
+            else:
+                new_schedules[k] = v
+        return new_schedules
 
 
 class ScheduleEventSchema(BaseModel):
