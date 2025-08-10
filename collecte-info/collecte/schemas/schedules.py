@@ -55,34 +55,3 @@ class ScheduleGroupSchema(BaseModel):
                 )
             )
         return schedules
-
-
-{
-    "url": "https://efs.link/Vcib7",
-    "time": "2025-08-10T09:00:39.337881Z",
-    "events": [
-        {
-            "date": "01/10/2025",
-            "slots": 76,
-            "type": "blood",
-            "schedules": {
-                "12h00": 1,
-                "12h05": 2,
-                "12h10": 2,
-                "12h15": 0,
-                "12h20": 2,
-                "12h25": 2,
-                "12h30": 1,
-                "15h20": 1,
-                "15h25": 2,
-                "15h30": 1,
-                "15h35": 1,
-                "15h40": 2,
-                "15h45": 1,
-                "15h50": 1,
-                "15h55": 2,
-                "16h00": 0,
-            },
-        }
-    ],
-}
