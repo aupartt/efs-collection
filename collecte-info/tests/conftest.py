@@ -3,6 +3,8 @@ import json
 from unittest.mock import AsyncMock
 from pathlib import Path
 
+from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
+
 from collecte.models import (
     GroupModel,
     LocationModel,
@@ -45,6 +47,7 @@ def mock_grp():
     class main:
         schemas = [GroupSchema(**group) for group in groups]
         models = [GroupModel(**shema.model_dump()) for shema in schemas]
+        api = [SamplingGroupEntity.from_dict(group) for group in groups]
 
     return main
 

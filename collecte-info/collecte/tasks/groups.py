@@ -15,8 +15,8 @@ from collecte.services.utils import (
     with_api_client,
     check_api,
 )
-from collecte.schemas.group import GroupSchema
-from collecte.services import save_groups
+from collecte.schemas import GroupSchema
+from collecte.services.groups import save_groups
 from collecte.core.settings import settings
 
 
