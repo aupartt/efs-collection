@@ -57,17 +57,21 @@ async def get_event(
 async def _handle_location(location: LocationSchema) -> list[CollectionGroupSchema]:
     async with db_samaphore:
         async with get_db() as session:
-            location_db = await get_location(session, location)
-            if not location_db:
-                logger.warning(f"Location {location.info()} not found")
-                return
+            try:
+                location_db = await get_location(session, location)
+                if not location_db:
+                    logger.warning(f"Location {location.info()} not found")
+                    return
 
-            collections = []
-            for collection in location.collections:
-                collection.location_id = location_db.id
-                collections.append(collection)
+                collections = []
+                for collection in location.collections:
+                    collection.location_id = location_db.id
+                    collections.append(collection)
 
-            return collections
+                return collections
+            except Exception as e:
+                logger.error(f"Couldn't handle location {location.info()} : {e}")
+                return []
 
 
 async def _handle_collection(
@@ -75,55 +79,61 @@ async def _handle_collection(
 ) -> tuple[list[CollectionGroupSnapshotSchema], list[CollectionEventSchema]] | None:
     async with db_samaphore:
         async with get_db() as session:
-            # Don't handle collection without efs_id
-            # This is usually because the collection is not already available
-            if not collection.efs_id:
-                logger.warning(
-                    f"Couldn't get efs_id for collection {collection.info()}"
-                )
-                return
+            try:
+                # Don't handle collection without efs_id
+                # This is usually because the collection is not already available
+                if not collection.efs_id:
+                    logger.warning(
+                        f"Couldn't get efs_id for collection {collection.info()}"
+                    )
+                    return
 
-            collection_db = await get_collection(session, collection)
+                collection_db = await get_collection(session, collection)
 
-            if not collection_db:
-                # Collection does not exist, create it
-                collection_db = CollectionGroupModel(**collection.model_dump())
-                session.add(collection_db)
+                if not collection_db:
+                    # Collection does not exist, create it
+                    collection_db = CollectionGroupModel(**collection.model_dump())
+                    session.add(collection_db)
+                    await session.commit()
+                    return
+                else:
+                    # Collection does exist, update the values
+                    for key, value in collection.model_dump(
+                        exclude={"id","location_id", "events", "snapshots"}
+                    ).items():
+                        setattr(collection_db, key, value)
+
                 await session.commit()
-                return
-            else:
-                # Collection does exist, update the values
-                for key, value in collection.model_dump(
-                    exclude={"location_id", "events", "snapshots"}
-                ).items():
-                    setattr(collection_db, key, value)
+                await session.refresh(collection_db)
 
-            await session.commit()
-            await session.refresh(collection_db)
+                # Update the ids of the events and snapshots
+                collection.update_ids(collection_db.id)
 
-            # Update the ids of the events and snapshots
-            collection.update_ids(collection_db.id)
-
-            return collection.events, collection.snapshots
+                return collection.events, collection.snapshots
+            except Exception as e:
+                logger.error(f"Couldn't handle collection {collection.info()} : {e}")
 
 
 async def _handle_event(event: CollectionEventSchema) -> CollectionEventModel:
     async with db_samaphore:
         async with get_db() as session:
-            event_db = await get_event(session, event.id)
+            try:
+                event_db = await get_event(session, event.id)
 
-            # Collection does not exist, create it
-            if not event_db:
-                event_db = CollectionEventModel(**event.model_dump())
-                session.add(event_db)
-            else:
-                # Collection does exist, update the values
-                for key, value in event.model_dump().items():
-                    setattr(event_db, key, value)
+                # Collection does not exist, create it
+                if not event_db:
+                    event_db = CollectionEventModel(**event.model_dump())
+                    session.add(event_db)
+                else:
+                    # Collection does exist, update the values
+                    for key, value in event.model_dump().items():
+                        setattr(event_db, key, value)
 
-            await session.commit()
-            await session.refresh(event_db)
-            return event_db
+                await session.commit()
+                await session.refresh(event_db)
+                return event_db
+            except Exception as e:
+                logger.error(f"Couldn't handle event {event.id} : {e}")
 
 
 async def _handle_snapshot(

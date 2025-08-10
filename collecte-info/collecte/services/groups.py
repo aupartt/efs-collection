@@ -40,7 +40,7 @@ async def add_group(group: GroupSchema) -> GroupModel | None:
                 existing_group = result.scalar_one_or_none()
 
                 if existing_group:
-                    for key, value in group.model_dump(exclude="locations").items():
+                    for key, value in group.model_dump(exclude={"gr_code", "locations"}).items():
                         setattr(existing_group, key, value)
                 else:
                     existing_group = GroupModel(**group.model_dump())
