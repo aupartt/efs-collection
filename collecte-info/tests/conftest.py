@@ -5,6 +5,9 @@ from pathlib import Path
 
 from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
 from api_carto_client.models.sampling_location_entity import SamplingLocationEntity
+from api_carto_client.models.sampling_location_collections_entity import (
+    SamplingLocationCollectionsEntity,
+)
 
 from collecte.models import (
     GroupModel,
@@ -18,6 +21,8 @@ from collecte.schemas import (
     LocationSchema,
     CollectionSchema,
     CollectionGroupSchema,
+    CollectionEventSchema,
+    CollectionGroupSnapshotSchema,
 )
 
 
@@ -46,9 +51,9 @@ def mock_grp():
     groups = get_data_from_json("groups.json")
 
     class main:
-        schemas = [GroupSchema(**group) for group in groups]
-        models = [GroupModel(**shema.model_dump()) for shema in schemas]
-        api = [SamplingGroupEntity.from_dict(group) for group in groups]
+        schemas: list[GroupSchema] = [GroupSchema(**group) for group in groups]
+        models: list[GroupModel] = [GroupModel(**shema.model_dump()) for shema in schemas]
+        api: list[SamplingGroupEntity] = [SamplingGroupEntity.from_dict(group) for group in groups]
 
     return main
 
@@ -58,9 +63,9 @@ def mock_loc():
     locations = get_data_from_json("locations.json")
 
     class main:
-        schemas = [LocationSchema(**location) for location in locations]
-        models = [LocationModel(**shema.model_dump()) for shema in schemas]
-        api = [SamplingLocationEntity.from_dict(location) for location in locations]
+        schemas: list[LocationSchema] = [LocationSchema(**location) for location in locations]
+        models: list[LocationModel] = [LocationModel(**shema.model_dump()) for shema in schemas]
+        api: list[SamplingLocationEntity] = [SamplingLocationEntity.from_dict(location) for location in locations]
 
     return main
 
@@ -70,7 +75,13 @@ def mock_loc_col():
     collections = get_data_from_json("collections.json")
 
     class main:
-        schemas = [LocationSchema(**collection) for collection in collections]
+        schemas: list[LocationSchema] = [
+            LocationSchema(**collection) for collection in collections
+        ]
+        api: list[SamplingLocationCollectionsEntity] = [
+            SamplingLocationCollectionsEntity.from_dict(collection)
+            for collection in collections
+        ]
 
     return main
 
@@ -89,7 +100,9 @@ def mock_grp_col(mock_col):
         schemas: list[CollectionGroupSchema] = [
             schema.as_group(from_db=False) for schema in mock_col.schemas
         ]
-        models = [CollectionGroupModel(**shema.model_dump()) for shema in schemas]
+        models: list[CollectionGroupModel] = [
+            CollectionGroupModel(**shema.model_dump()) for shema in schemas
+        ]
 
     return main
 
@@ -97,8 +110,10 @@ def mock_grp_col(mock_col):
 @pytest.fixture
 def mock_evt_col(mock_grp_col):
     class main:
-        schemas = mock_grp_col.schemas[0].events
-        models = [CollectionEventModel(**shema.model_dump()) for shema in schemas]
+        schemas: list[CollectionEventSchema] = mock_grp_col.schemas[0].events
+        models: list[CollectionEventModel] = [
+            CollectionEventModel(**shema.model_dump()) for shema in schemas
+        ]
 
     return main
 
@@ -106,8 +121,8 @@ def mock_evt_col(mock_grp_col):
 @pytest.fixture
 def mock_snap_col(mock_grp_col):
     class main:
-        schemas = mock_grp_col.schemas[0].snapshots
-        models = [
+        schemas: list[CollectionGroupSnapshotSchema] = mock_grp_col.schemas[0].snapshots
+        models: list[CollectionGroupSnapshotModel] = [
             CollectionGroupSnapshotModel(**shema.model_dump()) for shema in schemas
         ]
 
