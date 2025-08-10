@@ -113,7 +113,7 @@ async def test_add_location_existing(mocker, async_cm, mock_loc):
     result = await location_services.add_location(mock_loc.schemas[0])
 
     mock_session.add.assert_not_called()
-    mock_session.commit.assert_not_awaited()
+    mock_session.commit.assert_awaited()
     assert result is existing_location
 
 

@@ -47,19 +47,21 @@ async def add_location(location: LocationSchema) -> LocationModel | None:
     async with db_samaphore:
         async with get_db() as session:
             try:
-                location_db = await get_location(session, location)
-                if location_db:
-                    return location_db
-
                 # Ensure the group exists before creating the location
                 if not await get_group(session, gr_code=location.group_code):
                     logger.warning(
                         f"Group {location.group_code} does not exist for location: {location.info()}"
                     )
                     return None
+                
+                location_db = await get_location(session, location)
+                if not location_db:
+                    location_db = LocationModel(**location.model_dump())
+                    session.add(location_db)
+                else:
+                    for key, value in location.model_dump(exclude={"id", "group_code", "collections"}).items():
+                        setattr(location_db, key, value)
 
-                location_db = LocationModel(**location.model_dump())
-                session.add(location_db)
                 await session.commit()
                 await session.refresh(location_db)
                 return location_db
