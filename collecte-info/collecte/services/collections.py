@@ -19,10 +19,8 @@ from collecte.models.collection import (
     CollectionEventModel,
     CollectionGroupSnapshotModel,
 )
-from collecte.models.location import LocationModel
 
 # Services
-from collecte.services.groups import get_group
 from collecte.services.locations import get_location
 
 from .utils import sqlalchemy_to_pydantic
@@ -34,7 +32,7 @@ async def load_collection_groups() -> list[CollectionGroupSchema]:
     async with get_db() as session:
         results = await session.execute(select(CollectionGroupModel))
         collections = results.scalars().all()
-        return sqlalchemy_to_pydantic(collections, CollectionGroupSchema)
+        return await sqlalchemy_to_pydantic(collections, CollectionGroupSchema)
 
 
 async def get_collection(
@@ -48,13 +46,15 @@ async def get_collection(
     return results.scalar_one_or_none()
 
 
-async def get_event(session: AsyncSession, event_id: int):
-    stmt = select(CollectionEventModel).filter_by(event_id=event_id)
+async def get_event(
+    session: AsyncSession, event_id: int
+) -> CollectionEventModel | None:
+    stmt = select(CollectionEventModel).filter_by(id=event_id)
     results = await session.execute(stmt)
     return results.scalar_one_or_none()
 
 
-async def _handle_location(location: LocationSchema) -> list[CollectionGroupModel]:
+async def _handle_location(location: LocationSchema) -> list[CollectionGroupSchema]:
     async with db_samaphore:
         async with get_db() as session:
             location_db = await get_location(session, location)
@@ -72,7 +72,7 @@ async def _handle_location(location: LocationSchema) -> list[CollectionGroupMode
 
 async def _handle_collection(
     collection: CollectionGroupSchema,
-) -> tuple[list[CollectionGroupSnapshotModel], list[CollectionEventModel]] | None:
+) -> tuple[list[CollectionGroupSnapshotSchema], list[CollectionEventSchema]] | None:
     async with db_samaphore:
         async with get_db() as session:
             # Don't handle collection without efs_id
@@ -85,28 +85,29 @@ async def _handle_collection(
 
             collection_db = await get_collection(session, collection)
 
-            # Collection does not exist, create it
             if not collection_db:
+                # Collection does not exist, create it
                 collection_db = CollectionGroupModel(**collection.model_dump())
                 session.add(collection_db)
                 await session.commit()
                 return
+            else:
+                # Collection does exist, update the values
+                for key, value in collection.model_dump(
+                    exclude={"location_id", "events", "snapshots"}
+                ).items():
+                    setattr(collection_db, key, value)
 
-            # Collection does exist, update the values
-            for key, value in collection.model_dump(
-                exclude={"location_id", "events", "snapshots"}
-            ).items():
-                setattr(collection_db, key, value)
+            await session.commit()
+            await session.refresh(collection_db)
 
             # Update the ids of the events and snapshots
             collection.update_ids(collection_db.id)
 
-            await session.commit()
-
             return collection.events, collection.snapshots
 
 
-async def _handle_event(event: CollectionEventSchema):
+async def _handle_event(event: CollectionEventSchema) -> CollectionEventModel:
     async with db_samaphore:
         async with get_db() as session:
             event_db = await get_event(session, event.id)
@@ -114,19 +115,27 @@ async def _handle_event(event: CollectionEventSchema):
             # Collection does not exist, create it
             if not event_db:
                 event_db = CollectionEventModel(**event.model_dump())
-
-            # Collection does exist, update the values
-            for key, value in event.model_dump().items():
-                setattr(event_db, key, value)
+                session.add(event_db)
+            else:
+                # Collection does exist, update the values
+                for key, value in event.model_dump().items():
+                    setattr(event_db, key, value)
 
             await session.commit()
+            await session.refresh(event_db)
+            return event_db
 
 
-async def _handle_snapshot(snapshot: CollectionGroupSnapshotSchema):
+async def _handle_snapshot(
+    snapshot: CollectionGroupSnapshotSchema,
+) -> CollectionGroupSnapshotModel:
     async with db_samaphore:
         async with get_db() as session:
-            session.add(CollectionGroupSnapshotModel(**snapshot.model_dump()))
+            db_snapshot = CollectionGroupSnapshotModel(**snapshot.model_dump())
+            session.add(db_snapshot)
             await session.commit()
+            await session.refresh(db_snapshot)
+            return db_snapshot
 
 
 async def save_location_collections(
