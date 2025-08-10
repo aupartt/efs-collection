@@ -1,7 +1,8 @@
 import pytest
 import json
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 from pathlib import Path
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
 from api_carto_client.models.sampling_location_entity import SamplingLocationEntity
@@ -15,6 +16,7 @@ from collecte.models import (
     CollectionGroupModel,
     CollectionEventModel,
     CollectionGroupSnapshotModel,
+    ScheduleModel,
 )
 from collecte.schemas import (
     GroupSchema,
@@ -23,6 +25,9 @@ from collecte.schemas import (
     CollectionGroupSchema,
     CollectionEventSchema,
     CollectionGroupSnapshotSchema,
+    ScheduleSchema,
+    ScheduleGroupSchema,
+    ScheduleEventSchema,
 )
 
 
@@ -36,6 +41,18 @@ def async_cm():
         cm.__aenter__.return_value = return_value
         cm.__aexit__.return_value = None
         return cm
+
+    return _make
+
+
+@pytest.fixture
+def mock_get_db(async_cm):
+    def _make(value):
+        mock_session = AsyncMock(spec=AsyncSession)
+        mock_results = MagicMock()
+        mock_results.scalars.return_value.all.return_value = value
+        mock_session.execute.return_value = mock_results
+        return mock_session, async_cm(mock_session)
 
     return _make
 
@@ -134,6 +151,39 @@ def mock_snap_col(mock_grp_col):
         schemas: list[CollectionGroupSnapshotSchema] = mock_grp_col.schemas[0].snapshots
         models: list[CollectionGroupSnapshotModel] = [
             CollectionGroupSnapshotModel(**shema.model_dump()) for shema in schemas
+        ]
+
+    return main
+
+
+@pytest.fixture
+def mock_grp_sch():
+    schedules = get_data_from_json("schedules.json")
+
+    class main:
+        schemas: list[ScheduleGroupSchema] = [
+            ScheduleGroupSchema(**schedule) for schedule in schedules
+        ]
+
+    return main
+
+
+@pytest.fixture
+def mock_evt_sch(mock_grp_sch):
+    class main:
+        schemas: list[ScheduleEventSchema] = mock_grp_sch.schemas[0].events
+
+    return main
+
+
+@pytest.fixture
+def mock_sch(mock_grp_sch):
+    class main:
+        schemas: list[ScheduleSchema] = [
+            schema for schema in mock_grp_sch.schemas[0].build()
+        ]
+        models: list[ScheduleModel] = [
+            ScheduleModel(**schema.model_dump()) for schema in schemas
         ]
 
     return main
