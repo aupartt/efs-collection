@@ -33,7 +33,7 @@ class ScheduleEventSchema(BaseModel):
     schedules: dict[str, time]
 
 
-class GroupScheduleSchema(BaseModel):
+class ScheduleGroupSchema(BaseModel):
     """Pydantic: Informations relative to a group of locations"""
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)

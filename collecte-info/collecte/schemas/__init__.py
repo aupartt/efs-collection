@@ -6,6 +6,11 @@ from collecte.schemas.collection import (
     CollectionEventSchema,
     CollectionGroupSnapshotSchema,
 )
+from collecte.schemas.schedules import (
+    ScheduleSchema,
+    ScheduleGroupSchema,
+    ScheduleEventSchema,
+)
 
 __all__ = [
     "GroupSchema",
@@ -14,4 +19,7 @@ __all__ = [
     "CollectionGroupSchema",
     "CollectionEventSchema",
     "CollectionGroupSnapshotSchema",
+    "ScheduleSchema",
+    "ScheduleGroupSchema",
+    "ScheduleEventSchema",
 ]
