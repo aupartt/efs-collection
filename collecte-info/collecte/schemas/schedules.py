@@ -1,6 +1,6 @@
 from datetime import datetime, time
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class ScheduleSchema(BaseModel):
@@ -8,18 +8,36 @@ class ScheduleSchema(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
-    event_id: int
-    efs_id: Optional[str] = None
+    event_id: int | None = None
+    efs_id: str | None = None
 
     # Details
     date: datetime
     url: str
-    time: str
+    created_at: datetime
 
     # Data
     total_slots: int
-    type: str
-    schedules: dict[str, int]
+    collecte_type: str
+    schedules: dict[time, int]
+
+    @field_validator('date', mode='before')
+    def convert_date(cls, value):
+        if isinstance(value, str):
+            return datetime.strptime(value, "%d/%m/%Y").date()
+        return value
+
+    @field_validator('schedules', mode='before')
+    def convert_schedules_keys(cls, value):
+        if isinstance(value, dict):
+            new_schedules = {}
+            for k, v in value.items():
+                if isinstance(k, str):
+                    new_schedules[datetime.strptime(k, "%Hh%M").time()] = v
+                else:
+                    new_schedules[k] = v
+            return new_schedules
+        return value
 
 
 class ScheduleEventSchema(BaseModel):
@@ -27,10 +45,10 @@ class ScheduleEventSchema(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
-    date: datetime
+    date: str
     total_slots: int = Field(..., alias="slots")
-    type: str = Field(..., alias="type")
-    schedules: dict[str, time]
+    collecte_type: str = Field(..., alias="type")
+    schedules: dict[str, int]
 
 
 class ScheduleGroupSchema(BaseModel):
@@ -38,20 +56,18 @@ class ScheduleGroupSchema(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
-    event_id: int
-    efs_id: Optional[str] = None
+    efs_id: str | None = None
 
     url: str
-    time: str
+    created_at: datetime = Field(..., alias="time")
     events: list[ScheduleEventSchema]
 
-    def to_list(self) -> list[ScheduleSchema]:
+    def build(self) -> list[ScheduleSchema]:
         schedules = []
         for event in self.events:
             schedules.append(
                 ScheduleSchema(
-                    **event.model_dump(),
-                    **self.model_dump(exclude={"events"}),
+                    **event.model_dump() | self.model_dump(exclude={"events"}),
                 )
             )
         return schedules

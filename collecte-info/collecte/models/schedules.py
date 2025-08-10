@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column, relationship, ForeignKey
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from collecte.models.base import Base
 
@@ -19,13 +19,13 @@ class ScheduleModel(Base):
     # Details
     date: Mapped[datetime]
     url: Mapped[str]
-    time: Mapped[str]
+    created_at: Mapped[str]
 
     # Data
     total_slots: Mapped[int]
-    type: Mapped[str]
+    collecte_type: Mapped[str]
     schedules: Mapped[dict]
 
     # Relationships
     event_id: Mapped[int] = mapped_column(ForeignKey("collection_events.id"))
-    event: Mapped["CollectionEventModel"] = relationship(back_populates="schedules")
+    event: Mapped["CollectionEventModel"] = relationship(back_populates="snapshots")
