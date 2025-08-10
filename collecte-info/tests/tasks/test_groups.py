@@ -65,20 +65,20 @@ async def test_update_groups_success(mocker, mock_regions, mock_grp):
 
     mock_check_api = mocker.patch("collecte.tasks.groups.check_api", return_value=True)
     mock_retrieve_region = mocker.patch(
-        "collecte.tasks.groups._retrieve_region", return_value=mock_regions
+        "collecte.tasks.groups._retrieve_region", return_value=mock_region
     )
     mock_retrieve_groups = mocker.patch(
         "collecte.tasks.groups._retrieve_groups", return_value=mock_grp.schemas
     )
     mock_save_groups = mocker.patch("collecte.tasks.groups.save_groups")
     mock_settings = mocker.patch("collecte.tasks.groups.settings")
-    mock_settings.REGION_NAME = mock_regions.libelle
+    mock_settings.REGION_NAME = mock_region.libelle
     mock_log = mocker.patch.object(tasks_groups.logger, "info")
 
     await tasks_groups.update_groups()
 
     mock_check_api.assert_awaited()
-    mock_retrieve_region.assert_awaited_with(mock_regions.libelle)
+    mock_retrieve_region.assert_awaited_with(mock_region.libelle)
     mock_retrieve_groups.assert_awaited_with(mock_region)
     mock_save_groups.assert_awaited_with(mock_grp.schemas)
     assert mock_log.call_count == 3
