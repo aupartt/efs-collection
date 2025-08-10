@@ -21,6 +21,7 @@ api-carto-client = { path = "../api-carto-client", editable = true }
 
 [dependency-groups]
 dev = [
+    "aioresponses>=0.7.8",
     "ipykernel>=6.30.1",
     "pytest>=8.4.1",
     "pytest-asyncio>=1.1.0",
