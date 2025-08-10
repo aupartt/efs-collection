@@ -3,10 +3,10 @@ from typing import Optional, TYPE_CHECKING
 from sqlalchemy import DateTime, ForeignKey, UniqueConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from collecte.models.base import Base
-from collecte.models import ScheduleModel
 
 if TYPE_CHECKING:
     from .location import LocationModel
+    from .schedules import ScheduleModel
 
 
 class CollectionGroupModel(Base):

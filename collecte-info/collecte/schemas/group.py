@@ -1,7 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field
 
-from collecte.schemas import LocationSchema
+from collecte.schemas.location import LocationSchema
 
 
 class GroupSchema(BaseModel):

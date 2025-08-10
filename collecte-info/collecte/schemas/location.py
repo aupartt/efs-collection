@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Optional, Union
 from pydantic import BaseModel, ConfigDict, Field
 
-from .collection import CollectionSchema, CollectionGroupSchema
+from collecte.schemas.collection import CollectionSchema, CollectionGroupSchema
 
 
 class LocationSchema(BaseModel):
