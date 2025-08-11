@@ -75,6 +75,10 @@ class ScheduleGroupSchema(BaseModel):
     created_at: datetime = Field(..., alias="time")
     events: list[ScheduleEventSchema]
 
+    def info(self) -> str:
+        efs_id = self.efs_id if self.efs_id else "NO_EFS_ID"
+        return f"{efs_id:>9} - {self.url}"
+
     def build(self) -> list[ScheduleSchema]:
         schedules = []
         for event in self.events:

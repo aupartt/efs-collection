@@ -1,8 +1,10 @@
+import asyncio
 import logging
 
 from collecte.schemas import ScheduleSchema, ScheduleGroupSchema, CollectionEventSchema
 from collecte.services.schedules import retrieve_events, add_schedule
 from collecte.services.collections import get_active_collections
+from collecte.tasks.collections import get_esf_id
 
 
 logger = logging.getLogger(__name__)
@@ -66,3 +68,78 @@ async def _match_event(
         logger.error(
             f"Error while matching schedule {schedule.info()} with event {event.id} : {e}"
         )
+
+
+async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
+    """Retrieve events related to a schedule and match the schedule for each event"""
+    try:
+        events: list[CollectionEventSchema] = await retrieve_events(schedule)
+        schedules = []
+
+        if len(events) == 0:
+            raise ValueError("No event found.")
+
+        # Only one event: We can save directly the schedule
+        if len(events) == 1:
+            schedule.event_id = events[0].id
+            schedules.append(schedule)
+        else:
+            # Multiple events: We have to split the schedule (mostly morning / afternoon)
+            tasks = [_match_event(schedule, event) for event in events]
+            schedules = await asyncio.gather(*tasks)
+
+        return schedules
+    except Exception as e:
+        logger.error(f"Error while handling schedule {schedule.info()} : {e}")
+
+
+async def _handle_schedules_group(
+    schedules_group: ScheduleGroupSchema,
+) -> list[ScheduleSchema]:
+    """Retrieve EFS_ID of the url before handling each schedules"""
+    try:
+        efs_id = await get_esf_id(schedules_group.url)
+        if not efs_id:
+            raise ValueError("Could get EFS_ID.")
+
+        schedules_group.efs_id = efs_id
+        schedules = schedules_group.build()
+
+        tasks = [_handle_schedule(schedule) for schedule in schedules]
+        results = await asyncio.gather(*tasks)
+
+        return [item for items in results for item in items if item]
+    except Exception as e:
+        logger.error(
+            f"Error while handling schedules group {schedules_group.info()} : {e}"
+        )
+
+
+async def save_schedules(
+    schedules_groups: list[ScheduleGroupSchema] | None = None,
+) -> None:
+    """Retrieve, process and save schedules"""
+    if not schedules_groups:
+        schedules_groups = await _get_schedules_from_crawler()
+    if not schedules_groups or len(schedules_groups) == 0:
+        logger.error("No schedules to process")
+        return
+
+    # Get efs_ids and event id
+    tasks = [
+        _handle_schedules_group(schedules_group) for schedules_group in schedules_groups
+    ]
+    results = await asyncio.gather(*tasks)
+
+    # Add scedules
+    tasks = [
+        add_schedule(schedule)
+        for schedules in results
+        for schedule in schedules
+        if schedule
+    ]
+    results = await asyncio.gather(*tasks)
+
+    logger.info(f"Added {len(results)} to the database")
+
+    return results
