@@ -16,28 +16,31 @@ class ScheduleSchema(BaseModel):
     created_at: datetime
 
     # Data
-    total_slots: int
     collecte_type: str
     timetables: dict[time, int]
-    
+
+    @property
+    def total_slots(self) -> int:
+        return sum([value for value in self.timetables.values()])
+
     @property
     def timetable_min(self):
         return min(self.timetables.keys())
-    
+
     @property
     def timetable_max(self):
         return max(self.timetables.keys())
 
     def info(self):
-        return f"{self.efs_id:>6} - {date}"
+        return f"{self.efs_id:>6} - {self.date.strftime('%d/%m/%Y')}"
 
-    @field_validator('date', mode='before')
+    @field_validator("date", mode="before")
     def convert_date(cls, value):
         if isinstance(value, str):
             return datetime.strptime(value, "%d/%m/%Y").date()
         return value
 
-    @field_validator('timetables', mode='before')
+    @field_validator("timetables", mode="before")
     def convert_timetables_keys(cls, value):
         if not isinstance(value, dict):
             return {}
@@ -56,7 +59,7 @@ class ScheduleEventSchema(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
     date: str
-    total_slots: int = Field(..., alias="slots")
+    # total_slots: int = Field(..., alias="slots") Changed into @property of ScheduleSchema
     collecte_type: str = Field(..., alias="type")
     timetables: dict[str, int] = Field(default_factory=dict, alias="schedules")
 
