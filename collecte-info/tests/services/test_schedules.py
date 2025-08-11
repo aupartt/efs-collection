@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncAttrs
 
 import collecte.services.schedules as schedule_services
-from collecte.models import ScheduleModel
+from collecte.models import ScheduleModel, CollectionEventModel, CollectionGroupModel
 from collecte.schemas import ScheduleSchema
 
 
@@ -57,20 +57,38 @@ class TestLoadSchedules:
 
 class TestRetrieveEvents:
     @pytest.mark.asyncio
-    async def test_found(self, mocker, mock_grp_col, mock_sch):
-        mock_schedule = mock_sch.schemas[0]
-        mock_schedule.efs_id = "1337"
+    async def test_found(self, mocker):
+        mock_evt_col_1 = MagicMock(spec=CollectionEventModel, date="date_A")
+        mock_evt_col_2 = MagicMock(spec=CollectionEventModel, date="date_A")
+        mock_evt_col_3 = MagicMock(spec=CollectionEventModel, date="date_B")
 
+        # Créez le mock de la collection principale
+        mock_grp_col = MagicMock(
+            spec=CollectionGroupModel,
+            events=[mock_evt_col_1, mock_evt_col_2, mock_evt_col_3],
+        )
+        
+        # Méthode 1: Utiliser une coroutine directe (simple)
+        async def mock_events_property():
+            return None
+            
+        awaitable_attrs_mock = MagicMock()
+        awaitable_attrs_mock.events = mock_events_property()
+        mock_grp_col.awaitable_attrs = awaitable_attrs_mock
+
+        mock_schedule = MagicMock(spec=ScheduleSchema, date="date_A", efs_id="1337")
+
+        mocker.patch("collecte.services.schedules.CollectionEventSchema")
         mocker.patch("collecte.services.schedules.get_db")
         mock_get_collection = mocker.patch(
             "collecte.services.schedules.get_collection",
-            return_value=mock_grp_col.models[0],
+            return_value=mock_grp_col,
         )
 
         result = await schedule_services.retrieve_events(mock_schedule)
 
         mock_get_collection.assert_awaited_once_with(mocker.ANY, "1337")
-        assert result == mock_grp_col.models[0].events
+        assert len(result) == 2
 
     @pytest.mark.asyncio
     async def test_not_found(self, mocker, mock_sch):
@@ -91,9 +109,8 @@ class TestRetrieveEvents:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_exception(self, mocker, mock_sch):
-        mock_schedule = mock_sch.schemas[0]
-        mock_schedule.efs_id = "1337"
+    async def test_exception(self, mocker):
+        mock_schedule = MagicMock(spec=ScheduleSchema, efs_id="1337")
 
         mocker.patch("collecte.services.schedules.get_db")
         mock_get_collection = mocker.patch(
@@ -101,7 +118,7 @@ class TestRetrieveEvents:
         )
         mock_log = mocker.patch.object(schedule_services.logger, "error")
 
-        result = await schedule_services._retrieve_events(mock_schedule)
+        result = await schedule_services.retrieve_events(mock_schedule)
 
         mock_get_collection.assert_awaited_once_with(mocker.ANY, mock_schedule.efs_id)
         mock_log.assert_called_once()
@@ -141,4 +158,3 @@ class TestAddSchedule:
         mock_session.refresh.assert_not_called()
         mock_log.assert_called_once()
         assert result is None
-

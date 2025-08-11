@@ -41,7 +41,7 @@ async def retrieve_events(
 
             await collection_db.awaitable_attrs.events
             return [
-                ScheduleSchema.model_validate(event)
+                CollectionEventSchema.model_validate(event)
                 for event in collection_db.events
                 if event.date == schedule.date
             ]
@@ -49,7 +49,6 @@ async def retrieve_events(
             logger.error(
                 f"Error while retrieving events for schedule {schedule.info()}: {e}"
             )
-
 
 async def add_schedule(schedule: ScheduleSchema) -> ScheduleModel | None:
     """Save a single schedule"""
