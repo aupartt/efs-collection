@@ -1,5 +1,4 @@
-from datetime import datetime, time
-from typing import Optional
+from datetime import datetime, date, time
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
@@ -9,28 +8,28 @@ class ScheduleSchema(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
     event_id: int | None = None
-    efs_id: str | None = None
+    efs_id: str = None
 
     # Details
-    date: datetime
+    date: date
     url: str
     created_at: datetime
 
     # Data
     total_slots: int
     collecte_type: str
-    schedules: dict[time, int]
+    timetables: dict[time, int]
     
     @property
-    def schedule_min(self):
-        return min(self.schedules.keys())
+    def timetable_min(self):
+        return min(self.timetables.keys())
     
     @property
-    def schedule_max(self):
-        return max(self.schedules.keys())
+    def timetable_max(self):
+        return max(self.timetables.keys())
 
     def info(self):
-        return f"{self.efs_id:>6} - {datetime.strftime('%d/%m/%Y')}"
+        return f"{self.efs_id:>6} - {date}"
 
     @field_validator('date', mode='before')
     def convert_date(cls, value):
@@ -38,17 +37,17 @@ class ScheduleSchema(BaseModel):
             return datetime.strptime(value, "%d/%m/%Y").date()
         return value
 
-    @field_validator('schedules', mode='before')
-    def convert_schedules_keys(cls, value):
+    @field_validator('timetables', mode='before')
+    def convert_timetables_keys(cls, value):
         if not isinstance(value, dict):
             return {}
-        new_schedules = {}
+        new_timetables = {}
         for k, v in value.items():
             if isinstance(k, str):
-                new_schedules[datetime.strptime(k, "%Hh%M").time()] = v
+                new_timetables[datetime.strptime(k, "%Hh%M").time()] = v
             else:
-                new_schedules[k] = v
-        return new_schedules
+                new_timetables[k] = v
+        return new_timetables
 
 
 class ScheduleEventSchema(BaseModel):
@@ -59,7 +58,7 @@ class ScheduleEventSchema(BaseModel):
     date: str
     total_slots: int = Field(..., alias="slots")
     collecte_type: str = Field(..., alias="type")
-    schedules: dict[str, int]
+    timetables: dict[str, int] = Field(default_factory=dict, alias="schedules")
 
 
 class ScheduleGroupSchema(BaseModel):
