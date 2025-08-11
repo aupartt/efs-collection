@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 import logging
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -38,11 +39,24 @@ async def load_collection_groups() -> list[CollectionGroupSchema]:
 async def get_collection(
     session: AsyncSession, efs_id: str
 ) -> CollectionGroupModel | None:
-    stmt = select(CollectionGroupModel).filter_by(
-        efs_id=efs_id
-    )
+    stmt = select(CollectionGroupModel).filter_by(efs_id=efs_id)
     results = await session.execute(stmt)
     return results.scalar_one_or_none()
+
+
+async def get_active_collections() -> list[CollectionGroupSchema]:
+    """Filter and return all collection that have not already ended"""
+    async with get_db() as session:
+        try:
+            stmt = select(CollectionGroupModel).where(
+                CollectionGroupModel.end_date >= datetime.now()
+            )
+            results = await session.execute(stmt)
+            collections = results.scalars().all()
+            return await sqlalchemy_to_pydantic(collections, CollectionGroupSchema)
+        except Exception as e:
+            logger.error(f"Error while retrieving active collections : {e}")
+            return []
 
 
 async def get_event(
@@ -98,7 +112,7 @@ async def _handle_collection(
                 else:
                     # Collection does exist, update the values
                     for key, value in collection.model_dump(
-                        exclude={"id","location_id", "events", "snapshots"}
+                        exclude={"id", "location_id", "events", "snapshots"}
                     ).items():
                         setattr(collection_db, key, value)
 
@@ -110,7 +124,9 @@ async def _handle_collection(
 
                 return collection.events, collection.snapshots
             except Exception as e:
-                logger.error(f"Error while handling collection {collection.info()} : {e}")
+                logger.error(
+                    f"Error while handling collection {collection.info()} : {e}"
+                )
 
 
 async def _handle_event(event: CollectionEventSchema) -> CollectionEventModel:

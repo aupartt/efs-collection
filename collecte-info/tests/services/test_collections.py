@@ -63,6 +63,56 @@ class TestGetCollection:
         assert result is None
 
 
+class TestGetActiveCollections:
+    @pytest.mark.asyncio
+    async def test_found(self, mocker, async_cm, mock_grp_col):
+        mock_session = AsyncMock(spec=AsyncSession)
+        mock_results = MagicMock()
+        mock_results.scalars.return_value.all.return_value = mock_grp_col.models[:2]
+        mock_session.execute.return_value = mock_results
+
+        mocker.patch(
+            "collecte.services.collections.get_db", return_value=async_cm(mock_session)
+        )
+
+        result = await collection_services.get_active_collections()
+
+        # mock_session.execute.assert_awaited()
+        assert result == mock_grp_col.schemas[:2]
+
+    @pytest.mark.asyncio
+    async def test_not_found(self, mocker, async_cm):
+        mock_session = AsyncMock(spec=AsyncSession)
+        mock_results = MagicMock()
+        mock_results.scalars.return_value.all.return_value = []
+        mock_session.execute.return_value = mock_results
+
+        mocker.patch(
+            "collecte.services.collections.get_db", return_value=async_cm(mock_session)
+        )
+
+        result = await collection_services.get_active_collections()
+
+        mock_session.execute.assert_awaited()
+        assert result == []
+
+    @pytest.mark.asyncio
+    async def test_exception(self, mocker, async_cm, mock_grp_col):
+        mock_session = AsyncMock(spec=AsyncSession)
+        mock_session.execute.side_effect = Exception("error")
+
+        mocker.patch(
+            "collecte.services.collections.get_db", return_value=async_cm(mock_session)
+        )
+        mock_log = mocker.patch.object(collection_services.logger, "error")
+
+        result = await collection_services.get_active_collections()
+
+        mock_session.execute.assert_awaited()
+        mock_log.assert_called_once()
+        assert result == []
+
+
 class TestGetEvent:
     @pytest.mark.asyncio
     async def test_found(self, mock_evt_col):
@@ -133,7 +183,9 @@ class TestHandleLocation:
         mocker.patch(
             "collecte.services.collections.get_db", return_value=async_cm(mock_session)
         )
-        mocker.patch("collecte.services.collections.get_location", side_effect=Exception("error"))
+        mocker.patch(
+            "collecte.services.collections.get_location", side_effect=Exception("error")
+        )
         mock_log = mocker.patch.object(collection_services.logger, "error")
 
         result = await collection_services._handle_location(mock_loc_col.schemas[0])
@@ -207,7 +259,10 @@ class TestHandleCollection:
         mocker.patch(
             "collecte.services.collections.get_db", return_value=async_cm(mock_session)
         )
-        mocker.patch("collecte.services.collections.get_collection", side_effect=Exception("error"))
+        mocker.patch(
+            "collecte.services.collections.get_collection",
+            side_effect=Exception("error"),
+        )
         mock_log = mocker.patch.object(collection_services.logger, "error")
 
         result = await collection_services._handle_collection(collection)
