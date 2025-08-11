@@ -50,6 +50,7 @@ async def retrieve_events(
                 f"Error while retrieving events for schedule {schedule.info()}: {e}"
             )
 
+
 async def add_schedule(schedule: ScheduleSchema) -> ScheduleModel | None:
     """Save a single schedule"""
     async with get_db() as session:

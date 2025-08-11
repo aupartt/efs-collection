@@ -53,13 +53,15 @@ async def add_location(location: LocationSchema) -> LocationModel | None:
                         f"Group {location.group_code} does not exist for location: {location.info()}"
                     )
                     return None
-                
+
                 location_db = await get_location(session, location)
                 if not location_db:
                     location_db = LocationModel(**location.model_dump())
                     session.add(location_db)
                 else:
-                    for key, value in location.model_dump(exclude={"id", "group_code", "collections"}).items():
+                    for key, value in location.model_dump(
+                        exclude={"id", "group_code", "collections"}
+                    ).items():
                         setattr(location_db, key, value)
 
                 await session.commit()

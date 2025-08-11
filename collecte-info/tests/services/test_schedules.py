@@ -67,11 +67,11 @@ class TestRetrieveEvents:
             spec=CollectionGroupModel,
             events=[mock_evt_col_1, mock_evt_col_2, mock_evt_col_3],
         )
-        
+
         # Méthode 1: Utiliser une coroutine directe (simple)
         async def mock_events_property():
             return None
-            
+
         awaitable_attrs_mock = MagicMock()
         awaitable_attrs_mock.events = mock_events_property()
         mock_grp_col.awaitable_attrs = awaitable_attrs_mock

@@ -101,7 +101,9 @@ class CollectionEventModel(Base):
     collection_group: Mapped["CollectionGroupModel"] = relationship(
         back_populates="events"
     )
-    snapshots: Mapped[list["ScheduleModel"]] = relationship(back_populates="event", cascade="all, delete-orphan")
+    snapshots: Mapped[list["ScheduleModel"]] = relationship(
+        back_populates="event", cascade="all, delete-orphan"
+    )
 
 
 class CollectionGroupSnapshotModel(Base):
