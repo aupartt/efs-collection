@@ -101,7 +101,7 @@ async def _handle_collection(
                     )
                     return
 
-                collection_db = await get_collection(session, collection)
+                collection_db = await get_collection(session, collection.efs_id)
 
                 if not collection_db:
                     # Collection does not exist, create it
