@@ -67,7 +67,7 @@ class TestRetrieveEvents:
             return_value=mock_grp_col.models[0],
         )
 
-        result = await schedule_services._retrieve_events(mock_schedule)
+        result = await schedule_services.retrieve_events(mock_schedule)
 
         mock_get_collection.assert_awaited_once_with(mocker.ANY, "1337")
         assert result == mock_grp_col.models[0].events
@@ -83,7 +83,7 @@ class TestRetrieveEvents:
         )
         mock_log = mocker.patch.object(schedule_services.logger, "warning")
 
-        result = await schedule_services._retrieve_events(mock_schedule)
+        result = await schedule_services.retrieve_events(mock_schedule)
 
         mock_get_collection.assert_awaited_once_with(mocker.ANY, "1337")
         mock_log.assert_called_once()
@@ -108,7 +108,7 @@ class TestRetrieveEvents:
         assert result is None
 
 
-class TestSaveSchedule:
+class TestAddSchedule:
     @pytest.mark.asyncio
     async def test_success(self, mocker, async_cm, mock_sch):
         mock_session = AsyncMock(spec=AsyncSession)
@@ -117,7 +117,7 @@ class TestSaveSchedule:
             "collecte.services.schedules.get_db", return_value=async_cm(mock_session)
         )
 
-        result = await schedule_services._save_schedule(mock_sch.schemas[0])
+        result = await schedule_services.add_schedule(mock_sch.schemas[0])
 
         mock_session.add.assert_called_once()
         mock_session.commit.assert_called_once()
@@ -134,10 +134,11 @@ class TestSaveSchedule:
         )
         mock_log = mocker.patch.object(schedule_services.logger, "error")
 
-        result = await schedule_services._save_schedule(mock_sch.schemas[0])
+        result = await schedule_services.add_schedule(mock_sch.schemas[0])
 
         mock_session.add.assert_called_once()
         mock_session.commit.assert_called_once()
         mock_session.refresh.assert_not_called()
         mock_log.assert_called_once()
         assert result is None
+

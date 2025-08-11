@@ -5,8 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from collecte.core.database import get_db, db_samaphore
-from collecte.models import ScheduleModel, CollectionEventModel
-from collecte.schemas import ScheduleSchema
+from collecte.models import ScheduleModel
+from collecte.schemas import ScheduleSchema, CollectionEventSchema
 
 from collecte.services.utils import sqlalchemy_to_pydantic
 from collecte.services.collections import get_collection
@@ -27,10 +27,13 @@ async def load_schedules() -> list[ScheduleSchema]:
             logger.error(f"Error while loading schedules: {e}")
 
 
-async def _retrieve_events(
+async def retrieve_events(
     schedule: ScheduleSchema,
-) -> list[CollectionEventModel] | None:
+) -> list[CollectionEventSchema] | None:
     async with get_db() as session:
+        """Check if the schedule is linked to a collection.
+        Retrieve all events of that collection and return the ones that occure at the the same date
+        """
         try:
             collection_db = await get_collection(session, schedule.efs_id)
 
@@ -39,14 +42,19 @@ async def _retrieve_events(
                 return None
 
             await collection_db.awaitable_attrs.events
-            return collection_db.events
+            return [
+                ScheduleSchema.model_validate(event)
+                for event in collection_db.events
+                if event.date == schedule.date
+            ]
         except Exception as e:
             logger.error(
                 f"Error while retrieving events for schedule {schedule.info()}: {e}"
             )
 
 
-async def _save_schedule(schedule: ScheduleSchema) -> ScheduleModel | None:
+async def add_schedule(schedule: ScheduleSchema) -> ScheduleModel | None:
+    """Save a single schedule"""
     async with get_db() as session:
         try:
             schedule_db = ScheduleModel(**schedule.model_dump())
