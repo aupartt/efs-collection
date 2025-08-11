@@ -24,6 +24,7 @@ class TestRetrieveSamplingCollections:
         mock_api_search_collection.assert_awaited_with(
             client=mocker.ANY,
             post_code="35000",
+            hide_private_collects=True,
             hide_non_publiable_collects=True,
             limit=100,
             user_latitude=48,
