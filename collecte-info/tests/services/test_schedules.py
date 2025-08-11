@@ -106,3 +106,38 @@ class TestRetrieveEvents:
         mock_get_collection.assert_awaited_once_with(mocker.ANY, mock_schedule.efs_id)
         mock_log.assert_called_once()
         assert result is None
+
+
+class TestSaveSchedule:
+    @pytest.mark.asyncio
+    async def test_success(self, mocker, async_cm, mock_sch):
+        mock_session = AsyncMock(spec=AsyncSession)
+
+        mocker.patch(
+            "collecte.services.schedules.get_db", return_value=async_cm(mock_session)
+        )
+
+        result = await schedule_services._save_schedule(mock_sch.schemas[0])
+
+        mock_session.add.assert_called_once()
+        mock_session.commit.assert_called_once()
+        mock_session.refresh.assert_called_once()
+        assert isinstance(result, ScheduleModel)
+
+    @pytest.mark.asyncio
+    async def test_exception(self, mocker, async_cm, mock_sch):
+        mock_session = AsyncMock(spec=AsyncSession)
+        mock_session.commit.side_effect = Exception("error")
+
+        mocker.patch(
+            "collecte.services.schedules.get_db", return_value=async_cm(mock_session)
+        )
+        mock_log = mocker.patch.object(schedule_services.logger, "error")
+
+        result = await schedule_services._save_schedule(mock_sch.schemas[0])
+
+        mock_session.add.assert_called_once()
+        mock_session.commit.assert_called_once()
+        mock_session.refresh.assert_not_called()
+        mock_log.assert_called_once()
+        assert result is None

@@ -178,10 +178,12 @@ def mock_evt_sch(mock_grp_sch):
 
 @pytest.fixture
 def mock_sch(mock_grp_sch):
+    # Generate events
+    parent = mock_grp_sch.schemas[0]
+    parent.efs_id = "1337"
+
     class main:
-        schemas: list[ScheduleSchema] = [
-            schema for schema in mock_grp_sch.schemas[0].build()
-        ]
+        schemas: list[ScheduleSchema] = [schema for schema in parent.build()]
         models: list[ScheduleModel] = [
             ScheduleModel(**schema.model_dump()) for schema in schemas
         ]
