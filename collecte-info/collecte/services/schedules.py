@@ -1,10 +1,8 @@
-import asyncio
 import logging
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from collecte.core.database import get_db, db_samaphore
+from collecte.core.database import get_db
 from collecte.models import ScheduleModel
 from collecte.schemas import ScheduleSchema, CollectionEventSchema
 
