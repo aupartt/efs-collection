@@ -45,18 +45,6 @@ def async_cm():
     return _make
 
 
-@pytest.fixture
-def mock_get_db(async_cm):
-    def _make(value):
-        mock_session = AsyncMock(spec=AsyncSession)
-        mock_results = MagicMock()
-        mock_results.scalars.return_value.all.return_value = value
-        mock_session.execute.return_value = mock_results
-        return mock_session, async_cm(mock_session)
-
-    return _make
-
-
 # Fake schemas and models
 def get_data_from_json(file_name: str) -> list[dict]:
     with open(TEST_DATA_DIR / file_name, "r") as f:
