@@ -20,8 +20,6 @@ x-get-service-base: &get-service-base
       condition: service_healthy
   networks:
     - app_network
-  profiles:
-    - donotstart
 # volumes: 
 #   - ./collecte-info/data:/app/data
 
@@ -52,17 +50,17 @@ services:
   # Application Services
   # ---------------------------------------------------------------------------
   
-  crawler:
-    build: ./crawler/
-    command: main.py --headless --keep-alive
-    # depends_on:
-    #   - rabbitmq
-    # environment: *common-environment
-    restart: unless-stopped
-    networks:
-      - app_network
-    profiles:
-      - donotstart
+  # crawler:
+  #   build: ./crawler/
+  #   command: main.py --headless --keep-alive
+  #   depends_on:
+  #     - rabbitmq
+  #   environment: *common-environment
+  #   restart: unless-stopped
+  #   networks:
+  #     - app_network
+  #   profiles:
+  #     - donotstart
 
   # ---------------------------------------------------------------------------
   # Data Collection Services
@@ -72,23 +70,40 @@ services:
     build: 
       context: .
       dockerfile: ./collecte-info/Dockerfile
-    image: collecte-info:latest 
+    image: collecte-info:latest
+    profiles:
+      - donotstart
 
+  alembic:
+    <<: *get-service-base
+    command: alembic upgrade head
+    depends_on:
+      postgres:
+        condition: service_healthy
+  
   get-groups:
     <<: *get-service-base
     command: cli --groups
+    profiles:
+      - donotstart
     
   get-locations:
     <<: *get-service-base
     command: cli --locations
+    profiles:
+      - donotstart
 
   get-collections:
     <<: *get-service-base
     command: cli --collections
+    profiles:
+      - donotstart
 
   get-schedules:
     <<: *get-service-base
     command: cli --schedules
+    profiles:
+      - donotstart
 
   # ---------------------------------------------------------------------------
   # Database Services

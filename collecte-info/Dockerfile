@@ -15,9 +15,17 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 RUN uvx playwright install chromium --with-deps
 
+# Add alembic for migration
+COPY ./collecte-info/alembic.ini ./collecte-info/alembic.ini
+COPY ./collecte-info/alembic ./collecte-info/alembic
+
+# App
 COPY ./collecte-info/collecte ./collecte-info/collecte
 COPY ./collecte-info/cli.py ./collecte-info/cli.py
+
+# Config
 COPY ./collecte-info/uv.lock ./collecte-info/pyproject.toml ./
+
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
