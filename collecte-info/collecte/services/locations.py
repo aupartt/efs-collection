@@ -1,12 +1,14 @@
 import asyncio
 import logging
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from collecte.core.database import get_db, db_samaphore
+from collecte.core.database import db_samaphore, get_db
 from collecte.models import LocationModel
 from collecte.schemas import LocationSchema
 from collecte.services.groups import get_group
+
 from .utils import sqlalchemy_to_pydantic
 
 logger = logging.getLogger(__name__)

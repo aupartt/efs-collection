@@ -4,7 +4,7 @@ import logging
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from collecte.core.database import get_db, db_samaphore
+from collecte.core.database import db_samaphore, get_db
 from collecte.models import GroupModel
 from collecte.schemas import GroupSchema
 

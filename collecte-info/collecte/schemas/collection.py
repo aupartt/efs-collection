@@ -1,7 +1,7 @@
-from datetime import datetime, time
 import re
-from typing import TYPE_CHECKING, Optional
-from pydantic import BaseModel, ConfigDict, Field, computed_field
+from datetime import datetime, time
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CollectionGroupSnapshotSchema(BaseModel):
@@ -9,27 +9,27 @@ class CollectionGroupSnapshotSchema(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
-    id: Optional[int]
+    id: int | None
 
-    taux_remplissage: Optional[float] = None
+    taux_remplissage: float | None = None
 
     # Blood slots
-    nb_places_restantes_st: Optional[int] = None
-    nb_places_totales_st: Optional[int] = None
-    nb_places_reservees_st: Optional[int] = None
+    nb_places_restantes_st: int | None = None
+    nb_places_totales_st: int | None = None
+    nb_places_reservees_st: int | None = None
 
     # Plasma slots
-    nb_places_restantes_pla: Optional[int] = None
-    nb_places_totales_pla: Optional[int] = None
-    nb_places_reservees_pla: Optional[int] = None
+    nb_places_restantes_pla: int | None = None
+    nb_places_totales_pla: int | None = None
+    nb_places_reservees_pla: int | None = None
 
     # Platelet slots
-    nb_places_restantes_cpa: Optional[int] = None
-    nb_places_totales_cpa: Optional[int] = None
-    nb_places_reservees_cpa: Optional[int] = None
+    nb_places_restantes_cpa: int | None = None
+    nb_places_totales_cpa: int | None = None
+    nb_places_reservees_cpa: int | None = None
 
     # Relations
-    collection_group_id: Optional[int] = None
+    collection_group_id: int | None = None
 
 
 class CollectionEventSchema(BaseModel):
@@ -42,13 +42,13 @@ class CollectionEventSchema(BaseModel):
 
     date: datetime
 
-    morning_start_time: Optional[time] = None
-    morning_end_time: Optional[time] = None
-    afternoon_start_time: Optional[time] = None
-    afternoon_end_time: Optional[time] = None
+    morning_start_time: time | None = None
+    morning_end_time: time | None = None
+    afternoon_start_time: time | None = None
+    afternoon_end_time: time | None = None
 
     # Relations
-    collection_group_id: Optional[int] = None
+    collection_group_id: int | None = None
 
 
 class CollectionGroupSchema(BaseModel):
@@ -56,31 +56,31 @@ class CollectionGroupSchema(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
-    id: Optional[int] = None
-    efs_id: Optional[str] = None
+    id: int | None = None
+    efs_id: str | None = None
 
     # Date
     start_date: datetime = None
     end_date: datetime = None
 
     # Details
-    nature: Optional[str]
+    nature: str | None
     is_public: bool
     is_publishable: bool
     propose_planning_rdv: bool
 
     # URLs
-    url_blood: Optional[str] = None
-    url_plasma: Optional[str] = None
-    url_platelet: Optional[str] = None
+    url_blood: str | None = None
+    url_plasma: str | None = None
+    url_platelet: str | None = None
 
     # Text descriptions
-    convocation_label_long: Optional[str] = None
-    convocation_label_sms: Optional[str] = None
+    convocation_label_long: str | None = None
+    convocation_label_sms: str | None = None
 
     # Relations
-    group_code: Optional[str] = None
-    location_id: Optional[int] = None
+    group_code: str | None = None
+    location_id: int | None = None
     events: list[CollectionEventSchema] = []
     snapshots: list[CollectionGroupSnapshotSchema] = []
 
@@ -117,67 +117,67 @@ class CollectionSchema(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
-    id: Optional[int] = None
-    efs_id: Optional[str] = None
-    group_code: Optional[str] = Field(alias="groupCode")
+    id: int | None = None
+    efs_id: str | None = None
+    group_code: str | None = Field(alias="groupCode")
 
     # Date and timing
     date: datetime
-    morning_end_time: Optional[time] = Field(alias="morningEndTime")
-    morning_start_time: Optional[time] = Field(alias="morningStartTime")
-    afternoon_end_time: Optional[time] = Field(alias="afternoonEndTime")
-    afternoon_start_time: Optional[time] = Field(alias="afternoonStartTime")
+    morning_end_time: time | None = Field(alias="morningEndTime")
+    morning_start_time: time | None = Field(alias="morningStartTime")
+    afternoon_end_time: time | None = Field(alias="afternoonEndTime")
+    afternoon_start_time: time | None = Field(alias="afternoonStartTime")
 
     # Collection details
-    nature: Optional[str] = None
+    nature: str | None = None
     lp_code: str = Field(alias="lpCode")
     is_public: bool = Field(alias="isPublic")
     is_publishable: bool = Field(alias="isPublishable")
     propose_planning_rdv: bool = Field(alias="proposePlanningRdv")
 
     # Capacity info
-    taux_remplissage: Optional[float] = Field(alias="tauxRemplissage", default=None)
-    nb_places_restantes_st: Optional[int] = Field(
+    taux_remplissage: float | None = Field(alias="tauxRemplissage", default=None)
+    nb_places_restantes_st: int | None = Field(
         alias="nbPlacesRestantesST", default=None
     )
-    nb_places_totales_st: Optional[int] = Field(alias="nbPlacesTotalesST", default=None)
-    nb_places_reservees_st: Optional[int] = Field(
+    nb_places_totales_st: int | None = Field(alias="nbPlacesTotalesST", default=None)
+    nb_places_reservees_st: int | None = Field(
         alias="nbPlacesReserveesST", default=None
     )
-    nb_places_restantes_pla: Optional[int] = Field(
+    nb_places_restantes_pla: int | None = Field(
         alias="nbPlacesRestantesPLA", default=None
     )
-    nb_places_totales_pla: Optional[int] = Field(
+    nb_places_totales_pla: int | None = Field(
         alias="nbPlacesTotalesPLA", default=None
     )
-    nb_places_reservees_pla: Optional[int] = Field(
+    nb_places_reservees_pla: int | None = Field(
         alias="nbPlacesReserveesPLA", default=None
     )
-    nb_places_restantes_cpa: Optional[int] = Field(
+    nb_places_restantes_cpa: int | None = Field(
         alias="nbPlacesRestantesCPA", default=None
     )
-    nb_places_totales_cpa: Optional[int] = Field(
+    nb_places_totales_cpa: int | None = Field(
         alias="nbPlacesTotalesCPA", default=None
     )
-    nb_places_reservees_cpa: Optional[int] = Field(
+    nb_places_reservees_cpa: int | None = Field(
         alias="nbPlacesReserveesCPA", default=None
     )
 
     # URLs for booking
-    url_blood: Optional[str] = Field(alias="urlBlood", default=None)
-    url_plasma: Optional[str] = Field(alias="urlPlasma", default=None)
-    url_platelet: Optional[str] = Field(alias="urlPlatelet", default=None)
+    url_blood: str | None = Field(alias="urlBlood", default=None)
+    url_plasma: str | None = Field(alias="urlPlasma", default=None)
+    url_platelet: str | None = Field(alias="urlPlatelet", default=None)
 
     # Text descriptions
-    convocation_label_long: Optional[str] = Field(
+    convocation_label_long: str | None = Field(
         alias="convocationLabelLong", default=None
     )
-    convocation_label_sms: Optional[str] = Field(
+    convocation_label_sms: str | None = Field(
         alias="convocationLabelSMS", default=None
     )
 
     # Handle children collections
-    children: Optional[list["CollectionSchema"]] = []
+    children: list["CollectionSchema"] | None = []
 
     @property
     def url(self) -> str:

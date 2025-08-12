@@ -1,25 +1,26 @@
 import asyncio
-from datetime import datetime
 import logging
+from datetime import datetime
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from collecte.core.database import get_db, db_samaphore
-
-# Schemas
-from collecte.schemas import (
-    CollectionGroupSchema,
-    CollectionEventSchema,
-    CollectionGroupSnapshotSchema,
-)
-from collecte.schemas.location import LocationSchema
+from collecte.core.database import db_samaphore, get_db
 
 # Models
 from collecte.models import (
-    CollectionGroupModel,
     CollectionEventModel,
+    CollectionGroupModel,
     CollectionGroupSnapshotModel,
 )
+
+# Schemas
+from collecte.schemas import (
+    CollectionEventSchema,
+    CollectionGroupSchema,
+    CollectionGroupSnapshotSchema,
+)
+from collecte.schemas.location import LocationSchema
 
 # Services
 from collecte.services.locations import get_location

@@ -1,4 +1,4 @@
-from typing import Optional
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from collecte.schemas.location import LocationSchema
@@ -11,6 +11,6 @@ class GroupSchema(BaseModel):
 
     gr_code: str = Field(alias="grCode")
     gr_lib: str = Field(alias="grLib")
-    gr_desd: Optional[str] = Field(alias="grDesd")
+    gr_desd: str | None = Field(alias="grDesd")
 
-    locations: Optional[list["LocationSchema"]] = []
+    locations: list["LocationSchema"] | None = []

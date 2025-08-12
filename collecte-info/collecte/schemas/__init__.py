@@ -1,15 +1,15 @@
+from collecte.schemas.collection import (
+    CollectionEventSchema,
+    CollectionGroupSchema,
+    CollectionGroupSnapshotSchema,
+    CollectionSchema,
+)
 from collecte.schemas.group import GroupSchema
 from collecte.schemas.location import LocationSchema
-from collecte.schemas.collection import (
-    CollectionSchema,
-    CollectionGroupSchema,
-    CollectionEventSchema,
-    CollectionGroupSnapshotSchema,
-)
 from collecte.schemas.schedules import (
-    ScheduleSchema,
-    ScheduleGroupSchema,
     ScheduleEventSchema,
+    ScheduleGroupSchema,
+    ScheduleSchema,
 )
 
 __all__ = [

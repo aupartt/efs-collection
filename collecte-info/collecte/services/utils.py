@@ -1,13 +1,11 @@
 import logging
-from pydantic import BaseModel as PydanticBaseModel
 
 from api_carto_client import Client
-from api_carto_client.models.ping import Ping
 from api_carto_client.api.ping import get_carto_api_v3_ping as api_ping
+from api_carto_client.models.ping import Ping
+from pydantic import BaseModel as PydanticBaseModel
 
-from collecte.core.database import get_db
 from collecte.models.base import Base as SQLAlchemyBaseModel
-
 
 logger = logging.getLogger(__name__)
 

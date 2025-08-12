@@ -1,10 +1,10 @@
-from collecte.models.group import GroupModel
-from collecte.models.location import LocationModel
 from collecte.models.collection import (
-    CollectionGroupModel,
     CollectionEventModel,
+    CollectionGroupModel,
     CollectionGroupSnapshotModel,
 )
+from collecte.models.group import GroupModel
+from collecte.models.location import LocationModel
 from collecte.models.schedules import ScheduleModel
 
 __all__ = [

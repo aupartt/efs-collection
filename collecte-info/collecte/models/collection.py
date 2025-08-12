@@ -1,7 +1,9 @@
-from datetime import datetime, time, timezone
-from typing import Optional, TYPE_CHECKING
-from sqlalchemy import DateTime, ForeignKey, UniqueConstraint, String
+from datetime import UTC, datetime, time
+from typing import TYPE_CHECKING
+
+from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from collecte.models.base import Base
 
 if TYPE_CHECKING:
@@ -36,7 +38,7 @@ class CollectionGroupModel(Base):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    efs_id: Mapped[Optional[str]] = mapped_column(
+    efs_id: Mapped[str | None] = mapped_column(
         unique=True, nullable=True, index=True
     )
 
@@ -45,23 +47,23 @@ class CollectionGroupModel(Base):
     end_date: Mapped[datetime]
 
     # Details
-    nature: Mapped[Optional[str]]
+    nature: Mapped[str | None]
     is_public: Mapped[bool]
     is_publishable: Mapped[bool]
     propose_planning_rdv: Mapped[bool]
 
     # URLs
-    url_blood: Mapped[Optional[str]]
-    url_plasma: Mapped[Optional[str]]
-    url_platelet: Mapped[Optional[str]]
+    url_blood: Mapped[str | None]
+    url_plasma: Mapped[str | None]
+    url_platelet: Mapped[str | None]
 
     # Text descriptions
-    convocation_label_long: Mapped[Optional[str]]
-    convocation_label_sms: Mapped[Optional[str]]
+    convocation_label_long: Mapped[str | None]
+    convocation_label_sms: Mapped[str | None]
 
     # Metadata
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
 
     # Relationships
@@ -86,14 +88,14 @@ class CollectionEventModel(Base):
 
     date: Mapped[datetime]
 
-    morning_start_time: Mapped[Optional[time]] = None
-    morning_end_time: Mapped[Optional[time]] = None
-    afternoon_start_time: Mapped[Optional[time]] = None
-    afternoon_end_time: Mapped[Optional[time]] = None
+    morning_start_time: Mapped[time | None] = None
+    morning_end_time: Mapped[time | None] = None
+    afternoon_start_time: Mapped[time | None] = None
+    afternoon_end_time: Mapped[time | None] = None
 
     # Metadata
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )
 
     # Relationships
@@ -113,26 +115,26 @@ class CollectionGroupSnapshotModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
 
-    taux_remplissage: Mapped[Optional[float]]
+    taux_remplissage: Mapped[float | None]
 
     # Blood slots
-    nb_places_restantes_st: Mapped[Optional[int]]
-    nb_places_totales_st: Mapped[Optional[int]]
-    nb_places_reservees_st: Mapped[Optional[int]]
+    nb_places_restantes_st: Mapped[int | None]
+    nb_places_totales_st: Mapped[int | None]
+    nb_places_reservees_st: Mapped[int | None]
 
     # Plasma slots
-    nb_places_restantes_pla: Mapped[Optional[int]]
-    nb_places_totales_pla: Mapped[Optional[int]]
-    nb_places_reservees_pla: Mapped[Optional[int]]
+    nb_places_restantes_pla: Mapped[int | None]
+    nb_places_totales_pla: Mapped[int | None]
+    nb_places_reservees_pla: Mapped[int | None]
 
     # Platelet slots
-    nb_places_restantes_cpa: Mapped[Optional[int]]
-    nb_places_totales_cpa: Mapped[Optional[int]]
-    nb_places_reservees_cpa: Mapped[Optional[int]]
+    nb_places_restantes_cpa: Mapped[int | None]
+    nb_places_totales_cpa: Mapped[int | None]
+    nb_places_reservees_cpa: Mapped[int | None]
 
     # Metadata
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), index=True
     )
 
     # Relationships

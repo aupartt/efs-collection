@@ -1,5 +1,13 @@
-from datetime import datetime, date, time
-from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer, field_validator
+from datetime import date, datetime, time
+
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_serializer,
+    field_validator,
+)
 
 
 class ScheduleSchema(BaseModel):

@@ -1,11 +1,10 @@
-from datetime import datetime, date, time
+from datetime import date, datetime, time
 
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from collecte.models.base import Base
-
 from collecte.models import CollectionEventModel
+from collecte.models.base import Base
 
 
 class ScheduleModel(Base):

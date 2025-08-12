@@ -4,11 +4,9 @@ from sqlalchemy import select
 
 from collecte.core.database import get_db
 from collecte.models import ScheduleModel
-from collecte.schemas import ScheduleSchema, CollectionEventSchema
-
-from collecte.services.utils import sqlalchemy_to_pydantic
+from collecte.schemas import CollectionEventSchema, ScheduleSchema
 from collecte.services.collections import get_collection
-
+from collecte.services.utils import sqlalchemy_to_pydantic
 
 logger = logging.getLogger(__name__)
 
