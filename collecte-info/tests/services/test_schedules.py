@@ -1,9 +1,10 @@
-import pytest
 from unittest.mock import AsyncMock, MagicMock
-from sqlalchemy.ext.asyncio import AsyncSession, AsyncAttrs
+
+import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 import collecte.services.schedules as schedule_services
-from collecte.models import ScheduleModel, CollectionEventModel, CollectionGroupModel
+from collecte.models import CollectionEventModel, CollectionGroupModel, ScheduleModel
 from collecte.schemas import ScheduleSchema
 
 
@@ -62,15 +63,12 @@ class TestLoadSchedules:
 class TestRetrieveEvents:
     @pytest.mark.asyncio
     async def test_found(self, mocker):
-        mock_evt_col_1 = MagicMock(
-            spec=CollectionEventModel, date=MagicMock(date="date_A")
-        )
-        mock_evt_col_2 = MagicMock(
-            spec=CollectionEventModel, date=MagicMock(date="date_A")
-        )
-        mock_evt_col_3 = MagicMock(
-            spec=CollectionEventModel, date=MagicMock(date="date_B")
-        )
+        mock_evt_col_1 = MagicMock(spec=CollectionEventModel)
+        mock_evt_col_1.date.date.return_value = "date_A"
+        mock_evt_col_2 = MagicMock(spec=CollectionEventModel)
+        mock_evt_col_2.date.date.return_value = "date_A"
+        mock_evt_col_3 = MagicMock(spec=CollectionEventModel)
+        mock_evt_col_3.date.date.return_value = "date_B"
 
         # Créez le mock de la collection principale
         mock_grp_col = MagicMock(
