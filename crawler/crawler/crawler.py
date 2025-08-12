@@ -39,7 +39,7 @@ async def request_handler(
 async def start_crawler(
     urls: list[str],
     headless: bool = True,
-    browser_type: str = "firefox",
+    browser_type: str = "chromium",
     keep_alive: bool = False,
     channel: aio_pika.Channel | None = None,
     request_queue: RequestQueue | None = None,
@@ -97,7 +97,6 @@ async def start_crawler(
 
     if not keep_alive:
         data = await crawler.get_data()
-        crawler.log.info(f"Extracted data: {data.items}")
         return data
     elif stats.requests_total > max_requests_per_crawl:
         return "MAX_REQUESTS_REACHED"

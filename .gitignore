@@ -1,6 +1,6 @@
 # Data
 collecte-info/data/*.json
-crawler/storage/
+storage/
 crawler/results.json
 notebooks/data/*.json
 notebooks/data/*.jsonl
