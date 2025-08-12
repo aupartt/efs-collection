@@ -1,35 +1,33 @@
-import pytest
 import json
-from unittest.mock import AsyncMock, MagicMock
 from pathlib import Path
-from sqlalchemy.ext.asyncio import AsyncSession
+from unittest.mock import AsyncMock
 
+import pytest
 from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
-from api_carto_client.models.sampling_location_entity import SamplingLocationEntity
 from api_carto_client.models.sampling_location_collections_entity import (
     SamplingLocationCollectionsEntity,
 )
+from api_carto_client.models.sampling_location_entity import SamplingLocationEntity
 
 from collecte.models import (
+    CollectionEventModel,
+    CollectionGroupModel,
+    CollectionGroupSnapshotModel,
     GroupModel,
     LocationModel,
-    CollectionGroupModel,
-    CollectionEventModel,
-    CollectionGroupSnapshotModel,
     ScheduleModel,
 )
 from collecte.schemas import (
+    CollectionEventSchema,
+    CollectionGroupSchema,
+    CollectionGroupSnapshotSchema,
+    CollectionSchema,
     GroupSchema,
     LocationSchema,
-    CollectionSchema,
-    CollectionGroupSchema,
-    CollectionEventSchema,
-    CollectionGroupSnapshotSchema,
-    ScheduleSchema,
-    ScheduleGroupSchema,
     ScheduleEventSchema,
+    ScheduleGroupSchema,
+    ScheduleSchema,
 )
-
 
 TEST_DATA_DIR = Path(__file__).parent / "data"
 
@@ -47,7 +45,7 @@ def async_cm():
 
 # Fake schemas and models
 def get_data_from_json(file_name: str) -> list[dict]:
-    with open(TEST_DATA_DIR / file_name, "r") as f:
+    with open(TEST_DATA_DIR / file_name) as f:
         return json.load(f)
 
 

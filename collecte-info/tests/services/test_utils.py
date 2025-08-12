@@ -1,11 +1,10 @@
 import pytest
+from api_carto_client.models.ping import Ping
 from pydantic import BaseModel as PydanticBaseModel
 
-from api_carto_client.models.ping import Ping
-
 import collecte.services.utils as utils_services
-from collecte.models.base import Base as SQLAlchemyBaseModel
 from collecte.models import GroupModel
+from collecte.models.base import Base as SQLAlchemyBaseModel
 from collecte.schemas import GroupSchema
 
 

@@ -1,5 +1,4 @@
 from datetime import datetime, time
-import math
 from unittest.mock import MagicMock
 
 import pytest
@@ -7,7 +6,6 @@ from crawler.crawler.models import LocationEvents
 from pytest_mock import MockerFixture
 
 import collecte.tasks.schedules as schedule_tasks
-from collecte.core.settings import settings
 from collecte.schemas import CollectionEventSchema, ScheduleGroupSchema, ScheduleSchema
 
 

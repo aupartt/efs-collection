@@ -1,10 +1,9 @@
 import pytest
-from unittest.mock import MagicMock
 from aioresponses import aioresponses
+from api_carto_client.models.sampling_collection_result import SamplingCollectionResult
 
 import collecte.tasks.collections as tasks_collections
-from api_carto_client.models.sampling_collection_result import SamplingCollectionResult
-from collecte.schemas import LocationSchema, CollectionSchema, CollectionGroupSchema
+from collecte.schemas import CollectionGroupSchema, LocationSchema
 
 
 class TestRetrieveSamplingCollections:

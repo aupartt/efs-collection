@@ -1,8 +1,5 @@
 import pytest
-from unittest.mock import AsyncMock
-
 from api_carto_client.models.sampling_region_entity import SamplingRegionEntity
-from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
 
 import collecte.tasks.groups as tasks_groups
 from collecte.schemas.group import GroupSchema

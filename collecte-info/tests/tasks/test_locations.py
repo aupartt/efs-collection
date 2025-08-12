@@ -1,7 +1,7 @@
 import pytest
+from api_carto_client.models.sampling_location_result import SamplingLocationResult
 
 import collecte.tasks.locations as tasks_locations
-from api_carto_client.models.sampling_location_result import SamplingLocationResult
 from collecte.schemas.location import LocationSchema
 
 

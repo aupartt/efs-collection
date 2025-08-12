@@ -1,6 +1,6 @@
-import pytest
-import asyncio
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import collecte.services.locations as location_services
