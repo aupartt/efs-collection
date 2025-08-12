@@ -90,12 +90,14 @@ async def test_update_locations_empty_groups(mocker):
     mock_save_locations = mocker.patch(
         "collecte.tasks.locations.save_locations", return_value=mock__locations
     )
+    mock_log = mocker.patch.object(tasks_locations.logger, "error")
 
     await tasks_locations.update_locations()
 
+    mock_log.assert_called_once()
     mock_check_api.assert_awaited()
     mock_load_groups.assert_awaited()
-    mock_save_locations.assert_awaited_with([])
+    mock_save_locations.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -118,9 +120,11 @@ async def test_update_locations_no_locations_found(mocker, mock_grp):
     mock_save_locations = mocker.patch(
         "collecte.tasks.locations.save_locations", return_value=mock_locations
     )
+    mock_log = mocker.patch.object(tasks_locations.logger, "error")
 
     await tasks_locations.update_locations()
 
+    mock_log.assert_called_once()
     mock_check_api.assert_awaited()
     mock_load_groups.assert_awaited()
-    mock_save_locations.assert_awaited_with([])
+    mock_save_locations.assert_not_awaited()

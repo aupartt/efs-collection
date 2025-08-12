@@ -102,15 +102,18 @@ async def _transform_location_collections(location: LocationSchema) -> None:
     location.collections = await asyncio.gather(*tasks)
 
 
-async def update_collections():
+async def update_collections(locations: LocationSchema = None) -> None:
     """Update all collections for all locations"""
-    logger.info("Start updating collections...")
+    if not locations:
+        # Get all locations with active collections
+        locations = await _get_collections_locations()
 
-    # Get all locations with active collections
-    locations = await _get_collections_locations()
+    if not locations:
+        logger.error("No collections to process.")
+        return
 
     logger.info(
-        f"Retrieved {len(locations)} locations with active collections from API"
+        f"Start processing {len(locations)} collection locations."
     )
 
     # Set efs_id for all collections within a location

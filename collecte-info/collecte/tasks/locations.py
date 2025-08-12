@@ -1,17 +1,17 @@
-import logging
 import asyncio
+import logging
 
 from api_carto_client import Client
-from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
-from api_carto_client.models.sampling_location_result import SamplingLocationResult
 from api_carto_client.api.sampling_location import (
     get_carto_api_v3_samplinglocation_searchbygrouplocationcode as api_search_location,
 )
+from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
+from api_carto_client.models.sampling_location_result import SamplingLocationResult
 
 from collecte.schemas.location import LocationSchema
-from collecte.services.utils import api_to_pydantic, with_api_client, check_api
-from collecte.services.locations import save_locations
 from collecte.services.groups import load_groups
+from collecte.services.locations import save_locations
+from collecte.services.utils import api_to_pydantic, check_api, with_api_client
 
 logger = logging.getLogger(__name__)
 
@@ -27,20 +27,22 @@ async def _retrieve_location_sampling(
     return await api_to_pydantic(res.sampling_location_entities, LocationSchema)
 
 
-async def update_locations():
+async def update_locations(locations: list[LocationSchema] = None) -> None:
     """Retrieve all locations from API and store them in database"""
-    if not await check_api():
+    if not locations:
+        if not await check_api():
+            return
+        # Retrieve locations
+        groups = await load_groups()
+        tasks = [_retrieve_location_sampling(groupement=group) for group in groups]
+        _locations = await asyncio.gather(*tasks)
+        locations = [location for sublist in _locations for location in sublist]
+
+    if not locations:
+        logger.error("No locations to process.")
         return
 
-    logger.info(f"Start updating locations...")
-
-    # Retrieve locations
-    groups = await load_groups()
-    tasks = [_retrieve_location_sampling(groupement=group) for group in groups]
-    _locations = await asyncio.gather(*tasks)
-    locations = [location for sublist in _locations for location in sublist]
-
-    logger.info(f"{len(locations)} locations retrieved from API")
+    logger.info(f"Start processing {len(locations)} locations.")
 
     # Save locations
     added_locations = await save_locations(locations)

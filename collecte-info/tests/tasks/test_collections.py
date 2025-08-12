@@ -172,7 +172,6 @@ class TestUpdateCollections:
             "collecte.tasks.collections.save_location_collections",
             return_value=(10, 5, 3),
         )
-        mock_log = mocker.patch.object(tasks_collections.logger, "info")
 
         await tasks_collections.update_collections()
 
@@ -180,7 +179,6 @@ class TestUpdateCollections:
         assert mock_handle_location.call_count == len(mock_locations)
         assert mock_transform_location_collections.call_count == len(mock_locations)
         mock_save_location_collections.assert_awaited_with(mock_locations)
-        assert mock_log.call_count == 3
 
     @pytest.mark.asyncio
     async def test_empty_locations(self, mocker):
@@ -197,12 +195,12 @@ class TestUpdateCollections:
             "collecte.tasks.collections.save_location_collections",
             return_value=(0, 0, 0),
         )
-        mock_log = mocker.patch.object(tasks_collections.logger, "info")
+        mock_log = mocker.patch.object(tasks_collections.logger, "error")
 
         await tasks_collections.update_collections()
 
         mock_get_collections_locations.assert_awaited()
         mock_handle_location.assert_not_called()
         mock_transform_location_collections.assert_not_called()
-        mock_save_location_collections.assert_awaited_with([])
-        assert mock_log.call_count == 3
+        mock_save_location_collections.assert_not_awaited()
+        mock_log.assert_called_once()
