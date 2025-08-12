@@ -67,7 +67,9 @@ async def _get_collections_locations() -> list[LocationSchema]:
         return []
 
     postal_codes = await get_postal_codes()
-    tasks = [_retrieve_sampling_collections(postal_code) for postal_code in postal_codes]
+    tasks = [
+        _retrieve_sampling_collections(postal_code) for postal_code in postal_codes
+    ]
     _locations = await asyncio.gather(*tasks)
 
     locations = [
@@ -112,9 +114,7 @@ async def update_collections(locations: LocationSchema = None) -> None:
         logger.error("No collections to process.")
         return
 
-    logger.info(
-        f"Start processing {len(locations)} collection locations."
-    )
+    logger.info(f"Start processing {len(locations)} collection locations.")
 
     # Set efs_id for all collections within a location
     tasks = [_handle_location(location) for location in locations]

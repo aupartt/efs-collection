@@ -38,9 +38,7 @@ class CollectionGroupModel(Base):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    efs_id: Mapped[str | None] = mapped_column(
-        unique=True, nullable=True, index=True
-    )
+    efs_id: Mapped[str | None] = mapped_column(unique=True, nullable=True, index=True)
 
     # Date
     start_date: Mapped[datetime]

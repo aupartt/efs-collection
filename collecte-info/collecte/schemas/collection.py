@@ -147,18 +147,14 @@ class CollectionSchema(BaseModel):
     nb_places_restantes_pla: int | None = Field(
         alias="nbPlacesRestantesPLA", default=None
     )
-    nb_places_totales_pla: int | None = Field(
-        alias="nbPlacesTotalesPLA", default=None
-    )
+    nb_places_totales_pla: int | None = Field(alias="nbPlacesTotalesPLA", default=None)
     nb_places_reservees_pla: int | None = Field(
         alias="nbPlacesReserveesPLA", default=None
     )
     nb_places_restantes_cpa: int | None = Field(
         alias="nbPlacesRestantesCPA", default=None
     )
-    nb_places_totales_cpa: int | None = Field(
-        alias="nbPlacesTotalesCPA", default=None
-    )
+    nb_places_totales_cpa: int | None = Field(alias="nbPlacesTotalesCPA", default=None)
     nb_places_reservees_cpa: int | None = Field(
         alias="nbPlacesReserveesCPA", default=None
     )
@@ -172,9 +168,7 @@ class CollectionSchema(BaseModel):
     convocation_label_long: str | None = Field(
         alias="convocationLabelLong", default=None
     )
-    convocation_label_sms: str | None = Field(
-        alias="convocationLabelSMS", default=None
-    )
+    convocation_label_sms: str | None = Field(alias="convocationLabelSMS", default=None)
 
     # Handle children collections
     children: list["CollectionSchema"] | None = []

@@ -50,14 +50,15 @@ async def update_groups(groups: list[GroupSchema] = None) -> None:
             return
         region: SamplingRegionEntity = await _retrieve_region(settings.REGION_NAME)
         groups: list[GroupSchema] = await _retrieve_groups(region)
-        logger.info(f"{len(groups)} Groups retrieved from API for region {region.libelle}")
+        logger.info(
+            f"{len(groups)} Groups retrieved from API for region {region.libelle}"
+        )
 
     if not groups:
         logger.error("No groups to process.")
         return
 
     logger.info(f"Start processing {len(groups)} groups.")
-
 
     await save_groups(groups)
 

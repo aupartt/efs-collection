@@ -62,7 +62,7 @@ class ScheduleSchema(BaseModel):
             else:
                 new_timetables[k] = v
         return new_timetables
-    
+
     @field_serializer("timetables")
     def serialize_timetables_keys(self, timetables: dict[time, int]):
         if not isinstance(timetables, dict):
@@ -74,7 +74,6 @@ class ScheduleSchema(BaseModel):
             else:
                 new_timetables[k.isoformat()] = v
         return new_timetables
-        
 
 
 class ScheduleEventSchema(BaseModel):
