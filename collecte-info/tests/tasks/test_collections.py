@@ -4,7 +4,7 @@ from api_carto_client.models.sampling_collection_result import SamplingCollectio
 from pytest_mock import MockerFixture
 
 import collecte.tasks.collections as tasks_collections
-from collecte.schemas import CollectionGroupSchema, LocationSchema
+from collecte.schemas import CollectionGroupSchema
 
 
 class TestRetrieveSamplingCollections:

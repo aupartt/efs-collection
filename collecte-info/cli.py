@@ -41,8 +41,8 @@ parser.add_argument(
 parser.add_argument(
     "--format",
     "-F",
-    choices=['JSON', 'JSONL'],
-    default='JSONL',
+    choices=["JSON", "JSONL"],
+    default="JSONL",
     help="Format of the JSON data [JSON, JSONL]",
 )
 
@@ -52,7 +52,7 @@ def load_data(fila_path: str, file_type: str = "JSONL"):
         if file_type == "JSON":
             return json.load(file)
         return [json.loads(line) for line in file.readlines()]
-        
+
 
 async def main(params: argparse.Namespace):
     data = None

@@ -1,5 +1,4 @@
 from argparse import Namespace
-import json
 from unittest.mock import MagicMock
 
 import pytest
@@ -93,7 +92,7 @@ async def test_cli_file(mocker: MockerFixture, _mock_args):
     _mock_args.schedules = True
     _mock_args.file = "/path/to/data.json"
     mock_file_content = [{"foo": 1, "bar": 2}]
-    
+
     mock_update_groups = mocker.patch("cli.update_groups")
     mock_update_locations = mocker.patch("cli.update_locations")
     mock_update_collections = mocker.patch("cli.update_collections")
@@ -116,7 +115,7 @@ async def test_cli_load_data_json(mocker: MockerFixture, _mock_args):
     _mock_args.format = "JSON"
     mock_file_content = [{"foo": 1, "bar": 2}, {"foo": 1, "bar": 2}]
     mock_file_read = '[{"foo": 1, "bar": 2},\n{"foo": 1, "bar": 2}]'
-    
+
     mock_update_groups = mocker.patch("cli.update_groups")
     mock_update_locations = mocker.patch("cli.update_locations")
     mock_update_collections = mocker.patch("cli.update_collections")
@@ -140,7 +139,7 @@ async def test_cli_load_data_jsonl(mocker: MockerFixture, _mock_args):
     _mock_args.format = "JSONL"
     mock_file_content = [{"foo": 1, "bar": 2}, {"foo": 1, "bar": 2}]
     mock_file_read = '{"foo": 1, "bar": 2}\n{"foo": 1, "bar": 2}'
-    
+
     mock_update_groups = mocker.patch("cli.update_groups")
     mock_update_locations = mocker.patch("cli.update_locations")
     mock_update_collections = mocker.patch("cli.update_collections")

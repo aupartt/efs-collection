@@ -31,9 +31,7 @@ async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema] | None:
             batch_results = await start_crawler(_urls)
             results.extend(batch_results.items)
 
-        filtered_results = [
-            result.model_dump() for result in results if result
-        ]
+        filtered_results = [result.model_dump() for result in results if result]
         logger.info(f"Total schedules scraped : {len(filtered_results)}")
         return filtered_results
     except Exception as e:
@@ -141,13 +139,15 @@ async def update_schedules(
         logger.info("No schedules specified, retrieving with the crawler")
         schedules_groups = await _get_schedules_from_crawler()
         logger.info("Schedules retrieved.")
-    
+
     if not schedules_groups or len(schedules_groups) == 0:
         logger.error("No schedules to process")
         return
-    
-    schedules_groups = [ScheduleGroupSchema(**schedule) for schedule in schedules_groups]
-    
+
+    schedules_groups = [
+        ScheduleGroupSchema(**schedule) for schedule in schedules_groups
+    ]
+
     logger.info(f"Processing {len(schedules_groups)} schedules...")
 
     # Get efs_ids and event id

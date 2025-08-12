@@ -71,9 +71,7 @@ async def _get_collections_locations() -> list[dict]:
     _locations = await asyncio.gather(*tasks)
 
     locations = [
-        collection.to_dict()
-        for sublist in _locations
-        for collection in sublist
+        collection.to_dict() for sublist in _locations for collection in sublist
     ]
 
     return locations
@@ -115,7 +113,7 @@ async def update_collections(locations: list[dict] = None) -> None:
     if not locations:
         logger.error("No collections to process")
         return
-    
+
     locations = [LocationSchema(**location) for location in locations]
 
     logger.info(f"Processing {len(locations)} collections...")

@@ -43,9 +43,8 @@ async def update_locations(locations: list[LocationSchema] = None) -> None:
     if not locations:
         logger.error("No locations to process.")
         return
-    
-    logger.info(f"Processing {len(locations)} locations...")
 
+    logger.info(f"Processing {len(locations)} locations...")
 
     # Save locations
     added_locations = await save_locations(locations)

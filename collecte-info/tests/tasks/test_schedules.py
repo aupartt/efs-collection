@@ -6,7 +6,7 @@ from crawler.crawler.models import LocationEvents
 from pytest_mock import MockerFixture
 
 import collecte.tasks.schedules as schedule_tasks
-from collecte.schemas import CollectionEventSchema, ScheduleGroupSchema, ScheduleSchema
+from collecte.schemas import CollectionEventSchema, ScheduleSchema
 
 
 class TestRetrieveActiveCollectionsUrl:
