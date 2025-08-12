@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, date, time
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from collecte.models.base import Base
@@ -17,16 +17,16 @@ class ScheduleModel(Base):
     efs_id: Mapped[str] = mapped_column(index=True)
 
     # Details
-    date: Mapped[datetime]
+    date: Mapped[date]
     url: Mapped[str]
-    created_at: Mapped[str]
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
     # Data
     total_slots: Mapped[int]
     collecte_type: Mapped[str]
     timetables: Mapped[dict]
-    timetable_min: Mapped[datetime]
-    timetable_max: Mapped[datetime]
+    timetable_min: Mapped[time]
+    timetable_max: Mapped[time]
 
     # Relationships
     event_id: Mapped[int] = mapped_column(ForeignKey("collection_events.id"))

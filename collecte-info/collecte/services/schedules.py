@@ -43,7 +43,7 @@ async def retrieve_events(
             return [
                 CollectionEventSchema.model_validate(event)
                 for event in collection_db.events
-                if event.date == schedule.date
+                if event.date.date == schedule.date
             ]
         except Exception as e:
             logger.error(

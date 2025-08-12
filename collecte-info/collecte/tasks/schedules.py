@@ -1,11 +1,14 @@
 import asyncio
 import logging
+import math
 
-from collecte.schemas import ScheduleSchema, ScheduleGroupSchema, CollectionEventSchema
-from collecte.services.schedules import retrieve_events, add_schedule
+from crawler.crawler import start_crawler
+
+from collecte.core.settings import settings
+from collecte.schemas import CollectionEventSchema, ScheduleGroupSchema, ScheduleSchema
 from collecte.services.collections import get_active_collections
+from collecte.services.schedules import add_schedule, retrieve_events
 from collecte.tasks.collections import get_esf_id
-
 
 logger = logging.getLogger(__name__)
 
@@ -16,12 +19,27 @@ async def _retrieve_active_collections_url() -> list[str]:
     return [collection.url for collection in active_collections if collection]
 
 
-async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema]:
+async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema] | None:
     """Retrieves active collections urls
     then call the crawler to get corresponding schedules
     """
-    urls = await _retrieve_active_collections_url()
-    pass
+    try:
+        urls = await _retrieve_active_collections_url()
+        results = []
+        b = settings.CRAWLER_BATCH
+        logger.info(f"Start crawler with batch {b} for {len(urls)} urls")
+        for i in range(math.ceil(len(urls[:1]) / b)):
+            _urls = urls[b * i : b * i + b]
+            batch_results = await start_crawler(_urls)
+            results.extend(batch_results.items)
+
+        filtered_results = [
+            ScheduleGroupSchema.model_validate(result) for result in results if result
+        ]
+        logger.info(f"Total schedules scraped : {len(filtered_results)}")
+        return filtered_results
+    except Exception as e:
+        logger.error(f"Error while getting schedules from crawler : {e}")
 
 
 async def _match_event(
@@ -115,7 +133,7 @@ async def _handle_schedules_group(
         )
 
 
-async def save_schedules(
+async def update_schedules(
     schedules_groups: list[ScheduleGroupSchema] | None = None,
 ) -> None:
     """Retrieve, process and save schedules"""
@@ -124,10 +142,14 @@ async def save_schedules(
     if not schedules_groups or len(schedules_groups) == 0:
         logger.error("No schedules to process")
         return
+    
+    logger.info(f"Start processing {len(schedules_groups)} schedules.")
 
     # Get efs_ids and event id
     tasks = [
-        _handle_schedules_group(schedules_group) for schedules_group in schedules_groups
+        _handle_schedules_group(schedules_group)
+        for schedules_group in schedules_groups
+        if schedules_group
     ]
     results = await asyncio.gather(*tasks)
 
@@ -135,11 +157,12 @@ async def save_schedules(
     tasks = [
         add_schedule(schedule)
         for schedules in results
+        if schedules
         for schedule in schedules
         if schedule
     ]
     results = await asyncio.gather(*tasks)
 
-    logger.info(f"Added {len(results)} to the database")
+    logger.info(f"Added {len(results)} schedules to the database")
 
     return results

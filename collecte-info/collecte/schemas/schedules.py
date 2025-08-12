@@ -1,5 +1,5 @@
 from datetime import datetime, date, time
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer, field_validator
 
 
 class ScheduleSchema(BaseModel):
@@ -19,16 +19,19 @@ class ScheduleSchema(BaseModel):
     collecte_type: str
     timetables: dict[time, int]
 
+    @computed_field
     @property
     def total_slots(self) -> int:
         return sum([value for value in self.timetables.values()])
 
+    @computed_field
     @property
-    def timetable_min(self):
+    def timetable_min(self) -> time:
         return min(self.timetables.keys())
 
+    @computed_field
     @property
-    def timetable_max(self):
+    def timetable_max(self) -> time:
         return max(self.timetables.keys())
 
     def info(self):
@@ -51,6 +54,19 @@ class ScheduleSchema(BaseModel):
             else:
                 new_timetables[k] = v
         return new_timetables
+    
+    @field_serializer("timetables")
+    def serialize_timetables_keys(self, timetables: dict[time, int]):
+        if not isinstance(timetables, dict):
+            return {}
+        new_timetables = {}
+        for k, v in timetables.items():
+            if isinstance(k, str):
+                new_timetables[k] = v
+            else:
+                new_timetables[k.isoformat()] = v
+        return new_timetables
+        
 
 
 class ScheduleEventSchema(BaseModel):
@@ -59,7 +75,7 @@ class ScheduleEventSchema(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
     date: str
-    # total_slots: int = Field(..., alias="slots") Changed into @property of ScheduleSchema
+    # total_slots: int = Field(..., alias="slots") Changed into @computed_field of ScheduleSchema
     collecte_type: str = Field(..., alias="type")
     timetables: dict[str, int] = Field(default_factory=dict, alias="schedules")
 

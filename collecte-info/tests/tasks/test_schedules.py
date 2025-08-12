@@ -1,12 +1,14 @@
+from datetime import datetime, time
+import math
+from unittest.mock import MagicMock
+
 import pytest
-from datetime import time
-from unittest.mock import AsyncMock, MagicMock
+from crawler.crawler.models import LocationEvents
 from pytest_mock import MockerFixture
-from sqlalchemy.ext.asyncio import AsyncSession
 
 import collecte.tasks.schedules as schedule_tasks
-from collecte.models import ScheduleModel
-from collecte.schemas import ScheduleSchema, CollectionEventSchema
+from collecte.core.settings import settings
+from collecte.schemas import CollectionEventSchema, ScheduleGroupSchema, ScheduleSchema
 
 
 class TestRetrieveActiveCollectionsUrl:
@@ -35,8 +37,95 @@ class TestRetrieveActiveCollectionsUrl:
 
 
 class TestGetSchedulesFromCrawler:
-    # Need to addapt the crawler first
-    pass
+    @pytest.mark.asyncio
+    async def test_exception(self, mocker: MockerFixture):
+        mock_urls = ["http://foo.com/1", "http://foo.com/2", "http://foo.com/3"]
+
+        mock_retrieve_active_collections_url = mocker.patch(
+            "collecte.tasks.schedules._retrieve_active_collections_url",
+            return_value=mock_urls,
+        )
+        mock_start_crawler = mocker.patch(
+            "collecte.tasks.schedules.start_crawler", side_effect=Exception("error")
+        )
+        mock_log = mocker.patch.object(schedule_tasks.logger, "error")
+
+        results = await schedule_tasks._get_schedules_from_crawler()
+
+        mock_retrieve_active_collections_url.assert_awaited_once()
+        mock_start_crawler.assert_awaited()
+        mock_log.assert_called_once()
+        assert results is None
+
+    @pytest.mark.asyncio
+    async def test_not_found_urls(self, mocker: MockerFixture):
+        mock_urls = []
+        mock_crawler_resp = MagicMock(items=[])
+
+        mock_retrieve_active_collections_url = mocker.patch(
+            "collecte.tasks.schedules._retrieve_active_collections_url",
+            return_value=mock_urls,
+        )
+        mock_start_crawler = mocker.patch(
+            "collecte.tasks.schedules.start_crawler", return_value=mock_crawler_resp
+        )
+
+        results = await schedule_tasks._get_schedules_from_crawler()
+
+        mock_retrieve_active_collections_url.assert_awaited_once()
+        mock_start_crawler.assert_not_awaited()
+        assert results == []
+
+    @pytest.mark.asyncio
+    async def test_not_found_schedules(self, mocker: MockerFixture):
+        mock_urls = ["http://foo.com/1", "http://foo.com/2", "http://foo.com/3"]
+        mock_crawler_resp = MagicMock(items=[])
+
+        mock_retrieve_active_collections_url = mocker.patch(
+            "collecte.tasks.schedules._retrieve_active_collections_url",
+            return_value=mock_urls,
+        )
+        mock_start_crawler = mocker.patch(
+            "collecte.tasks.schedules.start_crawler", return_value=mock_crawler_resp
+        )
+
+        results = await schedule_tasks._get_schedules_from_crawler()
+
+        mock_retrieve_active_collections_url.assert_awaited_once()
+        mock_start_crawler.assert_awaited_once()
+        assert results == []
+
+    @pytest.mark.asyncio
+    async def test_found(self, mocker: MockerFixture):
+        mock_urls = [f"http://foo.com/{i}" for i in range(20)]
+        mock_crawler_resp = [None] + [
+            MagicMock(
+                spec=LocationEvents, url=url, time=datetime(2025, 11, 11), events=[]
+            )
+            for url in mock_urls
+        ]
+        mock_settings = MagicMock(CRAWLER_BATCH=5)
+        mocker.patch("collecte.tasks.schedules.settings", mock_settings)
+        mock_retrieve_active_collections_url = mocker.patch(
+            "collecte.tasks.schedules._retrieve_active_collections_url",
+            return_value=mock_urls,
+        )
+        mock_start_crawler = mocker.patch(
+            "collecte.tasks.schedules.start_crawler",
+            side_effect=[
+                MagicMock(items=mock_crawler_resp[:5]),
+                MagicMock(items=mock_crawler_resp[5:10]),
+                MagicMock(items=mock_crawler_resp[10:15]),
+                MagicMock(items=mock_crawler_resp[15:20]),
+            ],
+        )
+
+        results = await schedule_tasks._get_schedules_from_crawler()
+
+        mock_retrieve_active_collections_url.assert_awaited_once()
+        assert mock_start_crawler.await_count == 4
+        assert isinstance(results[0], ScheduleGroupSchema)
+        assert len(results) == 19
 
 
 class TestMatchEvent:
@@ -256,7 +345,7 @@ class TestHandleSchedulesGroup:
         assert len(results) == 6
 
 
-class TestSaveSchedule:
+class TestUpdateSchedule:
     @pytest.mark.asyncio
     async def test_no_schedules_groups(self, mocker: MockerFixture, mock_grp_sch):
         mock_get_schedules_from_crawler = mocker.patch(
@@ -264,7 +353,7 @@ class TestSaveSchedule:
         )
         mock_log = mocker.patch.object(schedule_tasks.logger, "error")
 
-        results = await schedule_tasks.save_schedules()
+        results = await schedule_tasks.update_schedules()
 
         mock_get_schedules_from_crawler.assert_awaited_once()
         mock_log.assert_called_once()
@@ -289,7 +378,7 @@ class TestSaveSchedule:
             return_value=True,
         )
 
-        results = await schedule_tasks.save_schedules()
+        results = await schedule_tasks.update_schedules()
 
         mock_get_schedules_from_crawler.assert_awaited_once()
         mock_handle_schedules_group.call_count == 3
@@ -314,7 +403,7 @@ class TestSaveSchedule:
             return_value=True,
         )
 
-        results = await schedule_tasks.save_schedules(mock_grp_sch.schemas)
+        results = await schedule_tasks.update_schedules(mock_grp_sch.schemas)
 
         mock_get_schedules_from_crawler.assert_not_called()
         mock_handle_schedules_group.call_count == 3
