@@ -2,18 +2,28 @@
 # Docker Compose Configuration for Collectes EFS
 # =============================================================================
 
-# Shared configuration templates
-x-common-environment: &common-environment
-  RABBITMQ_URL: amqp://efs_rq:rq_efs@rabbitmq:5672/
-  POSTGRES_URL: postgresql+asyncpg://efs_user:8yDRo7@postgres:5432/collecte
+# # Shared configuration templates
+# x-common-environment: &common-environment
+#   RABBITMQ_URL: amqp://efs_rq:rq_efs@rabbitmq:5672/
+#   POSTGRES_URL: postgresql+asyncpg://efs_user:8yDRo7@postgres:5432/collecte
 
 x-get-service-base: &get-service-base
-  build: 
-    context: .
-    dockerfile: ./collecte-info/Dockerfile
-  environment: *common-environment
-  volumes: 
-    - ./collecte-info/data:/app/data
+  image: collecte-info
+  environment:
+    POSTGRES_USER: ${POSTGRES_USER}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+    POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+    POSTGRES_DB: ${POSTGRES_DB}
+  depends_on:
+    postgres:
+      condition: service_healthy
+  networks:
+    - app_network
+  profiles:
+    - donotstart
+# volumes: 
+#   - ./collecte-info/data:/app/data
 
 # =============================================================================
 # Services
@@ -24,19 +34,19 @@ services:
   # Infrastructure Services
   # ---------------------------------------------------------------------------
   
-  rabbitmq:
-    image: rabbitmq:4-management
-    ports:
-      - "5672:5672"   # AMQP port
-      - "15672:15672" # Management UI
-    environment:
-      RABBITMQ_DEFAULT_USER: efs_rq
-      RABBITMQ_DEFAULT_PASS: rq_efs
-    restart: unless-stopped
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    networks:
-      - crawler_network
+  # rabbitmq:
+  #   image: rabbitmq:4-management
+  #   ports:
+  #     - "5672:5672"   # AMQP port
+  #     - "15672:15672" # Management UI
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: efs_rq
+  #     RABBITMQ_DEFAULT_PASS: rq_efs
+  #   restart: unless-stopped
+  #   volumes:
+  #     - rabbitmq_data:/var/lib/rabbitmq
+  #   networks:
+  #     - app_network
 
   # ---------------------------------------------------------------------------
   # Application Services
@@ -45,43 +55,40 @@ services:
   crawler:
     build: ./crawler/
     command: main.py --headless --keep-alive
-    depends_on:
-      - rabbitmq
-    environment: *common-environment
+    # depends_on:
+    #   - rabbitmq
+    # environment: *common-environment
     restart: unless-stopped
     networks:
-      - crawler_network
+      - app_network
+    profiles:
+      - donotstart
 
   # ---------------------------------------------------------------------------
   # Data Collection Services
   # ---------------------------------------------------------------------------
-  
-  consumer:
+
+  base-image:
+    build: 
+      context: .
+      dockerfile: ./collecte-info/Dockerfile
+    image: collecte-info:latest 
+
+  get-groups:
     <<: *get-service-base
-    command: get_schedules.py --listen
-    depends_on:
-      - rabbitmq
-      - crawler
-    restart: unless-stopped
-    networks:
-      - crawler_network
+    command: cli --groups
+    
+  get-locations:
+    <<: *get-service-base
+    command: cli --locations
 
   get-collections:
     <<: *get-service-base
-    command: get_collections.py
-
-  get-locations:
-    <<: *get-service-base
-    command: get_locations.py --force
+    command: cli --collections
 
   get-schedules:
     <<: *get-service-base
-    command: get_schedules.py
-    depends_on:
-      - rabbitmq
-      - crawler
-    networks:
-      - crawler_network
+    command: cli --schedules
 
   # ---------------------------------------------------------------------------
   # Database Services
@@ -90,19 +97,21 @@ services:
   postgres:
     image: postgres
     environment:
-      POSTGRES_DB: collecte
-      POSTGRES_USER: efs_user
-      POSTGRES_PASSWORD: 8yDRo7
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     restart: always
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
+      - efs_postgres:/var/lib/postgresql/data
     ports:
       - 5432:5432
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U efs_user -d collecte"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app_network
 
   adminer:
     image: adminer
@@ -111,15 +120,19 @@ services:
     restart: always
     depends_on:
       - postgres
+    networks:
+      - app_network
 
 # =============================================================================
 # Volumes & Networks
 # =============================================================================
 
 volumes:
-  rabbitmq_data:
+  efs_postgres:
     driver: local
+  # rabbitmq_data:
+  #   driver: local
+
 
 networks:
-  crawler_network:
-    driver: bridge
+  app_network:

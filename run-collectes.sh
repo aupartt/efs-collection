@@ -56,6 +56,11 @@ fi
 
 # Execute task based on parameter
 case "${1:-}" in
+    "groups")
+        log "=== GROUPS COLLECTION ==="
+        run_task "get-groups"
+        ;;
+
     "locations")
         log "=== LOCATIONS COLLECTION ==="
         run_task "get-locations"
@@ -72,7 +77,7 @@ case "${1:-}" in
         ;;
     
     *)
-        echo "Usage: $0 {locations|collections|schedules}"
+        echo "Usage: $0 {groups|locations|collections|schedules}"
         echo ""
         echo "Examples:"
         echo "  $0 schedules    # Run only get-schedules"
