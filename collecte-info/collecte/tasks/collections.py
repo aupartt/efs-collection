@@ -27,7 +27,7 @@ api_semaphore = asyncio.Semaphore(10)
 
 
 @with_api_client
-async def retrieve_sampling_collections(
+async def _retrieve_sampling_collections(
     client: Client, post_code: str
 ) -> list[SamplingLocationCollectionsEntity]:
     """Retrieve collections from the API"""
@@ -67,7 +67,7 @@ async def _get_collections_locations() -> list[LocationSchema]:
         return []
 
     postal_codes = await get_postal_codes()
-    tasks = [retrieve_sampling_collections(postal_code) for postal_code in postal_codes]
+    tasks = [_retrieve_sampling_collections(postal_code) for postal_code in postal_codes]
     _locations = await asyncio.gather(*tasks)
 
     locations = [

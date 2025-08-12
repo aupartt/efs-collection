@@ -19,7 +19,7 @@ class TestRetrieveSamplingCollections:
             return_value=mock_result,
         )
 
-        result = await tasks_collections.retrieve_sampling_collections("35000")
+        result = await tasks_collections._retrieve_sampling_collections("35000")
 
         mock_api_search_collection.assert_awaited_with(
             client=mocker.ANY,
@@ -39,7 +39,7 @@ class TestRetrieveSamplingCollections:
             return_value=None,
         )
 
-        result = await tasks_collections.retrieve_sampling_collections("35000")
+        result = await tasks_collections._retrieve_sampling_collections("35000")
 
         mock_api_search_collection.assert_awaited()
         assert result == []
@@ -103,7 +103,7 @@ class TestGetCollectionsLocations:
 
         mock__locations = [mock_loc_col.api[:2], mock_loc_col.api[2:]]
         mock_retrieve_sampling_collections = mocker.patch(
-            "collecte.tasks.collections.retrieve_sampling_collections",
+            "collecte.tasks.collections._retrieve_sampling_collections",
             side_effect=mock__locations,
         )
 
