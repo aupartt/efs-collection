@@ -30,5 +30,8 @@ dev = [
     "pytest-mock>=3.14.1",
 ]
 
+[tool.ruff]
+exclude = [".venv", "alembic", "storage"]
+
 [tool.ruff.lint]
 select = ["F", "I", "UP"]
