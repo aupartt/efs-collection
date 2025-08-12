@@ -32,7 +32,7 @@ async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema] | None:
             results.extend(batch_results.items)
 
         filtered_results = [
-            ScheduleGroupSchema.model_validate(result) for result in results if result
+            result.model_dump() for result in results if result
         ]
         logger.info(f"Total schedules scraped : {len(filtered_results)}")
         return filtered_results
@@ -132,7 +132,7 @@ async def _handle_schedules_group(
 
 
 async def update_schedules(
-    schedules_groups: list[ScheduleGroupSchema] | None = None,
+    schedules_groups: list[dict] | None = None,
 ) -> None:
     """Retrieve, process and save schedules"""
     logger.info("Start updating schedules...")
@@ -145,6 +145,8 @@ async def update_schedules(
     if not schedules_groups or len(schedules_groups) == 0:
         logger.error("No schedules to process")
         return
+    
+    schedules_groups = [ScheduleGroupSchema(**schedule) for schedule in schedules_groups]
     
     logger.info(f"Processing {len(schedules_groups)} schedules...")
 

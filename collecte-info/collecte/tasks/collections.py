@@ -59,7 +59,7 @@ async def get_esf_id(url: str) -> str | None:
                 logger.error(f"Error while retrieving ESF id from {url}: {e}")
 
 
-async def _get_collections_locations() -> list[LocationSchema]:
+async def _get_collections_locations() -> list[dict]:
     """Retrieve all collection locations from the API with post_codes and flatten the list"""
     if not await check_api():
         return []
@@ -71,7 +71,7 @@ async def _get_collections_locations() -> list[LocationSchema]:
     _locations = await asyncio.gather(*tasks)
 
     locations = [
-        LocationSchema(**collection.to_dict())
+        collection.to_dict()
         for sublist in _locations
         for collection in sublist
     ]
@@ -102,7 +102,7 @@ async def _transform_location_collections(location: LocationSchema) -> None:
     location.collections = await asyncio.gather(*tasks)
 
 
-async def update_collections(locations: LocationSchema = None) -> None:
+async def update_collections(locations: list[dict] = None) -> None:
     """Update all collections for all locations"""
     logger.info("Start updating collections...")
 
@@ -115,6 +115,8 @@ async def update_collections(locations: LocationSchema = None) -> None:
     if not locations:
         logger.error("No collections to process")
         return
+    
+    locations = [LocationSchema(**location) for location in locations]
 
     logger.info(f"Processing {len(locations)} collections...")
 

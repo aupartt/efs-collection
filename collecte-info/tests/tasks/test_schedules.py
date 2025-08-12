@@ -123,7 +123,6 @@ class TestGetSchedulesFromCrawler:
 
         mock_retrieve_active_collections_url.assert_awaited_once()
         assert mock_start_crawler.await_count == 4
-        assert isinstance(results[0], ScheduleGroupSchema)
         assert len(results) == 19
 
 
@@ -362,7 +361,7 @@ class TestUpdateSchedule:
     async def test_success_crawler(self, mocker: MockerFixture, mock_grp_sch):
         mock_get_schedules_from_crawler = mocker.patch(
             "collecte.tasks.schedules._get_schedules_from_crawler",
-            return_value=mock_grp_sch.schemas,
+            return_value=[schema.model_dump() for schema in mock_grp_sch.schemas],
         )  # return len 3
         mock_handle_schedules_group = mocker.patch(
             "collecte.tasks.schedules._handle_schedules_group",
@@ -385,6 +384,8 @@ class TestUpdateSchedule:
 
     @pytest.mark.asyncio
     async def test_success_param(self, mocker: MockerFixture, mock_grp_sch):
+        mock_data = [schema.model_dump() for schema in mock_grp_sch.schemas]
+
         mock_get_schedules_from_crawler = mocker.patch(
             "collecte.tasks.schedules._get_schedules_from_crawler"
         )
@@ -401,7 +402,7 @@ class TestUpdateSchedule:
             return_value=True,
         )
 
-        await schedule_tasks.update_schedules(mock_grp_sch.schemas)
+        await schedule_tasks.update_schedules(mock_data)
 
         mock_get_schedules_from_crawler.assert_not_called()
         mock_handle_schedules_group.call_count == 3

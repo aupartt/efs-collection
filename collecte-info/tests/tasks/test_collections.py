@@ -1,6 +1,7 @@
 import pytest
 from aioresponses import aioresponses
 from api_carto_client.models.sampling_collection_result import SamplingCollectionResult
+from pytest_mock import MockerFixture
 
 import collecte.tasks.collections as tasks_collections
 from collecte.schemas import CollectionGroupSchema, LocationSchema
@@ -111,7 +112,7 @@ class TestGetCollectionsLocations:
         mock_get_postal_codes.assert_awaited()
         mock_retrieve_sampling_collections.asser_awaited()
         assert len(result) == len(mock_loc_col.api)
-        assert all(isinstance(loc, LocationSchema) for loc in result)
+        assert all(isinstance(loc, dict) for loc in result)
 
     @pytest.mark.asyncio
     async def test_api_check_fails(self, mocker):
@@ -155,7 +156,7 @@ class TestTransformLocationCollections:
 class TestUpdateCollections:
     @pytest.mark.asyncio
     async def test_success(self, mocker, mock_loc):
-        mock_locations = mock_loc.schemas[:2]
+        mock_locations = [schema.model_dump() for schema in mock_loc.schemas[:2]]
 
         mock_get_collections_locations = mocker.patch(
             "collecte.tasks.collections._get_collections_locations",
@@ -177,7 +178,7 @@ class TestUpdateCollections:
         mock_get_collections_locations.assert_awaited()
         assert mock_handle_location.call_count == len(mock_locations)
         assert mock_transform_location_collections.call_count == len(mock_locations)
-        mock_save_location_collections.assert_awaited_with(mock_locations)
+        mock_save_location_collections.assert_awaited_with(mock_loc.schemas[:2])
 
     @pytest.mark.asyncio
     async def test_empty_locations(self, mocker):
@@ -203,3 +204,30 @@ class TestUpdateCollections:
         mock_transform_location_collections.assert_not_called()
         mock_save_location_collections.assert_not_awaited()
         mock_log.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_params(self, mocker: MockerFixture, mock_loc):
+        mock_data = [schema.model_dump() for schema in mock_loc.schemas]
+
+        mock_get_collections_locations = mocker.patch(
+            "collecte.tasks.collections._get_collections_locations"
+        )
+        mock_handle_location = mocker.patch(
+            "collecte.tasks.collections._handle_location"
+        )
+        mock_transform_location_collections = mocker.patch(
+            "collecte.tasks.collections._transform_location_collections"
+        )
+        mock_save_location_collections = mocker.patch(
+            "collecte.tasks.collections.save_location_collections",
+            return_value=(0, 0, 0),
+        )
+        mock_log = mocker.patch.object(tasks_collections.logger, "error")
+
+        await tasks_collections.update_collections(mock_data)
+
+        mock_get_collections_locations.assert_not_awaited()
+        assert mock_handle_location.await_count == 3
+        assert mock_transform_location_collections.await_count == 3
+        mock_save_location_collections.assert_awaited()
+        mock_log.assert_not_called()
