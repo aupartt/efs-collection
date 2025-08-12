@@ -72,7 +72,6 @@ async def test_update_groups_success(mocker, mock_regions, mock_grp):
     mock_save_groups = mocker.patch("collecte.tasks.groups.save_groups")
     mock_settings = mocker.patch("collecte.tasks.groups.settings")
     mock_settings.REGION_NAME = mock_region.libelle
-    mock_log = mocker.patch.object(tasks_groups.logger, "info")
 
     await tasks_groups.update_groups()
 
@@ -80,7 +79,6 @@ async def test_update_groups_success(mocker, mock_regions, mock_grp):
     mock_retrieve_region.assert_awaited_with(mock_region.libelle)
     mock_retrieve_groups.assert_awaited_with(mock_region)
     mock_save_groups.assert_awaited_with(mock_grp.schemas)
-    assert mock_log.call_count == 3
 
 
 @pytest.mark.asyncio

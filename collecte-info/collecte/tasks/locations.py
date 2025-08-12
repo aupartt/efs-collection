@@ -27,7 +27,10 @@ async def _retrieve_location_sampling(
 
 async def update_locations(locations: list[LocationSchema] = None) -> None:
     """Retrieve all locations from API and store them in database"""
+    logger.info("Start updating locations...")
+
     if not locations:
+        logger.info("No locations specified, retrieving from API...")
         if not await check_api():
             return
         # Retrieve locations
@@ -35,14 +38,16 @@ async def update_locations(locations: list[LocationSchema] = None) -> None:
         tasks = [_retrieve_location_sampling(groupement=group) for group in groups]
         _locations = await asyncio.gather(*tasks)
         locations = [location for sublist in _locations for location in sublist]
+        logger.info("Locations retrieved.")
 
     if not locations:
         logger.error("No locations to process.")
         return
+    
+    logger.info(f"Processing {len(locations)} locations...")
 
-    logger.info(f"Start processing {len(locations)} locations.")
 
     # Save locations
     added_locations = await save_locations(locations)
 
-    logger.info(f"{len(added_locations)} Locations updated !")
+    logger.info(f"Processed {len(added_locations)} collections")

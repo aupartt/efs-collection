@@ -42,21 +42,22 @@ async def _retrieve_groups(
 
 async def update_groups(groups: list[GroupSchema] = None) -> None:
     """Retrieve groups from API and add them to database"""
+    logger.info("Start updating groups...")
+
     if not groups:
+        logger.info("No groups specified, retrieving from API...")
         if not await check_api():
             return
         region: SamplingRegionEntity = await _retrieve_region(settings.REGION_NAME)
         groups: list[GroupSchema] = await _retrieve_groups(region)
-        logger.info(
-            f"{len(groups)} Groups retrieved from API for region {region.libelle}"
-        )
+        logger.info("Groups retrieved.")
 
     if not groups:
-        logger.error("No groups to process.")
+        logger.error("No groups to process")
         return
 
-    logger.info(f"Start processing {len(groups)} groups.")
+    logger.info(f"Processing {len(groups)} groups...")
 
-    await save_groups(groups)
+    groups_processed = await save_groups(groups)
 
-    logger.info("Groups updated !")
+    logger.info(f"Processed {len(groups_processed)} groups")

@@ -54,7 +54,8 @@ async def add_group(group: GroupSchema) -> GroupModel | None:
                 await session.rollback()
 
 
-async def save_groups(groups: list[GroupSchema]) -> None:
+async def save_groups(groups: list[GroupSchema]) -> list[GroupModel]:
     """ADD/UPDATE all groups to database"""
     tasks = [add_group(group) for group in groups]
-    await asyncio.gather(*tasks)
+    added_groups = await asyncio.gather(*tasks)
+    return [g for g in added_groups if g]

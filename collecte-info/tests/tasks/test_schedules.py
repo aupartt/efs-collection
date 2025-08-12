@@ -377,12 +377,11 @@ class TestUpdateSchedule:
             return_value=True,
         )
 
-        results = await schedule_tasks.update_schedules()
+        await schedule_tasks.update_schedules()
 
         mock_get_schedules_from_crawler.assert_awaited_once()
         mock_handle_schedules_group.call_count == 3
         mock_add_schedule.call_count == 4
-        assert len(results) == 4
 
     @pytest.mark.asyncio
     async def test_success_param(self, mocker: MockerFixture, mock_grp_sch):
@@ -402,9 +401,8 @@ class TestUpdateSchedule:
             return_value=True,
         )
 
-        results = await schedule_tasks.update_schedules(mock_grp_sch.schemas)
+        await schedule_tasks.update_schedules(mock_grp_sch.schemas)
 
         mock_get_schedules_from_crawler.assert_not_called()
         mock_handle_schedules_group.call_count == 3
         mock_add_schedule.call_count == 4
-        assert len(results) == 4

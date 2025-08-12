@@ -135,13 +135,18 @@ async def update_schedules(
     schedules_groups: list[ScheduleGroupSchema] | None = None,
 ) -> None:
     """Retrieve, process and save schedules"""
+    logger.info("Start updating schedules...")
+
     if not schedules_groups:
+        logger.info("No schedules specified, retrieving with the crawler")
         schedules_groups = await _get_schedules_from_crawler()
+        logger.info("Schedules retrieved.")
+    
     if not schedules_groups or len(schedules_groups) == 0:
         logger.error("No schedules to process")
         return
-
-    logger.info(f"Start processing {len(schedules_groups)} schedules.")
+    
+    logger.info(f"Processing {len(schedules_groups)} schedules...")
 
     # Get efs_ids and event id
     tasks = [
@@ -161,6 +166,4 @@ async def update_schedules(
     ]
     results = await asyncio.gather(*tasks)
 
-    logger.info(f"Added {len(results)} schedules to the database")
-
-    return results
+    logger.info(f"Processed {len(results)} schedules")
