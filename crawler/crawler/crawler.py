@@ -6,8 +6,6 @@ import logging
 from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext
 from crawlee.storages import RequestQueue
 from crawlee.configuration import Configuration
-
-from crawler.settings import settings
 from crawler.models import LocationEvents
 from crawler.locators import process_by_type
 
@@ -23,6 +21,8 @@ async def request_handler(
         data = await process_by_type(context)
 
         if channel:
+            from crawler.settings import settings
+            
             await channel.default_exchange.publish(
                 aio_pika.Message(body=data.model_dump_json().encode()),
                 routing_key=settings.RABBITMQ_DATA_QUEUE,

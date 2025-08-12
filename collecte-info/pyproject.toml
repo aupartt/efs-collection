@@ -10,14 +10,15 @@ dependencies = [
     "alembic>=1.16.4",
     "api-carto-client",
     "asyncpg>=0.30.0",
-    "pydantic>=2.11.7",
-    "pydantic-settings>=2.10.1",
+    "crawler",
+    "pydantic-settings==2.6.0",
     "sqlalchemy>=2.0.42",
     "tqdm>=4.67.1",
 ]
 
 [tool.uv.sources]
 api-carto-client = { path = "../api-carto-client", editable = true }
+crawler = { path = "../crawler", editable = true }
 
 [dependency-groups]
 dev = [
@@ -28,3 +29,6 @@ dev = [
     "pytest-cov>=6.2.1",
     "pytest-mock>=3.14.1",
 ]
+
+[tool.ruff.lint]
+select = ["F", "I", "UP"]
