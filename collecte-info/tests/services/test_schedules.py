@@ -9,20 +9,24 @@ from collecte.schemas import ScheduleSchema
 
 class TestLoadSchedules:
     @pytest.mark.asyncio
-    async def test_success(self, mocker, async_cm, mock_sch):
+    async def test_success(self, mocker, async_cm):
+        mock_sch_model = [MagicMock(spec=ScheduleModel) for _ in range(3)]
         mock_session = AsyncMock(spec=AsyncSession)
         mock_results = MagicMock()
-        mock_results.scalars.return_value.all.return_value = mock_sch.models
+        mock_results.scalars.return_value.all.return_value = mock_sch_model
         mock_session.execute.return_value = mock_results
 
+        sqlalchemy_to_pydantic = mocker.patch(
+            "collecte.services.schedules.sqlalchemy_to_pydantic"
+        )
         mocker.patch(
             "collecte.services.schedules.get_db", return_value=async_cm(mock_session)
         )
 
-        result = await schedule_services.load_schedules()
+        await schedule_services.load_schedules()
 
         mock_session.execute.assert_awaited()
-        assert result == mock_sch.schemas
+        sqlalchemy_to_pydantic.assert_awaited_with(mock_sch_model, ScheduleSchema)
 
     @pytest.mark.asyncio
     async def test_empty(self, mocker, async_cm):
@@ -58,9 +62,15 @@ class TestLoadSchedules:
 class TestRetrieveEvents:
     @pytest.mark.asyncio
     async def test_found(self, mocker):
-        mock_evt_col_1 = MagicMock(spec=CollectionEventModel, date="date_A")
-        mock_evt_col_2 = MagicMock(spec=CollectionEventModel, date="date_A")
-        mock_evt_col_3 = MagicMock(spec=CollectionEventModel, date="date_B")
+        mock_evt_col_1 = MagicMock(
+            spec=CollectionEventModel, date=MagicMock(date="date_A")
+        )
+        mock_evt_col_2 = MagicMock(
+            spec=CollectionEventModel, date=MagicMock(date="date_A")
+        )
+        mock_evt_col_3 = MagicMock(
+            spec=CollectionEventModel, date=MagicMock(date="date_B")
+        )
 
         # Créez le mock de la collection principale
         mock_grp_col = MagicMock(

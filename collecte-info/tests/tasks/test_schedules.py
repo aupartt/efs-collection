@@ -106,6 +106,7 @@ class TestGetSchedulesFromCrawler:
         ]
         mock_settings = MagicMock(CRAWLER_BATCH=5)
         mocker.patch("collecte.tasks.schedules.settings", mock_settings)
+        
         mock_retrieve_active_collections_url = mocker.patch(
             "collecte.tasks.schedules._retrieve_active_collections_url",
             return_value=mock_urls,
