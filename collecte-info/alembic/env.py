@@ -30,7 +30,7 @@ target_metadata = Base.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-config.set_main_option("sqlalchemy.url", settings.POSTGRES_URL.unicode_string())
+config.set_main_option("sqlalchemy.url", settings.POSTGRES_URL)
 
 
 def run_migrations_offline() -> None:

@@ -1,5 +1,3 @@
-import logging
-
 from api_carto_client import Client
 from api_carto_client.api.sampling_location import (
     get_carto_api_v3_samplinglocation_getgroupements as api_get_groupements,
@@ -10,6 +8,7 @@ from api_carto_client.api.sampling_location import (
 from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
 from api_carto_client.models.sampling_region_entity import SamplingRegionEntity
 
+from collecte.core.logging import logger
 from collecte.core.settings import settings
 from collecte.schemas import GroupSchema
 from collecte.services.groups import save_groups
@@ -18,8 +17,6 @@ from collecte.services.utils import (
     check_api,
     with_api_client,
 )
-
-logger = logging.getLogger(__name__)
 
 
 @with_api_client

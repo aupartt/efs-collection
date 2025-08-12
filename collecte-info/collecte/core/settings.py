@@ -1,17 +1,23 @@
-from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # Database
-    POSTGRES_URL: PostgresDsn = (
-        "postgresql+asyncpg://postgres:postgres@localhost:5432/collecte"
-    )
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
 
+    LOGGING_LEVEL: str = "INFO"
     REGION_NAME: str = "Bretagne"
     CRAWLER_BATCH: int = 20
 
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
+    # Postgres
+    POSTGRES_USER: str = "postgres"
+    POSTGRES_PASSWORD: str = "postgres"
+    POSTGRES_HOST: str = "127.0.0.1"
+    POSTGRES_PORT: str = "5432"
+    POSTGRES_DB: str = "collecte"
+
+    @property
+    def POSTGRES_URL(self) -> str:
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 
 settings = Settings()
