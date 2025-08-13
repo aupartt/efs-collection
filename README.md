@@ -45,12 +45,19 @@ The system automatically:
    ```bash
    docker compose up -d
    ```
-   
+
 5. **Init database**
 
    This service should have started with the previous step
    ```bash
    docker compose run --rm alembic
+   ```
+   
+6. **First run**
+
+   Don't forget to make a first run to init **groups** and **locations**
+   ```bash
+   docker compose run --rm cli --groups --locations
    ```
 
 ## 📋 CLI Usage
