@@ -20,17 +20,22 @@ log() {
 # Function to execute a Docker Compose task
 run_task() {
     local task_name="$1"
-    local log_file="$LOG_DIR/${task_name}_$(date '+%Y%m%d_%H%M%S').log"
+    local task_args="${2//-/}"
+    local log_file="$LOG_DIR/${task_name}_${task_args}-$(date '+%Y%m%d_%H%M%S').log"
    
-    log "Starting $task_name"
+    log "Starting $task_name with args: $task_args"
    
     cd "$PROJECT_DIR" || {
         log "ERROR: Cannot access directory $PROJECT_DIR"
         exit 1
     }
    
-    # Execute task
-    docker compose run --rm "$task_name" 2>&1 | tee "$log_file"
+    # Execute task - pass arguments after the service name
+    if [ -n "$task_args" ]; then
+        docker compose run --rm "$task_name" $task_args 2>&1 | tee "$log_file"
+    else
+        docker compose run --rm "$task_name" 2>&1 | tee "$log_file"
+    fi
     local exit_code=$?
    
     if [ $exit_code -eq 0 ]; then
@@ -58,22 +63,22 @@ fi
 case "${1:-}" in
     "groups")
         log "=== GROUPS COLLECTION ==="
-        run_task "cli --groups"
+        run_task "cli" "--groups"
         ;;
 
     "locations")
         log "=== LOCATIONS COLLECTION ==="
-        run_task "cli --locations"
+        run_task "cli" "--locations"
         ;;
     
     "collections")
         log "=== COLLECTIONS COLLECTION ==="
-        run_task "cli --collections"
+        run_task "cli" "--collections"
         ;;
     
     "schedules")
         log "=== SCHEDULES COLLECTION ==="
-        run_task "cli --schedules"
+        run_task "cli" "--schedules"
         ;;
     
     *)
