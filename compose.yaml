@@ -71,8 +71,6 @@ services:
       dockerfile: ./collecte-info/Dockerfile
     image: collecte-info:latest
     <<: *get-service-base
-    profiles:
-      - donotstart
     volumes:
       - ./data/:/data/ # to help passing files for import
 
