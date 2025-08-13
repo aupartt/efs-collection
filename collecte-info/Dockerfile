@@ -37,4 +37,4 @@ WORKDIR /app/collecte-info/
 ENV PATH="/app/.venv/bin:$PATH"
 
 # -u to enable log to be printed with docker compose run
-ENTRYPOINT ["python", "-u", "-m"]
+ENTRYPOINT ["python", "-u", "-m", "cli"]

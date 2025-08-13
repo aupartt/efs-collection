@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import json
 
+from collecte.core.logging import logger
 from collecte.tasks.collections import update_collections
 from collecte.tasks.groups import update_groups
 from collecte.tasks.locations import update_locations
@@ -56,16 +57,25 @@ def load_data(fila_path: str, file_type: str = "JSONL"):
 
 async def main(params: argparse.Namespace):
     data = None
+    grp = params.groups
+    loc = params.locations
+    col = params.collections
+    sch = params.schedules
 
     if params.file:
         data = load_data(params.file, params.format)
-    if params.groups:
+
+    if data and sum([grp, loc, col, sch]) > 1:
+        logger.error("You can't start multiple collecte type with file.")
+        return
+
+    if grp:
         await update_groups(data)
-    elif params.locations:
+    if loc:
         await update_locations(data)
-    elif params.collections:
+    if col:
         await update_collections(data)
-    elif params.schedules:
+    if sch:
         await update_schedules(data)
 
 

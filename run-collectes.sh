@@ -58,22 +58,22 @@ fi
 case "${1:-}" in
     "groups")
         log "=== GROUPS COLLECTION ==="
-        run_task "get-groups"
+        run_task "cli --groups"
         ;;
 
     "locations")
         log "=== LOCATIONS COLLECTION ==="
-        run_task "get-locations"
+        run_task "cli --locations"
         ;;
     
     "collections")
         log "=== COLLECTIONS COLLECTION ==="
-        run_task "get-collections"
+        run_task "cli --collections"
         ;;
     
     "schedules")
         log "=== SCHEDULES COLLECTION ==="
-        run_task "get-schedules"
+        run_task "cli --schedules"
         ;;
     
     *)

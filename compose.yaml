@@ -8,7 +8,6 @@
 #   POSTGRES_URL: postgresql+asyncpg://efs_user:8yDRo7@postgres:5432/collecte
 
 x-get-service-base: &get-service-base
-  image: collecte-info
   environment:
     POSTGRES_USER: ${POSTGRES_USER}
     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -66,44 +65,25 @@ services:
   # Data Collection Services
   # ---------------------------------------------------------------------------
 
-  base-image:
+  cli:
     build: 
       context: .
       dockerfile: ./collecte-info/Dockerfile
     image: collecte-info:latest
+    <<: *get-service-base
     profiles:
       - donotstart
+    volume:
+      - ./data/:/data/ # to help passing files for import
 
   alembic:
+    image: collecte-info:latest
     <<: *get-service-base
+    entrypoint: ["python", "-u", "-m"]
     command: alembic upgrade head
     depends_on:
       postgres:
         condition: service_healthy
-  
-  get-groups:
-    <<: *get-service-base
-    command: cli --groups
-    profiles:
-      - donotstart
-    
-  get-locations:
-    <<: *get-service-base
-    command: cli --locations
-    profiles:
-      - donotstart
-
-  get-collections:
-    <<: *get-service-base
-    command: cli --collections
-    profiles:
-      - donotstart
-
-  get-schedules:
-    <<: *get-service-base
-    command: cli --schedules
-    profiles:
-      - donotstart
 
   # ---------------------------------------------------------------------------
   # Database Services
