@@ -114,7 +114,7 @@ async def update_collections(locations: list[dict] = None) -> None:
         logger.error("No collections to process")
         return
 
-    locations = [LocationSchema(**location) for location in locations]
+    locations = [LocationSchema(**location) for location in locations if location]
 
     logger.info(f"Processing {len(locations)} collections...")
 
