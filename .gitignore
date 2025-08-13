@@ -5,7 +5,7 @@ crawler/results.json
 notebooks/data/*.json
 notebooks/data/*.jsonl
 notebooks/data/*.csv
-data/postgres
+data/
 
 # Cache & Co
 __pycache__/
