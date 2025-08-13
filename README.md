@@ -34,18 +34,13 @@ The system automatically:
    # ... change variables
    ```
 
-3. **Build all services**
+3. **Build and start the infrastructure**
 
    ```bash
-   docker compose build
+   docker compose up -d --build
    ```
 
-4. **Start the infrastructure**
-
-   ```bash
-   docker compose up -d
-   ```
-5. **Init database**
+4. **Init database**
 
    This service should have started with the previous step
    ```bash
