@@ -22,4 +22,4 @@
 30 11 * * * (/usr/local/bin/run-collectes.sh schedules) 2>&1 | logger -t get-schedules
 
 # Clean old logs (keep 30 days)
-0 0 1 * * (find /home/nuky/collectes-efs/logs -name "*.log" -mtime +30 -delete) 2>&1 | logger -t log-cleanup
+0 0 1 * * (find /path/to/collectes-efs/logs -name "*.log" -mtime +30 -delete) 2>&1 | logger -t log-cleanup
