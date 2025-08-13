@@ -20,21 +20,32 @@ The system automatically:
 ### Installation & Setup
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd collectes-efs
    ```
 
-2. **Build all services**
+2. **Setup `.env`**
+   
+   ```bash
+   cp .env.example .env
+
+   # ... change variables
+   ```
+
+3. **Build all services**
+
    ```bash
    docker compose build
    ```
 
-3. **Start the infrastructure**
+4. **Start the infrastructure**
+
    ```bash
    docker compose up -d
    ```
-4. **Init database**
+5. **Init database**
 
    This service should have started with the previous step
    ```bash
