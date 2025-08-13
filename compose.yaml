@@ -72,7 +72,7 @@ services:
     image: collecte-info:latest
     <<: *get-service-base
     volumes:
-      - ./data/:/data/ # to help passing files for import
+      - ./data/:/app/data/ # to help passing files for import
 
   alembic:
     image: collecte-info:latest

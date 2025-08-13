@@ -85,7 +85,8 @@ docker compose run --rm cli --collections --schedules
 Make sure to put you file into the `./data/` folder
 
 ```bash
-docker compose run --rm cli --collections --file /data/to/data.json
+# The ./data folder of this project is mounted at ../data/ 
+docker compose run --rm cli --collections --file ../data/collections.json
 ```
 
 
