@@ -1,5 +1,7 @@
+from unittest.mock import MagicMock
 import pytest
 from api_carto_client.models.sampling_location_result import SamplingLocationResult
+from pytest_mock import MockerFixture
 
 import collecte.tasks.locations as tasks_locations
 from collecte.schemas.location import LocationSchema
@@ -27,6 +29,31 @@ async def test_retrieve_location_sampling(mocker, mock_grp, mock_loc):
     )
     mock_api_to_pydantic.assert_awaited_with(mock_loc.api, LocationSchema)
     assert result == mock_loc.schemas
+
+
+@pytest.mark.asyncio
+async def test_filter_location_success(mocker: MockerFixture):
+    mock_input = MagicMock(spec=LocationSchema, latitude=48, longitude=-2)
+
+    mock_log = mocker.patch.object(tasks_locations.logger, "error")
+
+    result = await tasks_locations._filter_location(mock_input)
+    
+    mock_log.assert_not_called()
+    assert result == mock_input
+
+
+@pytest.mark.parametrize("lat, lng", [[0, 0], [48, 0], [0, -2]])
+@pytest.mark.asyncio
+async def test_filter_location_error(mocker: MockerFixture, lat, lng):
+    mock_input = MagicMock(spec=LocationSchema, latitude=lat, longitude=lng)
+
+    mock_log = mocker.patch.object(tasks_locations.logger, "warning")
+
+    result = await tasks_locations._filter_location(mock_input)
+    
+    mock_log.assert_called_once()
+    assert result is None
 
 
 @pytest.mark.asyncio

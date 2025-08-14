@@ -25,6 +25,26 @@ async def _retrieve_location_sampling(
     return await api_to_pydantic(res.sampling_location_entities, LocationSchema)
 
 
+async def _filter_location(
+    location: LocationSchema,
+) -> list[LocationSchema] | None:
+    """Run some check on the location to avoid bad data"""
+    min_lat = 47.09183211160008
+    max_lat = 49.06817494247612
+    min_lng = -5.429029053839311
+    max_lng = -0.9346669637510061
+
+    if not all(
+        [min_lat < location.latitude < max_lat, min_lng < location.longitude < max_lng]
+    ):
+        logger.warning(
+            f"Bad location {location.info()}: lat={location.latitude}, lng={location.longitude}"
+        )
+        return None
+
+    return location
+
+
 async def update_locations(locations: list[LocationSchema] = None) -> None:
     """Retrieve all locations from API and store them in database"""
     logger.info("Start updating locations...")
@@ -44,9 +64,14 @@ async def update_locations(locations: list[LocationSchema] = None) -> None:
         logger.error("No locations to process.")
         return
 
-    logger.info(f"Processing {len(locations)} locations...")
+    logger.info(f"Checking {len(locations)} locations...")
+
+    tasks = [_filter_location(location) for location in locations]
+    results = [item for item in await asyncio.gather(*tasks) if item]
+
+    logger.info(f"Checks complete, processing  {len(results)} locations...")
 
     # Save locations
-    added_locations = await save_locations(locations)
+    added_locations = await save_locations(results)
 
     logger.info(f"Processed {len(added_locations)} collections")
