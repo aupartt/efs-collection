@@ -2,6 +2,8 @@ import argparse
 import asyncio
 import json
 
+from crawler.crawler import start_crawler
+
 from collecte.core.logging import logger
 from collecte.tasks.collections import update_collections
 from collecte.tasks.groups import update_groups
@@ -46,6 +48,18 @@ parser.add_argument(
     default="JSONL",
     help="Format of the JSON data [JSON, JSONL]",
 )
+parser.add_argument(
+    "--crawl",
+    "-C",
+    action="store_true",
+    help="Run the crawler with the given url (for test purpose)",
+)
+parser.add_argument(
+    "--url",
+    "-u",
+    default=None,
+    help="The url to crawl",
+)
 
 
 def load_data(fila_path: str, file_type: str = "JSONL"):
@@ -61,6 +75,14 @@ async def main(params: argparse.Namespace):
     loc = params.locations
     col = params.collections
     sch = params.schedules
+
+    if params.crawl and not params.url:
+        logger.error("You need to provide a url to start the crawler")
+        return
+
+    if params.crawl:
+        results = await start_crawler([params.url])
+        logger.info(f"Crawler ended with data: {results.items}")
 
     if params.file:
         data = load_data(params.file, params.format)
@@ -83,3 +105,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     asyncio.run(main(args))
+
+
+# [root] ERROR Error while retrieving ESF id from https://efs.link/uC7Ea: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
+# [root] ERROR Error while retrieving ESF id from https://efs.link/czV2M: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
+# [root] ERROR Error while retrieving ESF id from https://efs.link/nBzHZ: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
+# [root] ERROR Error while retrieving ESF id from https://efs.link/RE2rS: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
+# [root] ERROR Error while retrieving ESF id from https://efs.link/S92Ti: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
+# [root] ERROR Error while retrieving ESF id from https://efs.link/jb4wd: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
+# [root] ERROR Error while retrieving ESF id from https://efs.link/RPKzx: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
+# [root] ERROR Error while retrieving ESF id from https://efs.link/FNh76: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
+# [root] ERROR Error while retrieving ESF id from https://efs.link/ufKPe: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
+# [root] ERROR Error while retrieving ESF id from https://efs.link/6gBGY: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
