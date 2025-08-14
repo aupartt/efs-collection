@@ -1,6 +1,8 @@
 import asyncio
 import math
+import uuid
 
+from crawlee import Request
 from crawler.crawler import start_crawler
 
 from collecte.core.logging import logger
@@ -21,13 +23,18 @@ async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema] | None:
     """Retrieves active collections urls
     then call the crawler to get corresponding schedules
     """
+
+    async def buil_request(url):
+        _id = f"{url}:{uuid.uuid4()}"
+        return Request.from_url(url, unique_key=_id)
+
     try:
         urls = await _retrieve_active_collections_url()
         results = []
         b = settings.CRAWLER_BATCH
         logger.info(f"Start crawler with batch {b} for {len(urls)} urls")
         for i in range(math.ceil(len(urls) / b)):
-            _urls = urls[b * i : b * i + b]
+            _urls = [await buil_request(url) for url in urls[b * i : b * i + b]]
             batch_results = await start_crawler(_urls)
             results.extend(batch_results.items)
 
