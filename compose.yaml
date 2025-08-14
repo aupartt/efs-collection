@@ -46,22 +46,18 @@ services:
   #     - app_network
 
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana-enterprise
     ports:
       - 3000:3000
     restart: unless-stopped
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
-      - GF_SECURITY_COOKIE_SAMESITE=none
-      - GF_SECURITY_COOKIE_SECURE=true
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
-      - GF_SERVER_DOMAIN=${GF_SERVER_DOMAIN}
-      - GF_SERVER_ROOT_URL=${GF_SERVER_ROOT_URL}
-      - GF_SERVER_SERVE_FROM_SUB_PATH=${GF_SERVER_SERVE_FROM_SUB_PATH}
     volumes:
       - ./grafana/dashboards:/etc/grafana/dashboards
       - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana-cache:/var/lib/grafana
     networks:
       - app_network
 
@@ -143,6 +139,7 @@ services:
 volumes:
   efs_postgres:
     driver: local
+  grafana-cache:
   # rabbitmq_data:
   #   driver: local
 
