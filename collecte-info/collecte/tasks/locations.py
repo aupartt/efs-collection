@@ -8,6 +8,7 @@ from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
 from api_carto_client.models.sampling_location_result import SamplingLocationResult
 
 from collecte.core.logging import logger
+from collecte.core.settings import settings
 from collecte.schemas.location import LocationSchema
 from collecte.services.groups import load_groups
 from collecte.services.locations import save_locations
@@ -29,13 +30,8 @@ async def _filter_location(
     location: LocationSchema,
 ) -> list[LocationSchema] | None:
     """Run some check on the location to avoid bad data"""
-    min_lat = 47.09183211160008
-    max_lat = 49.06817494247612
-    min_lng = -5.429029053839311
-    max_lng = -0.9346669637510061
-
     if not all(
-        [min_lat < location.latitude < max_lat, min_lng < location.longitude < max_lng]
+        [settings.MIN_LAT < location.latitude < settings.MAX_LAT, settings.MIN_LNG < location.longitude < settings.MAX_LNG]
     ):
         logger.warning(
             f"Bad location {location.info()}: lat={location.latitude}, lng={location.longitude}"

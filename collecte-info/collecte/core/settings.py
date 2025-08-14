@@ -5,10 +5,17 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
 
     LOGGING_LEVEL: str = "INFO"
-    REGION_NAME: str = "Bretagne"
+
     CRAWLER_BATCH: int = 20
 
-    # Postgres
+    # CLI SETUP
+    REGION_NAME: str = "Bretagne"
+    MIN_LAT: float = 47.09
+    MAX_LAT: float = 49.06
+    MIN_LNG: float = -5.42
+    MAX_LNG: float = -0.93
+    
+    # POSTGRES
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
     POSTGRES_HOST: str = "127.0.0.1"
