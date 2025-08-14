@@ -2,7 +2,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", case_sensitive=False, extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=".env", case_sensitive=False, extra="ignore"
+    )
 
     LOGGING_LEVEL: str = "INFO"
 
@@ -14,7 +16,7 @@ class Settings(BaseSettings):
     MAX_LAT: float = 49.06
     MIN_LNG: float = -5.42
     MAX_LNG: float = -0.93
-    
+
     # POSTGRES
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"

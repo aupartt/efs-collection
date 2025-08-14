@@ -22,7 +22,7 @@ async def request_handler(
 
         if channel:
             from crawler.settings import settings
-            
+
             await channel.default_exchange.publish(
                 aio_pika.Message(body=data.model_dump_json().encode()),
                 routing_key=settings.RABBITMQ_DATA_QUEUE,
@@ -49,29 +49,30 @@ async def start_crawler(
 ) -> LocationEvents | None | str:
     config = Configuration.get_global_configuration()
     config.available_memory_ratio = 0.33
-    
+
     # Add memory management configuration
     browser_launch_options = {
-        'args': [
-            '--memory-pressure-off',
-            '--max_old_space_size=2048',  # Limit Node.js heap
-            '--disable-dev-shm-usage',   # Reduce shared memory usage
-            '--disable-extensions',
-            '--disable-plugins',
-            '--disable-background-networking',
-            '--disable-background-timer-throttling',
-            '--disable-renderer-backgrounding',
+        "args": [
+            "--memory-pressure-off",
+            "--max_old_space_size=2048",  # Limit Node.js heap
+            "--disable-dev-shm-usage",  # Reduce shared memory usage
+            "--disable-extensions",
+            "--disable-plugins",
+            "--disable-background-networking",
+            "--disable-background-timer-throttling",
+            "--disable-renderer-backgrounding",
         ]
     }
 
-    
-    if browser_type == 'chromium':
-        browser_launch_options['args'].extend([
-            '--disable-web-security',
-            '--disable-blink-features=AutomationControlled',
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-        ])
+    if browser_type == "chromium":
+        browser_launch_options["args"].extend(
+            [
+                "--disable-web-security",
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+            ]
+        )
 
     crawler = PlaywrightCrawler(
         headless=headless,

@@ -1,4 +1,5 @@
 from unittest.mock import MagicMock
+
 import pytest
 from api_carto_client.models.sampling_location_result import SamplingLocationResult
 from pytest_mock import MockerFixture
@@ -38,7 +39,7 @@ async def test_filter_location_success(mocker: MockerFixture):
     mock_log = mocker.patch.object(tasks_locations.logger, "error")
 
     result = await tasks_locations._filter_location(mock_input)
-    
+
     mock_log.assert_not_called()
     assert result == mock_input
 
@@ -51,7 +52,7 @@ async def test_filter_location_error(mocker: MockerFixture, lat, lng):
     mock_log = mocker.patch.object(tasks_locations.logger, "warning")
 
     result = await tasks_locations._filter_location(mock_input)
-    
+
     mock_log.assert_called_once()
     assert result is None
 

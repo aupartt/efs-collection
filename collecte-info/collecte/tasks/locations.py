@@ -31,7 +31,10 @@ async def _filter_location(
 ) -> list[LocationSchema] | None:
     """Run some check on the location to avoid bad data"""
     if not all(
-        [settings.MIN_LAT < location.latitude < settings.MAX_LAT, settings.MIN_LNG < location.longitude < settings.MAX_LNG]
+        [
+            settings.MIN_LAT < location.latitude < settings.MAX_LAT,
+            settings.MIN_LNG < location.longitude < settings.MAX_LNG,
+        ]
     ):
         logger.warning(
             f"Bad location {location.info()}: lat={location.latitude}, lng={location.longitude}"
