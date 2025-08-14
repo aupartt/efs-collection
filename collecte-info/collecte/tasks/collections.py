@@ -1,5 +1,6 @@
 import asyncio
 import re
+from datetime import datetime
 
 import aiohttp
 from api_carto_client import Client
@@ -10,6 +11,7 @@ from api_carto_client.models.sampling_collection_result import SamplingCollectio
 from api_carto_client.models.sampling_location_collections_entity import (
     SamplingLocationCollectionsEntity,
 )
+from dateutil.relativedelta import relativedelta
 
 from collecte.core.logging import logger
 from collecte.schemas import (
@@ -37,6 +39,7 @@ async def _retrieve_sampling_collections(
         limit=100,
         user_latitude=48,
         user_longitude=-2,
+        max_date=datetime.now() + relativedelta(months=+6),
     )
     if not collections:
         return []
