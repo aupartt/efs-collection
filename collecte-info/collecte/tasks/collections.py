@@ -34,8 +34,8 @@ async def _retrieve_sampling_collections(
     collections: SamplingCollectionResult = await api_search_collection.asyncio(
         client=client,
         post_code=post_code,
-        hide_private_collects=True,
-        hide_non_publiable_collects=True,
+        # hide_private_collects=True,
+        # hide_non_publiable_collects=True,
         limit=100,
         user_latitude=48,
         user_longitude=-2,
