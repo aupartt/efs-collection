@@ -109,7 +109,9 @@ class CollectionGroupSchema(BaseModel):
             event.collection_group_id = _id
 
     def info(self) -> str:
-        return f"{str(self.efs_id):>6} - {str(self.url):22} - {self.nature}"
+        efs_id = self.efs_id if self.efs_id else "NO_EFS_ID"
+        url = self.url if self.url else "NO_URL"
+        return f"{efs_id:>6} - {url:22} - {self.nature}"
 
 
 class CollectionSchema(BaseModel):

@@ -48,4 +48,5 @@ class LocationSchema(BaseModel):
     collections: list[Union["CollectionSchema", "CollectionGroupSchema"]] | None = []
 
     def info(self) -> str:
-        return f"{str(self.group_code):>6} - {str(self.post_code):>5} - {str(self.city):>20} - {self.name}"
+        city = self.city if self.city else "NO_CITY"
+        return f"{str(self.group_code):>6} - {str(self.post_code):>5} - {city:<20} - {self.name}"
