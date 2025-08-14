@@ -20,8 +20,8 @@ log() {
 # Function to execute a Docker Compose task
 run_task() {
     local task_name="$1"
-    local task_args="${2//-/}"
-    local log_file="$LOG_DIR/${task_name}_${task_args}-$(date '+%Y%m%d_%H%M%S').log"
+    local task_args="$2"
+    local log_file="$LOG_DIR/${task_name}_${task_args//-/}-$(date '+%Y%m%d_%H%M%S').log"
    
     log "Starting $task_name with args: $task_args"
    
@@ -32,7 +32,7 @@ run_task() {
    
     # Execute task - pass arguments after the service name
     if [ -n "$task_args" ]; then
-        docker compose run --rm "$task_name" $task_args 2>&1 | tee "$log_file"
+        docker compose run --rm "$task_name" "$task_args" 2>&1 | tee "$log_file"
     else
         docker compose run --rm "$task_name" 2>&1 | tee "$log_file"
     fi
