@@ -55,8 +55,8 @@ parser.add_argument(
     help="Run the crawler with the given url (for test purpose)",
 )
 parser.add_argument(
-    "--url",
-    "-u",
+    "urls",
+    nargs="*",
     default=None,
     help="The url to crawl",
 )
@@ -76,12 +76,12 @@ async def main(params: argparse.Namespace):
     col = params.collections
     sch = params.schedules
 
-    if params.crawl and not params.url:
+    if params.crawl and len(params.urls) == 0:
         logger.error("You need to provide a url to start the crawler")
         return
 
     if params.crawl:
-        results = await start_crawler([params.url])
+        results = await start_crawler(params.urls)
         logger.info(f"Crawler ended with data: {results.items}")
 
     if params.file:

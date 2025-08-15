@@ -300,14 +300,33 @@ class TestHandleSchedule:
         mock_match_event = mocker.patch(
             "collecte.tasks.schedules._match_event", side_effect=mock_results
         )
-        mock_log = mocker.patch.object(schedule_tasks.logger, "error")
+        mock_log = mocker.patch.object(schedule_tasks.logger, "warning")
 
         results = await schedule_tasks._handle_schedule(mock_sch.schemas[0])
 
         mock_retrieve_events.assert_awaited_once()
         mock_log.assert_called_once()
         mock_match_event.assert_not_called()
-        assert results is None
+        assert results == []
+
+    @pytest.mark.asyncio
+    async def test_exception(self, mocker: MockerFixture, mock_sch, mock_evt_col):
+        mock_events = mock_evt_col.schemas[:2]
+
+        mock_retrieve_events = mocker.patch(
+            "collecte.tasks.schedules.retrieve_events", return_value=mock_events
+        )
+        mock_match_event = mocker.patch(
+            "collecte.tasks.schedules._match_event", side_effect=Exception("foo")
+        )
+        mock_log = mocker.patch.object(schedule_tasks.logger, "error")
+
+        results = await schedule_tasks._handle_schedule(mock_sch.schemas[0])
+
+        mock_retrieve_events.assert_awaited_once()
+        mock_match_event.assert_called()
+        mock_log.assert_called_once()
+        assert results == []
 
 
 class TestHandleSchedulesGroup:
