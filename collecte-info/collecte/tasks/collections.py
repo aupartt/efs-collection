@@ -81,15 +81,15 @@ async def _get_collections_locations() -> list[dict]:
 
 
 async def _handle_location(location: LocationSchema) -> None:
-    """Handle a single location"""
+    """Handle a single location and filter collections without urls"""
 
-    async def _add_efs_id(collection: CollectionSchema) -> None:
+    async def _add_efs_id(collection: CollectionSchema) -> CollectionSchema:
         """Add efs_id to a collection"""
         efs_id = await get_esf_id(collection.url)
         collection.efs_id = efs_id
 
-    tasks = [_add_efs_id(collection) for collection in location.collections]
-    await asyncio.gather(*tasks)
+    tasks = [_add_efs_id(collection) for collection in location.collections if collection.url]
+    location.collections = await asyncio.gather(*tasks)
 
 
 async def _transform_location_collections(location: LocationSchema) -> None:
@@ -98,7 +98,7 @@ async def _transform_location_collections(location: LocationSchema) -> None:
     async def _collection_to_group(collection: CollectionSchema) -> None:
         group_collection: CollectionGroupSchema = collection.as_group(from_db=False)
         return group_collection
-
+    
     tasks = [_collection_to_group(collection) for collection in location.collections]
     location.collections = await asyncio.gather(*tasks)
 
@@ -133,5 +133,5 @@ async def update_collections(locations: list[dict] = None) -> None:
     collections, events, snapshots = await save_location_collections(locations)
 
     logger.info(
-        f"Processed {collections} collections, {events} events, {snapshots} snapshots"
+        f"Processed {collections} collections resulting to: {events} events and {snapshots} snapshots"
     )
