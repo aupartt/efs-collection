@@ -98,7 +98,8 @@ async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
         schedules = []
 
         if len(events) == 0:
-            raise ValueError("No event found.")
+            logger.warning(f"No event found for schedule {schedule.info()}.")
+            return schedules
 
         # Only one event: We can save directly the schedule
         if len(events) == 1:
@@ -112,6 +113,7 @@ async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
         return schedules
     except Exception as e:
         logger.error(f"Error while handling schedule {schedule.info()} : {e}")
+        return []
 
 
 async def _handle_schedules_group(
