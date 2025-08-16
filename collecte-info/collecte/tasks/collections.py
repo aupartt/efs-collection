@@ -126,7 +126,7 @@ async def update_collections(locations: list[dict] = None) -> None:
     await asyncio.gather(*tasks)
 
     # Transform collections to group collections
-    tasks = [_transform_location_collections(location) for location in locations]
+    tasks = [_transform_location_collections(location) for location in locations if location]
     await asyncio.gather(*tasks)
 
     # Save all collections to database
