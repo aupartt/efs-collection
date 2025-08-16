@@ -82,7 +82,8 @@ async def main(params: argparse.Namespace):
 
     if params.crawl:
         results = await start_crawler(params.urls)
-        logger.info(f"Crawler ended with data: {results.items}")
+        data = results.items
+        logger.info(f"Crawler ended with data: {data}")
 
     if params.file:
         data = load_data(params.file, params.format)
@@ -105,15 +106,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     asyncio.run(main(args))
-
-
-# [root] ERROR Error while retrieving ESF id from https://efs.link/uC7Ea: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
-# [root] ERROR Error while retrieving ESF id from https://efs.link/czV2M: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
-# [root] ERROR Error while retrieving ESF id from https://efs.link/nBzHZ: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
-# [root] ERROR Error while retrieving ESF id from https://efs.link/RE2rS: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
-# [root] ERROR Error while retrieving ESF id from https://efs.link/S92Ti: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
-# [root] ERROR Error while retrieving ESF id from https://efs.link/jb4wd: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
-# [root] ERROR Error while retrieving ESF id from https://efs.link/RPKzx: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
-# [root] ERROR Error while retrieving ESF id from https://efs.link/FNh76: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
-# [root] ERROR Error while retrieving ESF id from https://efs.link/ufKPe: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
-# [root] ERROR Error while retrieving ESF id from https://efs.link/6gBGY: Cannot connect to host efs.link:443 ssl:default [Temporary failure in name resolution]
