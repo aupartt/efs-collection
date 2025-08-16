@@ -99,7 +99,7 @@ async def _transform_location_collections(location: LocationSchema) -> None:
         group_collection: CollectionGroupSchema = collection.as_group(from_db=False)
         return group_collection
     
-    tasks = [_collection_to_group(collection) for collection in location.collections]
+    tasks = [_collection_to_group(collection) for collection in location.collections if collection]
     location.collections = await asyncio.gather(*tasks)
 
 
