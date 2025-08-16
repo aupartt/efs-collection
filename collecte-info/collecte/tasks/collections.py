@@ -83,10 +83,13 @@ async def _get_collections_locations() -> list[dict]:
 async def _handle_location(location: LocationSchema) -> None:
     """Handle a single location and filter collections without urls"""
 
-    async def _add_efs_id(collection: CollectionSchema) -> CollectionSchema:
+    async def _add_efs_id(collection: CollectionSchema) -> CollectionSchema | None:
         """Add efs_id to a collection"""
         efs_id = await get_esf_id(collection.url)
+        if not efs_id:
+            return None
         collection.efs_id = efs_id
+        return collection
 
     tasks = [_add_efs_id(collection) for collection in location.collections if collection.url]
     location.collections = await asyncio.gather(*tasks)
