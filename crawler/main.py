@@ -69,10 +69,7 @@ async def setup_rabbitmq(keep_alive: bool, rq: RequestQueue):
         return None, None
     try:
         connection = await aio_pika.connect_robust(
-            host=settings.RABBITMQ_HOST,
-            port=settings.RABBITMQ_PORT,
-            login=settings.RABBITMQ_USER,
-            password=settings.RABBITMQ_PASSWORD,
+            url=settings.RABBITMQ_URL,
             client_properties={"connection_name": "crawler"},
         )
         channel = await connection.channel()

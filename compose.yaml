@@ -2,22 +2,25 @@
 # Docker Compose Configuration for Collectes EFS
 # =============================================================================
 
-# Shared configuration templates
-x-common-environment: &common-environment
-  RABBITMQ_USER: guest
-  RABBITMQ_PASSWORD: guest
-  RABBITMQ_PORT: 5672
-  RABBITMQ_HOST: rabbitmq
-
-x-common-volumes: &common-volumes
-  - ./collecte-info/data:/app/data
+# # Shared configuration templates
+# x-common-environment: &common-environment
+#   RABBITMQ_URL: amqp://efs_rq:rq_efs@rabbitmq:5672/
+#   POSTGRES_URL: postgresql+asyncpg://efs_user:8yDRo7@postgres:5432/collecte
 
 x-get-service-base: &get-service-base
-  build: 
-    context: .
-    dockerfile: ./collecte-info/Dockerfile
-  volumes: *common-volumes
-  environment: *common-environment
+  environment:
+    POSTGRES_USER: ${POSTGRES_USER}
+    POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+    POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+    POSTGRES_DB: ${POSTGRES_DB}
+  depends_on:
+    postgres:
+      condition: service_healthy
+  networks:
+    - app_network
+# volumes: 
+#   - ./collecte-info/data:/app/data
 
 # =============================================================================
 # Services
@@ -28,73 +31,118 @@ services:
   # Infrastructure Services
   # ---------------------------------------------------------------------------
   
-  rabbitmq:
-    image: rabbitmq:4-management
+  # rabbitmq:
+  #   image: rabbitmq:4-management
+  #   ports:
+  #     - "5672:5672"   # AMQP port
+  #     - "15672:15672" # Management UI
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: efs_rq
+  #     RABBITMQ_DEFAULT_PASS: rq_efs
+  #   restart: unless-stopped
+  #   volumes:
+  #     - rabbitmq_data:/var/lib/rabbitmq
+  #   networks:
+  #     - app_network
+
+  grafana:
+    image: grafana/grafana-enterprise
     ports:
-      - "5672:5672"   # AMQP port
-      - "15672:15672" # Management UI
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      - 3000:3000
     restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - ./grafana/dashboards:/etc/grafana/dashboards
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana-cache:/var/lib/grafana
     networks:
-      - crawler_network
+      - app_network
 
   # ---------------------------------------------------------------------------
   # Application Services
   # ---------------------------------------------------------------------------
   
-  crawler:
-    build: ./crawler/
-    command: main.py --headless --keep-alive
-    depends_on:
-      - rabbitmq
-    environment: *common-environment
-    restart: unless-stopped
-    networks:
-      - crawler_network
+  # crawler:
+  #   build: ./crawler/
+  #   command: main.py --headless --keep-alive
+  #   depends_on:
+  #     - rabbitmq
+  #   environment: *common-environment
+  #   restart: unless-stopped
+  #   networks:
+  #     - app_network
+  #   profiles:
+  #     - donotstart
 
   # ---------------------------------------------------------------------------
   # Data Collection Services
   # ---------------------------------------------------------------------------
+
+  cli:
+    build: 
+      context: .
+      dockerfile: ./collecte-info/Dockerfile
+    image: collecte-info:latest
+    <<: *get-service-base
+    volumes:
+      - ./data/:/app/data/ # to help passing files for import
+
+  alembic:
+    image: collecte-info:latest
+    <<: *get-service-base
+    entrypoint: ["python", "-u", "-m"]
+    command: alembic upgrade head
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # Database Services
+  # ---------------------------------------------------------------------------
   
-  consumer:
-    <<: *get-service-base
-    command: get_schedules.py --listen
-    depends_on:
-      - rabbitmq
-      - crawler
-    restart: unless-stopped
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: always
+    volumes:
+      - efs_postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
-      - crawler_network
+      - app_network
 
-  get-collections:
-    <<: *get-service-base
-    command: get_collections.py
-
-  get-locations:
-    <<: *get-service-base
-    command: get_locations.py --force
-
-  get-schedules:
-    <<: *get-service-base
-    command: get_schedules.py
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    restart: always
     depends_on:
-      - rabbitmq
-      - crawler
+      - postgres
     networks:
-      - crawler_network
+      - app_network
 
 # =============================================================================
 # Volumes & Networks
 # =============================================================================
 
 volumes:
-  rabbitmq_data:
+  efs_postgres:
     driver: local
+  grafana-cache:
+  # rabbitmq_data:
+  #   driver: local
+
 
 networks:
-  crawler_network:
-    driver: bridge
+  app_network:

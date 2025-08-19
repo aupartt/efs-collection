@@ -1,0 +1,180 @@
+import asyncio
+import math
+import uuid
+
+from crawlee import Request
+from crawler.crawler import start_crawler
+
+from collecte.core.logging import logger
+from collecte.core.settings import settings
+from collecte.schemas import CollectionEventSchema, ScheduleGroupSchema, ScheduleSchema
+from collecte.services.collections import get_active_collections
+from collecte.services.schedules import add_schedule, retrieve_events
+from collecte.tasks.collections import get_esf_id
+
+
+async def _retrieve_active_collections_url() -> list[str]:
+    """Retrieve all active collections from the database and return their URL"""
+    active_collections = await get_active_collections()
+    return [collection.url for collection in active_collections if collection]
+
+
+async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema] | None:
+    """Retrieves active collections urls
+    then call the crawler to get corresponding schedules
+    """
+
+    async def buil_request(url):
+        _id = f"{url}:{uuid.uuid4()}"
+        return Request.from_url(url, unique_key=_id)
+
+    try:
+        urls = await _retrieve_active_collections_url()
+        results = []
+        b = settings.CRAWLER_BATCH
+        logger.info(f"Start crawler with batch {b} for {len(urls)} urls")
+        for i in range(math.ceil(len(urls) / b)):
+            _urls = [await buil_request(url) for url in urls[b * i : b * i + b]]
+            batch_results = await start_crawler(_urls)
+            results.extend(batch_results.items)
+
+        filtered_results = [result for result in results if result]
+        logger.info(f"Total schedules scraped : {len(filtered_results)}")
+        return filtered_results
+    except Exception as e:
+        logger.error(f"Error while getting schedules from crawler : {e}")
+
+
+async def _match_event(
+    schedule: ScheduleSchema, event: CollectionEventSchema
+) -> ScheduleSchema | None:
+    """Match the schedule with the event and return the schedule with the event id.
+    - It may have multiple events for the same day but with different timetables.
+    """
+    try:
+        # Get basic informations
+        is_morning = all([event.morning_start_time, event.morning_end_time])
+        is_afternoon = all([event.afternoon_start_time, event.afternoon_end_time])
+        is_all_day = all([event.morning_start_time, event.afternoon_end_time]) or all(
+            [is_morning, is_afternoon]
+        )
+        if not any([is_morning, is_afternoon, is_all_day]):
+            raise ValueError("The event have no timerange")
+
+        # No error, we can assign ID
+        schedule.event_id = event.id
+
+        # Check if this event is for the whole day
+        if is_all_day:
+            return schedule
+
+        # Set MinMax values for event
+        if is_morning:
+            min_value = event.morning_start_time
+            max_value = event.morning_end_time
+        else:
+            min_value = event.afternoon_start_time
+            max_value = event.afternoon_end_time
+
+        new_schedule = schedule.model_copy()
+        new_schedule.timetables = {
+            k: v
+            for k, v in schedule.timetables.items()
+            if k >= min_value and k <= max_value
+        }
+
+        return new_schedule
+
+    except Exception as e:
+        logger.error(
+            f"Error while matching schedule {schedule.info()} with event {event.id} : {e}"
+        )
+
+
+async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
+    """Retrieve events related to a schedule and match the schedule for each event"""
+    try:
+        events: list[CollectionEventSchema] = await retrieve_events(schedule)
+        schedules = []
+
+        if len(events) == 0:
+            logger.warning(f"No event found for schedule {schedule.info()}.")
+            return schedules
+
+        # Only one event: We can save directly the schedule
+        if len(events) == 1:
+            schedule.event_id = events[0].id
+            schedules.append(schedule)
+        else:
+            # Multiple events: We have to split the schedule (mostly morning / afternoon)
+            tasks = [_match_event(schedule, event) for event in events]
+            schedules = await asyncio.gather(*tasks)
+
+        return schedules
+    except Exception as e:
+        logger.error(f"Error while handling schedule {schedule.info()} : {e}")
+        return []
+
+
+async def _handle_schedules_group(
+    schedules_group: ScheduleGroupSchema,
+) -> list[ScheduleSchema]:
+    """Retrieve EFS_ID of the url before handling each schedules"""
+    try:
+        efs_id = await get_esf_id(schedules_group.url)
+        if not efs_id:
+            raise ValueError("Could get EFS_ID.")
+
+        schedules_group.efs_id = efs_id
+        schedules = schedules_group.build()
+
+        tasks = [_handle_schedule(schedule) for schedule in schedules]
+        results = await asyncio.gather(*tasks)
+
+        return [item for items in results for item in items if item]
+    except Exception as e:
+        logger.error(
+            f"Error while handling schedules group {schedules_group.info()} : {e}"
+        )
+
+
+async def update_schedules(
+    schedules_groups: list[dict] | None = None,
+) -> None:
+    """Retrieve, process and save schedules"""
+    logger.info("Start updating schedules...")
+
+    if not schedules_groups:
+        logger.info("No schedules specified, retrieving with the crawler")
+        schedules_groups = await _get_schedules_from_crawler()
+        logger.info("Schedules retrieved.")
+
+    if not schedules_groups or len(schedules_groups) == 0:
+        logger.error("No schedules to process")
+        return
+
+    schedules_groups = [
+        ScheduleGroupSchema(**schedule) for schedule in schedules_groups if schedule
+    ]
+
+    logger.info(f"Processing {len(schedules_groups)} schedules...")
+
+    # Get efs_ids and event id
+    tasks = [
+        _handle_schedules_group(schedules_group)
+        for schedules_group in schedules_groups
+        if schedules_group
+    ]
+    results = await asyncio.gather(*tasks)
+
+    # Add scedules
+    tasks = [
+        add_schedule(schedule)
+        for schedules in results
+        if schedules
+        for schedule in schedules
+        if schedule
+    ]
+    results = await asyncio.gather(*tasks)
+
+    logger.info(f"Processed {len(results)} schedules")

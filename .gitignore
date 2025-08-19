@@ -1,16 +1,21 @@
 # Data
 collecte-info/data/*.json
-crawler/storage/
+storage/
 crawler/results.json
 notebooks/data/*.json
 notebooks/data/*.jsonl
 notebooks/data/*.csv
+data/
 
 # Cache & Co
 __pycache__/
+.pytest_cache
 .venv/
 .ruff_cache/
 .uv/
+.vscode
+*.egg-info
 
 # Files
 .env
+.coverage

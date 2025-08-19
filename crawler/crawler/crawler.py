@@ -6,8 +6,6 @@ import logging
 from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext
 from crawlee.storages import RequestQueue
 from crawlee.configuration import Configuration
-
-from crawler.settings import settings
 from crawler.models import LocationEvents
 from crawler.locators import process_by_type
 
@@ -23,6 +21,8 @@ async def request_handler(
         data = await process_by_type(context)
 
         if channel:
+            from crawler.settings import settings
+
             await channel.default_exchange.publish(
                 aio_pika.Message(body=data.model_dump_json().encode()),
                 routing_key=settings.RABBITMQ_DATA_QUEUE,
@@ -39,7 +39,7 @@ async def request_handler(
 async def start_crawler(
     urls: list[str],
     headless: bool = True,
-    browser_type: str = "firefox",
+    browser_type: str = "chromium",
     keep_alive: bool = False,
     channel: aio_pika.Channel | None = None,
     request_queue: RequestQueue | None = None,
@@ -49,29 +49,30 @@ async def start_crawler(
 ) -> LocationEvents | None | str:
     config = Configuration.get_global_configuration()
     config.available_memory_ratio = 0.33
-    
+
     # Add memory management configuration
     browser_launch_options = {
-        'args': [
-            '--memory-pressure-off',
-            '--max_old_space_size=2048',  # Limit Node.js heap
-            '--disable-dev-shm-usage',   # Reduce shared memory usage
-            '--disable-extensions',
-            '--disable-plugins',
-            '--disable-background-networking',
-            '--disable-background-timer-throttling',
-            '--disable-renderer-backgrounding',
+        "args": [
+            "--memory-pressure-off",
+            "--max_old_space_size=2048",  # Limit Node.js heap
+            "--disable-dev-shm-usage",  # Reduce shared memory usage
+            "--disable-extensions",
+            "--disable-plugins",
+            "--disable-background-networking",
+            "--disable-background-timer-throttling",
+            "--disable-renderer-backgrounding",
         ]
     }
 
-    
-    if browser_type == 'chromium':
-        browser_launch_options['args'].extend([
-            '--disable-web-security',
-            '--disable-blink-features=AutomationControlled',
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-        ])
+    if browser_type == "chromium":
+        browser_launch_options["args"].extend(
+            [
+                "--disable-web-security",
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+            ]
+        )
 
     crawler = PlaywrightCrawler(
         headless=headless,
@@ -97,7 +98,6 @@ async def start_crawler(
 
     if not keep_alive:
         data = await crawler.get_data()
-        crawler.log.info(f"Extracted data: {data.items}")
         return data
     elif stats.requests_total > max_requests_per_crawl:
         return "MAX_REQUESTS_REACHED"
