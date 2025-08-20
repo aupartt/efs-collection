@@ -9,17 +9,17 @@
 # 4. Add the lines below
 #
 
-# Collect groups every week at 3 AM
-0 3 * * 0 (/usr/local/bin/run-collectes.sh groups) 2>&1 | logger -t get-groups
+# Collect groups every week at 2 AM
+0 2 * * 0 (/usr/local/bin/run-collectes.sh groups) 2>&1 | logger -t get-groups
 
-# Collect locations every Sunday at 3:30 AM
-30 3 * * 0 (/usr/local/bin/run-collectes.sh locations) 2>&1 | logger -t get-locations
+# Collect locations every Sunday at 2:30 AM
+30 2 * * 0 (/usr/local/bin/run-collectes.sh locations) 2>&1 | logger -t get-locations
 
-# Collect collections every day at 11 AM
-0 11 * * * (/usr/local/bin/run-collectes.sh collections) 2>&1 | logger -t get-collections
+# Collect collections every day at 3 AM
+0 3 * * * (/usr/local/bin/run-collectes.sh collections) 2>&1 | logger -t get-collections
 
-# Collect schedules every day at 11:30 AM
-30 11 * * * (/usr/local/bin/run-collectes.sh schedules) 2>&1 | logger -t get-schedules
+# Collect schedules every day at 3:30 AM
+30 3 * * * (/usr/local/bin/run-collectes.sh schedules) 2>&1 | logger -t get-schedules
 
 # Clean old logs (keep 30 days)
 0 0 1 * * (find /path/to/collectes-efs/logs -name "*.log" -mtime +30 -delete) 2>&1 | logger -t log-cleanup

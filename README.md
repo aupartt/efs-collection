@@ -64,12 +64,13 @@ The system automatically:
 ### Parameters
 | Long | Short | Type | Default | Description |
 |-----------|------|-----------|---------|---|
-| **--file** | **-f** | str | `None` | Path to the file |
-| **--format** | **-F** | `JSON`, `JSONL` | `JSONL` | Update appointment availability |
+| **--file** | **-f** | str | `None` | Path to the data file |
+| **--format** | **-F** | `JSON`, `JSONL` | `JSONL` | Format of the data |
 | **--groups** | **-g** | bool | `False` | Update groups database |
 | **--locations** | **-l** | bool | `False` | Update location database |
-| **--collections** | **-c** | bool | `False` | Refresh collection events |
-| **--schedules** | **-s** | bool | `False` | Update appointment availability |
+| **--collections** | **-c** | bool | `False` | Update collection and get events snapshot |
+| **--schedules** | **-s** | bool | `False` | Get schedules snapshot |
+| **--crawl** | **-s** | bool | `False` | Start the crawler with nargs* urls |
 
 ### Start collecte
 
@@ -97,10 +98,10 @@ You can use `run-collectes.sh` and `crontab-collectes` to schedule automated dat
 ### Default scheduled Tasks
 | Task | Frequency | Purpose |
 |------|-----------|---------|
-| `get-groups` | Weekly (Sun 3 AM) | Update groups database |
-| `get-locations` | Weekly (Sun 3:30 AM) | Update location database |
-| `get-collections` | Daily (11 AM) | Refresh collection events |
-| `get-schedules` | Twice daily (11:30 AM) | Update appointment availability |
+| `get-groups` | Weekly (Sun 2 AM) | Update groups database |
+| `get-locations` | Weekly (Sun 2:30 AM) | Update location database |
+| `get-collections` | Daily (3 AM) | Refresh collection events |
+| `get-schedules` | Daily (3:30 AM) | Update appointment availability |
 
 **Setup automated scheduling**
 ```bash
