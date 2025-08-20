@@ -28,5 +28,5 @@ class ScheduleModel(Base):
     timetable_max: Mapped[time]
 
     # Relationships
-    event_id: Mapped[int] = mapped_column(ForeignKey("collection_events.id"))
+    event_id: Mapped[int] = mapped_column(ForeignKey("collection_events.id", ondelete="CASCADE"))
     event: Mapped["CollectionEventModel"] = relationship(back_populates="snapshots")

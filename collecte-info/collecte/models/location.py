@@ -63,7 +63,7 @@ class LocationModel(Base):
 
     # Relationships
     group_code: Mapped[str] = mapped_column(
-        String(10), ForeignKey("groups.gr_code"), index=True
+        String(10), ForeignKey("groups.gr_code", ondelete="CASCADE"), index=True
     )
     group: Mapped["GroupModel"] = relationship(back_populates="locations")
     collections: Mapped[list["CollectionGroupModel"]] = relationship(
