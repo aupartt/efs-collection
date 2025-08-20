@@ -98,6 +98,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      - ./collecte-info/alembic.ini:/app/alembic.ini
+      - ./collecte-info/alembic:/app/alembic
 
   # ---------------------------------------------------------------------------
   # Database Services
