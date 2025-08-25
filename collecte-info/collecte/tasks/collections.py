@@ -48,7 +48,7 @@ async def _retrieve_sampling_collections(
 
 
 async def get_esf_id(url: str) -> str | None:
-    """Retrieve ESF id from url"""
+    """Retrieve EFS id from url"""
     if not url:
         return
 
@@ -61,7 +61,7 @@ async def get_esf_id(url: str) -> str | None:
                     return match.group(1) if match else None
             except Exception as e:
                 logger.error(
-                    "Failed to retrieve ESF id", extra={"url": url, "error": str(e)}
+                    "Failed to retrieve EFS_ID", extra={"url": url, "error": str(e)}
                 )
 
 
