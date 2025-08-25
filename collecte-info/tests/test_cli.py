@@ -10,6 +10,7 @@ import cli
 @pytest.fixture
 def _mock_args():
     args = MagicMock(spec=Namespace)
+    args.ping = False
     args.groups = False
     args.locations = False
     args.collections = False
