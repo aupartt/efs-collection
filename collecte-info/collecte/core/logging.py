@@ -68,29 +68,20 @@ def configure_logger() -> logging.Logger:
     # Handler Loki si disponible
     if settings.LOKI_URL:
         try:
-            import atexit
-            from multiprocessing import Queue
+            from loki_logger_handler.loki_logger_handler import LokiLoggerHandler
 
-            import logging_loki
-
-            queue = Queue(-1)
-            handler = logging.handlers.QueueHandler(queue)
-
-            loki_handler = logging_loki.LokiHandler(
+            loki_handler = LokiLoggerHandler(
                 url=f"{settings.LOKI_URL}/loki/api/v1/push",
-                tags={
+                labels={
                     "application": "collecte-info",
                     "environment": settings.ENVIRONMENT,
                     "host": os.getenv("HOSTNAME", "unknown"),
                 },
-                version="1",
+                label_keys={},
+                timeout=10,
             )
-            listener = logging.handlers.QueueListener(queue, loki_handler)
-            listener.start()
 
-            atexit.register(lambda: listener.stop())
-
-            logger.addHandler(handler)
+            logger.addHandler(loki_handler)
         except ImportError:
             print("⚠️  logging_loki non disponible")
         except Exception as e:
@@ -162,7 +153,7 @@ class CrawleeLogFormatter(logging.Formatter):
         extra_string = ""
         extra = self._get_extra_fields(record)
         if extra:
-            extra_string = f" {Fore.LIGHTBLACK_EX}({json.dumps(extra, ensure_ascii=False, default=str)}){Style.RESET_ALL}"
+            extra_string = f" {Fore.LIGHTBLACK_EX}{json.dumps(extra, ensure_ascii=False, default=str)}{Style.RESET_ALL}"
 
         # Call the parent method so that it populates missing fields in the record
         super().format(record)

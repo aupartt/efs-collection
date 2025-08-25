@@ -84,7 +84,7 @@ async def main(params: argparse.Namespace):
     sch = params.schedules
 
     if params.ping:
-        logger.info("Pong !")
+        logger.info("Pong !", extra={"foo": "bar"})
         return
 
     if params.crawl and len(params.urls) == 0:

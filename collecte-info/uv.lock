@@ -412,8 +412,8 @@ dependencies = [
     { name = "api-carto-client" },
     { name = "asyncpg" },
     { name = "crawler" },
+    { name = "loki-logger-handler" },
     { name = "pydantic-settings" },
-    { name = "python-logging-loki" },
     { name = "sqlalchemy" },
     { name = "tqdm" },
 ]
@@ -436,8 +436,8 @@ requires-dist = [
     { name = "api-carto-client", editable = "../api-carto-client" },
     { name = "asyncpg", specifier = ">=0.30.0" },
     { name = "crawler", editable = "../crawler" },
+    { name = "loki-logger-handler", specifier = ">=1.1.2" },
     { name = "pydantic-settings", specifier = "==2.6.0" },
-    { name = "python-logging-loki", specifier = ">=0.3.1" },
     { name = "sqlalchemy", specifier = ">=2.0.42" },
     { name = "tqdm", specifier = ">=4.67.1" },
 ]
@@ -938,6 +938,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/99/1b/72906d554acfeb588332eaaa6f61577705e9ec752ddb486f302dafa292d9/jupyter_core-5.8.1.tar.gz", hash = "sha256:0a5f9706f70e64786b75acba995988915ebd4601c8a52e534a40b51c95f59941", size = 88923 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2f/57/6bffd4b20b88da3800c5d691e0337761576ee688eb01299eae865689d2df/jupyter_core-5.8.1-py3-none-any.whl", hash = "sha256:c28d268fc90fb53f1338ded2eb410704c5449a358406e8a948b75706e24863d0", size = 28880 },
+]
+
+[[package]]
+name = "loki-logger-handler"
+version = "1.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ea/60/6c212ae881abf82e6b85fddd6ef338404c4dbf812c3b1cb88527903c7633/loki_logger_handler-1.1.2.tar.gz", hash = "sha256:b3b588903420197ac9bb477f9c8fd6c18edf3e475b94f3d27d2aeed3930eb5d1", size = 15986 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/09/00/93631b307a801d8fe48867e20923fdb161f5d0aa165ca322b71544c35b96/loki_logger_handler-1.1.2-py3-none-any.whl", hash = "sha256:7ee10259162caf6aa21b784d753dc2f73102225517857bb40051b7e933cfd07d", size = 14272 },
 ]
 
 [[package]]
@@ -1446,19 +1455,6 @@ wheels = [
 ]
 
 [[package]]
-name = "python-logging-loki"
-version = "0.3.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "requests" },
-    { name = "rfc3339" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/39/e2/b1ca91524530e5c7d73e70c4a2df952e5b7f1519977c7c51b3966b0332a8/python-logging-loki-0.3.1.tar.gz", hash = "sha256:b83610c8a3adc99fbab072493b91dfb25ced69be4874fefe3ab457b391adbf60", size = 5214 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e9/ca/1f5660fbda815ed04839d657cab77605337e32c224c03c780cd383c7bcd6/python_logging_loki-0.3.1-py3-none-any.whl", hash = "sha256:8a9131db037fbea3d390089c4c32dbe7ed233944905079615a9fb6f669b0f4e6", size = 7004 },
-]
-
-[[package]]
 name = "pywin32"
 version = "311"
 source = { registry = "https://pypi.org/simple" }
@@ -1542,15 +1538,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/72/97/bf44e6c6bd8ddbb99943baf7ba8b1a8485bcd2fe0e55e5708d7fee4ff1ae/requests_file-2.1.0.tar.gz", hash = "sha256:0f549a3f3b0699415ac04d167e9cb39bccfb730cb832b4d20be3d9867356e658", size = 6891 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d7/25/dd878a121fcfdf38f52850f11c512e13ec87c2ea72385933818e5b6c15ce/requests_file-2.1.0-py2.py3-none-any.whl", hash = "sha256:cf270de5a4c5874e84599fc5778303d496c10ae5e870bfa378818f35d21bda5c", size = 4244 },
-]
-
-[[package]]
-name = "rfc3339"
-version = "6.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/91/fb/2835a62f2de226796fce76411daec6b9831eaf6d2fd04994ac1de055dc13/rfc3339-6.2.tar.gz", hash = "sha256:d53c3b5eefaef892b7240ba2a91fef012e86faa4d0a0ca782359c490e00ad4d0", size = 4144 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/0f/2e/48d6cf57dec789c90a7b1cb59a21c3cad509f0ec1284632152f33bb1d88d/rfc3339-6.2-py3-none-any.whl", hash = "sha256:f44316b21b21db90a625cde04ebb0d46268f153e6093021fa5893e92a96f58a3", size = 5515 },
 ]
 
 [[package]]

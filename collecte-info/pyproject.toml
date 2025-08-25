@@ -11,8 +11,8 @@ dependencies = [
     "api-carto-client",
     "asyncpg>=0.30.0",
     "crawler",
+    "loki-logger-handler>=1.1.2",
     "pydantic-settings==2.6.0",
-    "python-logging-loki>=0.3.1",
     "sqlalchemy>=2.0.42",
     "tqdm>=4.67.1",
 ]
