@@ -60,6 +60,11 @@ parser.add_argument(
     default=None,
     help="The url to crawl",
 )
+parser.add_argument(
+    "--ping",
+    action="store_true",
+    help="Pong!",
+)
 
 
 def load_data(fila_path: str, file_type: str = "JSONL"):
@@ -75,6 +80,10 @@ async def main(params: argparse.Namespace):
     loc = params.locations
     col = params.collections
     sch = params.schedules
+
+    if params.ping:
+        logger.info("Pong !")
+        return
 
     if params.crawl and len(params.urls) == 0:
         logger.error("You need to provide a url to start the crawler")
