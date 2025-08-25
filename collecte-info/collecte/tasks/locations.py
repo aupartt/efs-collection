@@ -32,10 +32,14 @@ async def _filter_location(
     location: LocationSchema,
 ) -> list[LocationSchema] | None:
     """Run some check on the location to avoid bad data"""
-    if location.post_code and location.post_code[:2] not in ["22", "29", "35", "56", ""]:
-        logger.warning(
-            f"Bad post_code {location.info()}"
-        )
+    if location.post_code and location.post_code[:2] not in [
+        "22",
+        "29",
+        "35",
+        "56",
+        "",
+    ]:
+        logger.warning(f"Bad post_code {location.info()}")
         return None
     if not all(
         [

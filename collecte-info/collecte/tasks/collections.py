@@ -92,7 +92,9 @@ async def _handle_location(location: LocationSchema) -> None:
         collection.efs_id = efs_id
         return collection
 
-    tasks = [_add_efs_id(collection) for collection in location.collections if collection.url]
+    tasks = [
+        _add_efs_id(collection) for collection in location.collections if collection.url
+    ]
     location.collections = await asyncio.gather(*tasks)
 
 
@@ -102,8 +104,12 @@ async def _transform_location_collections(location: LocationSchema) -> None:
     async def _collection_to_group(collection: CollectionSchema) -> None:
         group_collection: CollectionGroupSchema = collection.as_group(from_db=False)
         return group_collection
-    
-    tasks = [_collection_to_group(collection) for collection in location.collections if collection]
+
+    tasks = [
+        _collection_to_group(collection)
+        for collection in location.collections
+        if collection
+    ]
     location.collections = await asyncio.gather(*tasks)
 
 
@@ -130,7 +136,9 @@ async def update_collections(locations: list[dict] = None) -> None:
     await asyncio.gather(*tasks)
 
     # Transform collections to group collections
-    tasks = [_transform_location_collections(location) for location in locations if location]
+    tasks = [
+        _transform_location_collections(location) for location in locations if location
+    ]
     await asyncio.gather(*tasks)
 
     # Save all collections to database

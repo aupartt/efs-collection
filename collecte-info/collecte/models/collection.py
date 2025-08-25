@@ -65,14 +65,18 @@ class CollectionGroupModel(Base):
     )
 
     # Relationships
-    group_code: Mapped[str] = mapped_column(ForeignKey("groups.gr_code", ondelete="CASCADE"))
+    group_code: Mapped[str] = mapped_column(
+        ForeignKey("groups.gr_code", ondelete="CASCADE")
+    )
     events: Mapped[list["CollectionEventModel"]] = relationship(
         back_populates="collection_group", cascade="all, delete-orphan"
     )
     snapshots: Mapped[list["CollectionGroupSnapshotModel"]] = relationship(
         back_populates="collection_group", cascade="all, delete-orphan"
     )
-    location_id: Mapped[int] = mapped_column(ForeignKey("locations.id", ondelete="CASCADE"))
+    location_id: Mapped[int] = mapped_column(
+        ForeignKey("locations.id", ondelete="CASCADE")
+    )
     location: Mapped["LocationModel"] = relationship(back_populates="collections")
 
 
@@ -97,7 +101,9 @@ class CollectionEventModel(Base):
     )
 
     # Relationships
-    collection_group_id: Mapped[int] = mapped_column(ForeignKey("collection_groups.id", ondelete="CASCADE"))
+    collection_group_id: Mapped[int] = mapped_column(
+        ForeignKey("collection_groups.id", ondelete="CASCADE")
+    )
     collection_group: Mapped["CollectionGroupModel"] = relationship(
         back_populates="events"
     )
@@ -136,7 +142,9 @@ class CollectionGroupSnapshotModel(Base):
     )
 
     # Relationships
-    collection_group_id: Mapped[int] = mapped_column(ForeignKey("collection_groups.id", ondelete="CASCADE"))
+    collection_group_id: Mapped[int] = mapped_column(
+        ForeignKey("collection_groups.id", ondelete="CASCADE")
+    )
     collection_group: Mapped["CollectionGroupModel"] = relationship(
         back_populates="snapshots"
     )
