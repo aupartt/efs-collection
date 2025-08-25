@@ -4,11 +4,13 @@ import json
 
 from crawler.crawler import start_crawler
 
-from collecte.core.logging import logger
+from collecte.core.logging import configure_logger
 from collecte.tasks.collections import update_collections
 from collecte.tasks.groups import update_groups
 from collecte.tasks.locations import update_locations
 from collecte.tasks.schedules import update_schedules
+
+logger = configure_logger()
 
 parser = argparse.ArgumentParser(prog="collecte-info", description="Collecte info CLI")
 parser.add_argument(

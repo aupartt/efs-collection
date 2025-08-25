@@ -1,16 +1,18 @@
 import asyncio
+import logging
 import math
 import uuid
 
 from crawlee import Request
 from crawler.crawler import start_crawler
 
-from collecte.core.logging import logger
 from collecte.core.settings import settings
 from collecte.schemas import CollectionEventSchema, ScheduleGroupSchema, ScheduleSchema
 from collecte.services.collections import get_active_collections
 from collecte.services.schedules import add_schedule, retrieve_events
 from collecte.tasks.collections import get_esf_id
+
+logger = logging.getLogger(__name__)
 
 
 async def _retrieve_active_collections_url() -> list[str]:

@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from api_carto_client import Client
 from api_carto_client.api.sampling_location import (
@@ -7,12 +8,13 @@ from api_carto_client.api.sampling_location import (
 from api_carto_client.models.sampling_group_entity import SamplingGroupEntity
 from api_carto_client.models.sampling_location_result import SamplingLocationResult
 
-from collecte.core.logging import logger
 from collecte.core.settings import settings
 from collecte.schemas.location import LocationSchema
 from collecte.services.groups import load_groups
 from collecte.services.locations import save_locations
 from collecte.services.utils import api_to_pydantic, check_api, with_api_client
+
+logger = logging.getLogger(__name__)
 
 
 @with_api_client

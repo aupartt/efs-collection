@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import re
 from datetime import datetime
 
@@ -13,7 +14,6 @@ from api_carto_client.models.sampling_location_collections_entity import (
 )
 from dateutil.relativedelta import relativedelta
 
-from collecte.core.logging import logger
 from collecte.schemas import (
     CollectionGroupSchema,
     CollectionSchema,
@@ -23,6 +23,7 @@ from collecte.services.collections import save_location_collections
 from collecte.services.locations import get_postal_codes
 from collecte.services.utils import check_api, with_api_client
 
+logger = logging.getLogger(__name__)
 api_semaphore = asyncio.Semaphore(10)
 
 

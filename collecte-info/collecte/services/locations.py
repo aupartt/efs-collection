@@ -1,15 +1,17 @@
 import asyncio
+import logging
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from collecte.core.database import db_samaphore, get_db
-from collecte.core.logging import logger
 from collecte.models import LocationModel
 from collecte.schemas import LocationSchema
 from collecte.services.groups import get_group
 
 from .utils import sqlalchemy_to_pydantic
+
+logger = logging.getLogger(__name__)
 
 
 async def load_locations() -> list[LocationSchema]:
