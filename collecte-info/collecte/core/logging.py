@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import textwrap
 from typing import Any, Literal, assert_never
 
@@ -54,21 +55,50 @@ def string_to_log_level(level: type_log) -> int:
     assert_never(level)
 
 
-def configure_logger(
-    logger: logging.Logger, *, remove_old_handlers: bool = False
-) -> None:
-    handler = logging.StreamHandler()
-    handler.setFormatter(CrawleeLogFormatter())
-
-    if remove_old_handlers:
-        for old_handler in logger.handlers[:]:
-            logger.removeHandler(old_handler)
-
-    logger.addHandler(handler)
+def configure_logger() -> logging.Logger:
+    logger = logging.getLogger("collecte")
     logger.setLevel(string_to_log_level(settings.LOGGING_LEVEL))
+
+    logger.handlers.clear()
+
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(CrawleeLogFormatter())
+    logger.addHandler(console_handler)
+
+    # Handler Loki si disponible
+    if settings.LOKI_URL:
+        try:
+            import atexit
+            from multiprocessing import Queue
+
+            import logging_loki
+
+            queue = Queue(-1)
+            handler = logging.handlers.QueueHandler(queue)
+
+            loki_handler = logging_loki.LokiHandler(
+                url=f"{settings.LOKI_URL}/loki/api/v1/push",
+                tags={
+                    "application": "collecte-info",
+                    "environment": settings.ENVIRONMENT,
+                    "host": os.getenv("HOSTNAME", "unknown"),
+                },
+                version="1",
+            )
+            listener = logging.handlers.QueueListener(queue, loki_handler)
+            listener.start()
+
+            atexit.register(lambda: listener.stop())
+
+            logger.addHandler(handler)
+        except ImportError:
+            print("⚠️  logging_loki non disponible")
+        except Exception as e:
+            print(f"❌ Erreur configuration Loki: {e}")
 
     # Do not propagate the log messages to the parent logger to prevent duplicate log messages.
     logger.propagate = False
+    return logger
 
 
 class CrawleeLogFormatter(logging.Formatter):
@@ -156,10 +186,6 @@ class CrawleeLogFormatter(logging.Formatter):
 
         return f"{level_string}{log_string}{extra_string}{exception_string}"
 
-
-logger = logging.getLogger()
-
-configure_logger(logger, remove_old_handlers=True)
 
 # Silence HTTPX logger
 httpx_logger = logging.getLogger("httpx")

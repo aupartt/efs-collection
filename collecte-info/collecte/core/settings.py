@@ -7,8 +7,7 @@ class Settings(BaseSettings):
     )
 
     LOGGING_LEVEL: str = "INFO"
-
-    CRAWLER_BATCH: int = 20
+    ENVIRONMENT: str = "dev"
 
     # CLI SETUP
     REGION_NAME: str = "Bretagne"
@@ -16,6 +15,7 @@ class Settings(BaseSettings):
     MAX_LAT: float = 49.06
     MIN_LNG: float = -5.42
     MAX_LNG: float = -0.93
+    CRAWLER_BATCH: int = 20
 
     # POSTGRES
     POSTGRES_USER: str = "postgres"
@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str = "127.0.0.1"
     POSTGRES_PORT: str = "5432"
     POSTGRES_DB: str = "collecte"
+
+    # LOKI
+    LOKI_URL: str = None
 
     @property
     def POSTGRES_URL(self) -> str:
