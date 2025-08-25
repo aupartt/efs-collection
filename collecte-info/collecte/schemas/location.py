@@ -47,6 +47,19 @@ class LocationSchema(BaseModel):
     group_code: str = Field(alias="groupCode")
     collections: list[Union["CollectionSchema", "CollectionGroupSchema"]] | None = []
 
-    def info(self) -> str:
-        city = self.city if self.city else "NO_CITY"
-        return f"{str(self.group_code):>6} - {str(self.post_code):>5} - {city:<20} - {self.name}"
+    def info(self) -> dict:
+        return {
+            **self.model_dump(
+                include=[
+                    "id",
+                    "city",
+                    "post_code",
+                    "full_address",
+                    "group_code",
+                    "latitude",
+                    "longitude",
+                ]
+            ),
+            # Avoid KeyError: "Attempt to overwrite 'name' in LogRecord"
+            "location_name": self.name,
+        }

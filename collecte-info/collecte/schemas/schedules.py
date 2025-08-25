@@ -42,8 +42,10 @@ class ScheduleSchema(BaseModel):
     def timetable_max(self) -> time:
         return max(self.timetables.keys())
 
-    def info(self):
-        return f"{self.efs_id:>6} - {self.date.strftime('%d/%m/%Y')}"
+    def info(self) -> dict:
+        return self.model_dump(
+            include=["event_id", "efs_id", "url", "collecte_type", "date"]
+        )
 
     @field_validator("date", mode="before")
     def convert_date(cls, value):
@@ -98,9 +100,8 @@ class ScheduleGroupSchema(BaseModel):
     created_at: datetime = Field(..., alias="time")
     events: list[ScheduleEventSchema]
 
-    def info(self) -> str:
-        efs_id = self.efs_id if self.efs_id else "NO_EFS_ID"
-        return f"{efs_id:>9} - {self.url}"
+    def info(self) -> dict:
+        return self.model_dump(include=["efs_id", "url"])
 
     def build(self) -> list[ScheduleSchema]:
         schedules = []

@@ -50,6 +50,9 @@ class CollectionEventSchema(BaseModel):
     # Relations
     collection_group_id: int | None = None
 
+    def info(self) -> dict:
+        return self.model_dump()
+
 
 class CollectionGroupSchema(BaseModel):
     """Pydantic: Global data for a group of events"""
@@ -108,11 +111,20 @@ class CollectionGroupSchema(BaseModel):
         for event in self.events:
             event.collection_group_id = _id
 
-    def info(self) -> str:
-        efs_id = self.efs_id if self.efs_id else "NO_EFS_ID"
-        url = self.url if self.url else "NO_URL"
-        is_public = "PUBLIC" if self.is_public else "PRIVATE"
-        return f"[{is_public:<7}] {self.start_date.date()} to {self.end_date.date()} | {efs_id:<9} - {url:22} - {self.nature}"
+    def info(self) -> dict:
+        return self.model_dump(
+            include=[
+                "id",
+                "efs_id",
+                "location_id",
+                "is_public",
+                "is_publishable",
+                "start_date",
+                "end_date",
+                "url",
+                "nature",
+            ]
+        )
 
 
 class CollectionSchema(BaseModel):
@@ -193,12 +205,19 @@ class CollectionSchema(BaseModel):
 
         return url
 
-    def info(self) -> str:
-        efs_id = self.efs_id if self.efs_id else "NO_EFS_ID"
-        url = self.url if self.url else "NO_URL"
-        is_public = "PUBLIC" if self.is_public else "PRIVATE"
-        fill_ratio = f"{self.taux_remplissage:.1%}" if self.taux_remplissage else "NaN"
-        return f"[{self.lp_code:<5}] {is_public} ({self.date.date()}) - {fill_ratio:<5} | {efs_id:<9} - {url:22} - {self.nature}"
+    def info(self) -> dict:
+        return self.model_dump(
+            include=[
+                "id",
+                "efs_id",
+                "is_public",
+                "is_publishable",
+                "date",
+                "fill_ratio",
+                "url",
+                "nature",
+            ]
+        )
 
     def get_dates(self) -> str:
         """Return the last available date for booking"""

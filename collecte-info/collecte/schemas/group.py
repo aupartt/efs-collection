@@ -13,3 +13,6 @@ class GroupSchema(BaseModel):
     gr_desd: str | None = Field(alias="grDesd")
 
     locations: list["LocationSchema"] | None = []
+
+    def info(self) -> dict:
+        return self.model_dump(include=["gr_code", "gr_lib", "gr_desd"])
