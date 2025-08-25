@@ -51,9 +51,7 @@ async def add_location(location: LocationSchema) -> LocationModel | None:
             try:
                 # Ensure the group exists before creating the location
                 if not await get_group(session, gr_code=location.group_code):
-                    logger.warning(
-                        f"Group {location.group_code} does not exist for location: {location.info()}"
-                    )
+                    logger.warning("No group found", extra={**location.info()})
                     return None
 
                 location_db = await get_location(session, location)
@@ -71,7 +69,8 @@ async def add_location(location: LocationSchema) -> LocationModel | None:
                 return location_db
             except Exception as e:
                 logger.error(
-                    f"Error adding location: (city={location.city} post_code={location.post_code} name={location.name} group_code={location.group_code}) - {e}"
+                    "Failed to add/update location",
+                    extra={**location.info(), "error": str(e)},
                 )
                 await session.rollback()
 

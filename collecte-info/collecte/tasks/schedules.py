@@ -44,7 +44,7 @@ async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema] | None:
         logger.info(f"Total schedules scraped : {len(filtered_results)}")
         return filtered_results
     except Exception as e:
-        logger.error(f"Error while getting schedules from crawler : {e}")
+        logger.error("Failed to retrieve schedules from crawler", extra={"error": e})
 
 
 async def _match_event(
@@ -89,7 +89,8 @@ async def _match_event(
 
     except Exception as e:
         logger.error(
-            f"Error while matching schedule {schedule.info()} with event {event.id} : {e}"
+            "Failed to match schedule with event",
+            extra={"event_id": event.id, **schedule.info(), "error": str(e)},
         )
 
 
@@ -100,7 +101,7 @@ async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
         schedules = []
 
         if len(events) == 0:
-            logger.warning(f"No event found for schedule {schedule.info()}.")
+            logger.warning("No event found", extra={**schedule.info()})
             return schedules
 
         # Only one event: We can save directly the schedule
@@ -114,7 +115,10 @@ async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
 
         return schedules
     except Exception as e:
-        logger.error(f"Error while handling schedule {schedule.info()} : {e}")
+        logger.error(
+            "Failed to handle Schedule",
+            extra={**schedule.info(), "error": str(e)},
+        )
         return []
 
 
@@ -136,7 +140,8 @@ async def _handle_schedules_group(
         return [item for items in results for item in items if item]
     except Exception as e:
         logger.error(
-            f"Error while handling schedules group {schedules_group.info()} : {e}"
+            "Failed to handle ScheduleGroup",
+            extra={**schedules_group.info(), "error": str(e)},
         )
 
 
@@ -179,4 +184,4 @@ async def update_schedules(
     ]
     results = await asyncio.gather(*tasks)
 
-    logger.info(f"Processed {len(results)} schedules")
+    logger.info("Successfully processed schedules", extra={"n_schedules": len(results)})

@@ -56,7 +56,9 @@ async def get_active_collections() -> list[CollectionGroupSchema]:
             collections = results.scalars().all()
             return await sqlalchemy_to_pydantic(collections, CollectionGroupSchema)
         except Exception as e:
-            logger.error(f"Error while retrieving active collections : {e}")
+            logger.error(
+                "Failed to retrieve active collections", extra={"error": str(e)}
+            )
             return []
 
 
@@ -74,7 +76,7 @@ async def _handle_location(location: LocationSchema) -> list[CollectionGroupSche
             try:
                 location_db = await get_location(session, location)
                 if not location_db:
-                    logger.warning(f"Location {location.info()} not found")
+                    logger.warning("Location doesn't exist", extra={**location.info()})
                     return
 
                 collections = []
@@ -84,7 +86,10 @@ async def _handle_location(location: LocationSchema) -> list[CollectionGroupSche
 
                 return collections
             except Exception as e:
-                logger.error(f"Error while handling location {location.info()} : {e}")
+                logger.error(
+                    "Failed to handle location",
+                    extra={**location.info(), "error": str(e)},
+                )
                 return []
 
 
@@ -98,7 +103,7 @@ async def _handle_collection(
                 # This is usually because the collection is not already available
                 if not collection.efs_id:
                     logger.warning(
-                        f"Couldn't get efs_id for collection {collection.info()}"
+                        "Collection doesn't have EFS_ID", extra={**collection.info()}
                     )
                     return
 
@@ -126,7 +131,8 @@ async def _handle_collection(
                 return collection.events, collection.snapshots
             except Exception as e:
                 logger.error(
-                    f"Error while handling collection {collection.info()} : {e}"
+                    "Failed to handle collection",
+                    extra={**collection.info(), "error": str(e)},
                 )
 
 
@@ -149,7 +155,9 @@ async def _handle_event(event: CollectionEventSchema) -> CollectionEventModel:
                 await session.refresh(event_db)
                 return event_db
             except Exception as e:
-                logger.error(f"Error while handling event {event.id} : {e}")
+                logger.error(
+                    "Failed to handle event", extra={**event.info(), "error": str(e)}
+                )
 
 
 async def _handle_snapshot(

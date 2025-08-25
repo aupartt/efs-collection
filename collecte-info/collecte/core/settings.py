@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "collecte"
 
     # LOKI
-    LOKI_URL: str = None
+    LOKI_URL: str | None = None
 
     @property
     def POSTGRES_URL(self) -> str:

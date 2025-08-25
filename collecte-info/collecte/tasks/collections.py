@@ -60,7 +60,9 @@ async def get_esf_id(url: str) -> str | None:
                     match = re.search(reg, resp.url.raw_path)
                     return match.group(1) if match else None
             except Exception as e:
-                logger.error(f"Error while retrieving ESF id from {url}: {e}")
+                logger.error(
+                    "Failed to retrieve ESF id", extra={"url": url, "error": str(e)}
+                )
 
 
 async def _get_collections_locations() -> list[dict]:
@@ -145,5 +147,10 @@ async def update_collections(locations: list[dict] = None) -> None:
     collections, events, snapshots = await save_location_collections(locations)
 
     logger.info(
-        f"Processed {collections} collections resulting to: {events} events and {snapshots} snapshots"
+        "Successfully processed collections",
+        extra={
+            "n_collections": collections,
+            "n_events": events,
+            "n_snapshots": snapshots,
+        },
     )

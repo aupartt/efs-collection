@@ -20,7 +20,7 @@ async def load_schedules() -> list[ScheduleSchema]:
             schdules = results.scalars().all()
             return await sqlalchemy_to_pydantic(schdules, ScheduleSchema)
         except Exception as e:
-            logger.error(f"Error while loading schedules: {e}")
+            logger.error("Failed to load schedules", extra={"error": str(e)})
 
 
 async def retrieve_events(
@@ -34,7 +34,7 @@ async def retrieve_events(
             collection_db = await get_collection(session, schedule.efs_id)
 
             if not collection_db:
-                logger.warning(f"Collection not found for schedule {schedule.info()}")
+                logger.warning("Collection not found", extra={**schedule.info()})
                 return None
 
             await collection_db.awaitable_attrs.events
@@ -45,7 +45,8 @@ async def retrieve_events(
             ]
         except Exception as e:
             logger.error(
-                f"Error while retrieving events for schedule {schedule.info()}: {e}"
+                "Failed to retrieve events ",
+                extra={**schedule.info(), "error": str(e)},
             )
 
 
@@ -59,4 +60,4 @@ async def add_schedule(schedule: ScheduleSchema) -> ScheduleModel | None:
             await session.refresh(schedule_db)
             return schedule_db
         except Exception as e:
-            logger.error(f"Error while saving schedule {schedule.info()}: {e}")
+            logger.error("Failed to add schedule", {**schedule.info(), "error": str(e)})

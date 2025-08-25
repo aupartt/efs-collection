@@ -63,4 +63,6 @@ async def update_groups(groups: list[GroupSchema] = None) -> None:
 
     groups_processed = await save_groups(groups)
 
-    logger.info(f"Processed {len(groups_processed)} groups")
+    logger.info(
+        "Successfully processed groups", extra={"n_groups": len(groups_processed)}
+    )

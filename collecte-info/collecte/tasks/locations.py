@@ -39,7 +39,7 @@ async def _filter_location(
         "56",
         "",
     ]:
-        logger.warning(f"Bad post_code {location.info()}")
+        logger.warning("PostCode Check failed", extra={**location.info()})
         return None
     if not all(
         [
@@ -47,9 +47,7 @@ async def _filter_location(
             settings.MIN_LNG < location.longitude < settings.MAX_LNG,
         ]
     ):
-        logger.warning(
-            f"Bad LAT / LNG {location.info()}: lat={location.latitude}, lng={location.longitude}"
-        )
+        logger.warning("LatLng check failed", extra={**location.info()})
         return None
 
     return location
@@ -85,3 +83,7 @@ async def update_locations(locations: list[LocationSchema] = None) -> None:
     added_locations = await save_locations(results)
 
     logger.info(f"Processed {len(added_locations)} collections")
+
+    logger.info(
+        "Successfully processed locations", extra={"n_locations": len(added_locations)}
+    )
