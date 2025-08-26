@@ -1,9 +1,7 @@
 import asyncio
 import logging
-import re
 from datetime import datetime
 
-import aiohttp
 from api_carto_client import Client
 from api_carto_client.api.sampling_collection import (
     get_carto_api_v3_samplingcollection_searchbypostcode as api_search_collection,
@@ -12,7 +10,6 @@ from api_carto_client.models.sampling_collection_result import SamplingCollectio
 from api_carto_client.models.sampling_location_collections_entity import (
     SamplingLocationCollectionsEntity,
 )
-from async_lru import alru_cache
 from dateutil.relativedelta import relativedelta
 
 from collecte.schemas import (
@@ -23,6 +20,7 @@ from collecte.schemas import (
 from collecte.services.collections import save_location_collections
 from collecte.services.locations import get_postal_codes
 from collecte.services.utils import check_api, with_api_client
+from collecte.tasks.efs_batch_processor import EFSBatchProcessor
 
 logger = logging.getLogger(__name__)
 api_semaphore = asyncio.Semaphore(5)
@@ -47,26 +45,6 @@ async def _retrieve_sampling_collections(
         return []
     return collections.sampling_location_collections
 
-
-@alru_cache
-async def get_efs_id(url: str) -> str | None:
-    """Retrieve EFS id from url"""
-    if not url:
-        return
-
-    async with api_semaphore:
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.head(url, allow_redirects=True) as resp:
-                    reg = r"trouver-une-collecte/([0-9]+)/"
-                    match = re.search(reg, resp.url.raw_path)
-                    return match.group(1) if match else None
-            except Exception as e:
-                logger.error(
-                    "Failed to retrieve EFS_ID", extra={"url": url, "error": str(e)}
-                )
-
-
 async def _get_collections_locations() -> list[dict]:
     """Retrieve all collection locations from the API with post_codes and flatten the list"""
     if not await check_api():
@@ -85,12 +63,12 @@ async def _get_collections_locations() -> list[dict]:
     return locations
 
 
-async def _handle_location(location: LocationSchema) -> None:
+async def _handle_location(location: LocationSchema, efs_processor: EFSBatchProcessor) -> None:
     """Handle a single location and filter collections without urls"""
 
     async def _add_efs_id(collection: CollectionSchema) -> CollectionSchema | None:
         """Add efs_id to a collection"""
-        efs_id = await get_efs_id(collection.url)
+        efs_id = await efs_processor.get_efs_id(collection.url)
         if not efs_id:
             return None
         collection.efs_id = efs_id
@@ -136,8 +114,9 @@ async def update_collections(locations: list[dict] = None) -> None:
     logger.info(f"Processing {len(locations)} collections...")
 
     # Set efs_id for all collections within a location
-    tasks = [_handle_location(location) for location in locations]
-    await asyncio.gather(*tasks)
+    async with EFSBatchProcessor() as efs_processor:
+        tasks = [_handle_location(location, efs_processor) for location in locations]
+        _ = await asyncio.gather(*tasks)
 
     # Transform collections to group collections
     tasks = [

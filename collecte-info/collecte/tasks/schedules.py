@@ -10,7 +10,7 @@ from collecte.core.settings import settings
 from collecte.schemas import CollectionEventSchema, ScheduleGroupSchema, ScheduleSchema
 from collecte.services.collections import get_active_collections
 from collecte.services.schedules import add_schedule, retrieve_events
-from collecte.tasks.collections import get_efs_id
+from collecte.tasks.efs_batch_processor import EFSBatchProcessor
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 async def _retrieve_active_collections_url() -> list[str]:
     """Retrieve all active collections from the database and return their URL"""
     active_collections = await get_active_collections()
-    return [collection.url for collection in active_collections if collection]
+    return list({collection.url for collection in active_collections if collection})
 
 
 async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema] | None:
@@ -128,10 +128,11 @@ async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
 
 async def _handle_schedules_group(
     schedules_group: ScheduleGroupSchema,
+    efs_processor: EFSBatchProcessor
 ) -> list[ScheduleSchema]:
     """Retrieve EFS_ID of the url before handling each schedules"""
     try:
-        efs_id = await get_efs_id(schedules_group.url)
+        efs_id = await efs_processor.get_efs_id(schedules_group.url)
         if not efs_id:
             raise ValueError("Couldn't get EFS_ID.")
 
@@ -171,12 +172,13 @@ async def update_schedules(
     logger.info(f"Processing {len(schedules_groups)} schedules...")
 
     # Get efs_ids and event id
-    tasks = [
-        _handle_schedules_group(schedules_group)
-        for schedules_group in schedules_groups
-        if schedules_group
-    ]
-    results = await asyncio.gather(*tasks)
+    async with EFSBatchProcessor() as efs_processor:
+        tasks = [
+            _handle_schedules_group(schedules_group, efs_processor)
+            for schedules_group in schedules_groups
+            if schedules_group
+        ]
+        results = await asyncio.gather(*tasks)
 
     # Add scedules
     tasks = [
@@ -184,7 +186,7 @@ async def update_schedules(
         for schedules in results
         if schedules
         for schedule in schedules
-        if schedule
+        if schedule and bool(schedule.timetables)
     ]
     results = await asyncio.gather(*tasks)
 
