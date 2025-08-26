@@ -37,7 +37,7 @@ async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema] | None:
         logger.info(f"Start crawler with batch {b} for {len(urls)} urls")
         for i in range(math.ceil(len(urls) / b)):
             _urls = [await buil_request(url) for url in urls[b * i : b * i + b]]
-            batch_results = await start_crawler(_urls)
+            batch_results = await start_crawler(_urls, crawler_logger=logger)
             results.extend(batch_results.items)
 
         filtered_results = [result for result in results if result]
@@ -129,7 +129,7 @@ async def _handle_schedules_group(
     try:
         efs_id = await get_esf_id(schedules_group.url)
         if not efs_id:
-            raise ValueError("Could get EFS_ID.")
+            raise ValueError("Couldn't get EFS_ID.")
 
         schedules_group.efs_id = efs_id
         schedules = schedules_group.build()

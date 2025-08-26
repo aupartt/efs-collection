@@ -46,6 +46,7 @@ async def start_crawler(
     request_handled_timeout: int = 60 * 2,
     system_info_interval: int = 60 * 30,
     max_requests_per_crawl: int = 100,
+    crawler_logger: logging.Logger = None
 ) -> LocationEvents | None | str:
     config = Configuration.get_global_configuration()
     config.available_memory_ratio = 0.33
@@ -83,6 +84,8 @@ async def start_crawler(
         statistics_log_format="inline",
         browser_launch_options=browser_launch_options,
         max_requests_per_crawl=max_requests_per_crawl,
+        _logger=crawler_logger,
+        configure_logging=False if crawler_logger else True
         # Not implemented in Python version yet
         # status_message_logging_interval=timedelta(seconds=system_info_interval),
     )
