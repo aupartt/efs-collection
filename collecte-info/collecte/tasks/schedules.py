@@ -106,7 +106,7 @@ async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
 
         if len(events) == 0:
             logger.warning("No event found", extra={**schedule.info()})
-            return schedules
+            return []
 
         # Only one event: We can save directly the schedule
         if len(events) == 1:
@@ -138,7 +138,7 @@ async def _handle_schedules_group(
         schedules_group.efs_id = efs_id
         schedules = schedules_group.build()
 
-        tasks = [_handle_schedule(schedule) for schedule in schedules]
+        tasks = [_handle_schedule(schedule) for schedule in schedules if bool(schedule.timetables)]
         results = await asyncio.gather(*tasks)
 
         return [item for items in results for item in items if item]
@@ -185,7 +185,7 @@ async def update_schedules(
         for schedules in results
         if schedules
         for schedule in schedules
-        if schedule and bool(schedule.timetables)
+        if schedule
     ]
     results = await asyncio.gather(*tasks)
 
