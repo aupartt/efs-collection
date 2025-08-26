@@ -35,17 +35,24 @@ class ScheduleSchema(BaseModel):
     @computed_field
     @property
     def timetable_min(self) -> time:
-        return min(self.timetables.keys())
+        keys = self.timetables.keys()
+        if len(keys) > 0:
+            return min(keys)
 
     @computed_field
     @property
     def timetable_max(self) -> time:
-        return max(self.timetables.keys())
+        keys = self.timetables.keys()
+        if len(keys) > 0:
+            return max(keys)
 
     def info(self) -> dict:
-        return self.model_dump(
-            include=["event_id", "efs_id", "url", "collecte_type", "date"]
-        )
+        return {
+            **self.model_dump(
+                include=["event_id", "efs_id", "url", "collecte_type"]
+            ),
+            "date": self.date.isoformat()
+        }
 
     @field_validator("date", mode="before")
     def convert_date(cls, value):
