@@ -1,5 +1,5 @@
 from datetime import datetime, time
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from crawler.crawler.models import LocationEvents
@@ -332,14 +332,13 @@ class TestHandleSchedule:
 class TestHandleSchedulesGroup:
     @pytest.mark.asyncio
     async def test_no_efs_id(self, mocker: MockerFixture, mock_grp_sch):
-        mock_get_efs_id = mocker.patch(
-            "collecte.tasks.schedules.get_efs_id", return_value=None
-        )
+        mock_ebp = MagicMock()
+        mock_ebp.get_efs_id = AsyncMock(return_value=None)
         mock_log = mocker.patch.object(schedule_tasks.logger, "error")
 
-        results = await schedule_tasks._handle_schedules_group(mock_grp_sch.schemas[0])
+        results = await schedule_tasks._handle_schedules_group(mock_grp_sch.schemas[0], mock_ebp)
 
-        mock_get_efs_id.assert_awaited_once()
+        mock_ebp.get_efs_id.assert_awaited_once()
         mock_log.assert_called_once()
         assert results is None
 
@@ -347,17 +346,16 @@ class TestHandleSchedulesGroup:
     async def test_success(self, mocker: MockerFixture, mock_grp_sch):
         mock_schedules_group = mock_grp_sch.schemas[0]
 
-        mock_get_efs_id = mocker.patch(
-            "collecte.tasks.schedules.get_efs_id", return_value="foo"
-        )
+        mock_ebp = MagicMock()
+        mock_ebp.get_efs_id = AsyncMock(return_value="foo")
         mock_handle_schedule = mocker.patch(
             "collecte.tasks.schedules._handle_schedule",
             side_effect=[[1, 2], [3], [4, 5, 6]],
         )
 
-        results = await schedule_tasks._handle_schedules_group(mock_schedules_group)
+        results = await schedule_tasks._handle_schedules_group(mock_schedules_group, mock_ebp)
 
-        mock_get_efs_id.assert_awaited_once()
+        mock_ebp.get_efs_id.assert_awaited_once()
         mock_handle_schedule.call_count == 2
         assert len(results) == 6
 
@@ -378,6 +376,9 @@ class TestUpdateSchedule:
 
     @pytest.mark.asyncio
     async def test_success_crawler(self, mocker: MockerFixture, mock_grp_sch):
+        mock_ebp = mocker.patch("collecte.tasks.schedules.EFSBatchProcessor")
+        mock_schedule = MagicMock(timetables={"foo": "bar"})
+
         mock_get_schedules_from_crawler = mocker.patch(
             "collecte.tasks.schedules._get_schedules_from_crawler",
             return_value=[schema.model_dump() for schema in mock_grp_sch.schemas],
@@ -385,8 +386,8 @@ class TestUpdateSchedule:
         mock_handle_schedules_group = mocker.patch(
             "collecte.tasks.schedules._handle_schedules_group",
             side_effect=[
-                [1],
-                [2, None, 3, 4],
+                [mock_schedule],
+                [mock_schedule, None, mock_schedule, MagicMock(timetables={})],
                 [],
             ],
         )
@@ -397,12 +398,15 @@ class TestUpdateSchedule:
 
         await schedule_tasks.update_schedules()
 
+        mock_ebp.assert_called_once()
         mock_get_schedules_from_crawler.assert_awaited_once()
         mock_handle_schedules_group.call_count == 3
-        mock_add_schedule.call_count == 4
+        mock_add_schedule.call_count == 3
 
     @pytest.mark.asyncio
     async def test_success_param(self, mocker: MockerFixture, mock_grp_sch):
+        mock_ebp = mocker.patch("collecte.tasks.schedules.EFSBatchProcessor")
+        mock_schedule = MagicMock(timetables={"foo": "bar"})
         mock_data = [schema.model_dump() for schema in mock_grp_sch.schemas]
 
         mock_get_schedules_from_crawler = mocker.patch(
@@ -411,8 +415,8 @@ class TestUpdateSchedule:
         mock_handle_schedules_group = mocker.patch(
             "collecte.tasks.schedules._handle_schedules_group",
             side_effect=[
-                [1],
-                [2, None, 3, 4],
+                [mock_schedule],
+                [mock_schedule, None, mock_schedule, mock_schedule],
                 [],
             ],
         )
@@ -423,6 +427,7 @@ class TestUpdateSchedule:
 
         await schedule_tasks.update_schedules(mock_data)
 
+        mock_ebp.assert_called_once()
         mock_get_schedules_from_crawler.assert_not_called()
         mock_handle_schedules_group.call_count == 3
         mock_add_schedule.call_count == 4

@@ -1,3 +1,4 @@
+from unittest.mock import AsyncMock, MagicMock
 import pytest
 from aioresponses import aioresponses
 from api_carto_client.models.sampling_collection_result import SamplingCollectionResult
@@ -46,53 +47,6 @@ class TestRetrieveSamplingCollections:
         assert result == []
 
 
-class TestGetEsfId:
-    @pytest.fixture
-    def aiores(self):
-        with aioresponses() as m:
-            yield m
-
-    def _mock_url(self, efs_id="123456"):
-        return f"https://example.com/trouver-une-collecte/{efs_id}/"
-
-    @pytest.mark.asyncio
-    async def test_success(self, aiores):
-        efs_id = "138799"
-        url = self._mock_url(efs_id)
-        aiores.head(url)
-        result = await tasks_collections.get_efs_id(url)
-
-        assert result == efs_id
-
-    @pytest.mark.asyncio
-    async def test_no_match(self, aiores):
-        url = "http://example.com/path/to/page"
-        aiores.head(url)
-        result = await tasks_collections.get_efs_id(url)
-
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_empty_url(self):
-        result = await tasks_collections.get_efs_id("")
-        assert result is None
-
-        result = await tasks_collections.get_efs_id(None)
-        assert result is None
-
-    @pytest.mark.asyncio
-    async def test_exception(self, mocker, aiores):
-        url = self._mock_url()
-        aiores.head(url, exception=Exception)
-
-        mock_log = mocker.patch.object(tasks_collections.logger, "error")
-
-        result = await tasks_collections.get_efs_id(url)
-
-        mock_log.assert_called_once()
-        assert result is None
-
-
 class TestGetCollectionsLocations:
     @pytest.mark.asyncio
     async def test_success(self, mocker, mock_loc, mock_loc_col):
@@ -133,12 +87,11 @@ class TestHandleLocation:
         loc_col = mock_loc_col.schemas[0]
         efs_ids = [str(i) for i in range(len(loc_col.collections))]
 
-        mock_get_efs_id = mocker.patch(
-            "collecte.tasks.collections.get_efs_id", side_effect=efs_ids
-        )
-        await tasks_collections._handle_location(loc_col)
+        mock_ebp = MagicMock()
+        mock_ebp.get_efs_id = AsyncMock(side_effect=efs_ids)
+        await tasks_collections._handle_location(loc_col, mock_ebp)
 
-        assert mock_get_efs_id.call_count == len(efs_ids)
+        assert mock_ebp.get_efs_id.call_count == len(efs_ids)
         for efs_id, collection in zip(efs_ids, loc_col.collections):
             assert collection.efs_id == efs_id
 
