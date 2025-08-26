@@ -49,7 +49,7 @@ async def _retrieve_sampling_collections(
 
 
 @alru_cache
-async def get_esf_id(url: str) -> str | None:
+async def get_efs_id(url: str) -> str | None:
     """Retrieve EFS id from url"""
     if not url:
         return
@@ -90,7 +90,7 @@ async def _handle_location(location: LocationSchema) -> None:
 
     async def _add_efs_id(collection: CollectionSchema) -> CollectionSchema | None:
         """Add efs_id to a collection"""
-        efs_id = await get_esf_id(collection.url)
+        efs_id = await get_efs_id(collection.url)
         if not efs_id:
             return None
         collection.efs_id = efs_id

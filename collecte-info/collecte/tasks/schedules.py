@@ -10,7 +10,7 @@ from collecte.core.settings import settings
 from collecte.schemas import CollectionEventSchema, ScheduleGroupSchema, ScheduleSchema
 from collecte.services.collections import get_active_collections
 from collecte.services.schedules import add_schedule, retrieve_events
-from collecte.tasks.collections import get_esf_id
+from collecte.tasks.collections import get_efs_id
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +131,7 @@ async def _handle_schedules_group(
 ) -> list[ScheduleSchema]:
     """Retrieve EFS_ID of the url before handling each schedules"""
     try:
-        efs_id = await get_esf_id(schedules_group.url)
+        efs_id = await get_efs_id(schedules_group.url)
         if not efs_id:
             raise ValueError("Couldn't get EFS_ID.")
 
