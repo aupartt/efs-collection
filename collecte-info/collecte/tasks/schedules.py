@@ -127,8 +127,7 @@ async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
 
 
 async def _handle_schedules_group(
-    schedules_group: ScheduleGroupSchema,
-    efs_processor: EFSBatchProcessor
+    schedules_group: ScheduleGroupSchema, efs_processor: EFSBatchProcessor
 ) -> list[ScheduleSchema]:
     """Retrieve EFS_ID of the url before handling each schedules"""
     try:

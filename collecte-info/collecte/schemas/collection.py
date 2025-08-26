@@ -53,7 +53,7 @@ class CollectionEventSchema(BaseModel):
     def info(self) -> dict:
         return {
             **self.model_dump(include=["id", "lp_code"]),
-            "date": self.date.isoformat()
+            "date": self.date.isoformat(),
         }
 
 
@@ -223,7 +223,7 @@ class CollectionSchema(BaseModel):
                     "nature",
                 ]
             ),
-            "date": self.date.isoformat()
+            "date": self.date.isoformat(),
         }
 
     def get_dates(self) -> str:

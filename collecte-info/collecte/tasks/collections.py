@@ -45,6 +45,7 @@ async def _retrieve_sampling_collections(
         return []
     return collections.sampling_location_collections
 
+
 async def _get_collections_locations() -> list[dict]:
     """Retrieve all collection locations from the API with post_codes and flatten the list"""
     if not await check_api():
@@ -63,7 +64,9 @@ async def _get_collections_locations() -> list[dict]:
     return locations
 
 
-async def _handle_location(location: LocationSchema, efs_processor: EFSBatchProcessor) -> None:
+async def _handle_location(
+    location: LocationSchema, efs_processor: EFSBatchProcessor
+) -> None:
     """Handle a single location and filter collections without urls"""
 
     async def _add_efs_id(collection: CollectionSchema) -> CollectionSchema | None:

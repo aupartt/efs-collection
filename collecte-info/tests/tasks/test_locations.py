@@ -34,7 +34,9 @@ async def test_retrieve_location_sampling(mocker, mock_grp, mock_loc):
 
 @pytest.mark.asyncio
 async def test_filter_location_success(mocker: MockerFixture):
-    mock_input = MagicMock(spec=LocationSchema, post_code="22", latitude=48, longitude=-2)
+    mock_input = MagicMock(
+        spec=LocationSchema, post_code="22", latitude=48, longitude=-2
+    )
 
     mock_log = mocker.patch.object(tasks_locations.logger, "error")
 
@@ -44,10 +46,14 @@ async def test_filter_location_success(mocker: MockerFixture):
     assert result == mock_input
 
 
-@pytest.mark.parametrize("post_code, lat, lng", [["53", 48, -2], ["35", 0, 0], ["35", 48, 0], ["35", 0, -2]])
+@pytest.mark.parametrize(
+    "post_code, lat, lng", [["53", 48, -2], ["35", 0, 0], ["35", 48, 0], ["35", 0, -2]]
+)
 @pytest.mark.asyncio
 async def test_filter_location_error(mocker: MockerFixture, post_code, lat, lng):
-    mock_input = MagicMock(spec=LocationSchema, post_code=post_code, latitude=lat, longitude=lng)
+    mock_input = MagicMock(
+        spec=LocationSchema, post_code=post_code, latitude=lat, longitude=lng
+    )
 
     mock_log = mocker.patch.object(tasks_locations.logger, "warning")
 

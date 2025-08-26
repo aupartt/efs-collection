@@ -48,10 +48,8 @@ class ScheduleSchema(BaseModel):
 
     def info(self) -> dict:
         return {
-            **self.model_dump(
-                include=["event_id", "efs_id", "url", "collecte_type"]
-            ),
-            "date": self.date.isoformat()
+            **self.model_dump(include=["event_id", "efs_id", "url", "collecte_type"]),
+            "date": self.date.isoformat(),
         }
 
     @field_validator("date", mode="before")

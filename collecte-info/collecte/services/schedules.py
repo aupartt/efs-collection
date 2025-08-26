@@ -60,4 +60,6 @@ async def add_schedule(schedule: ScheduleSchema) -> ScheduleModel | None:
             await session.refresh(schedule_db)
             return schedule_db
         except Exception as e:
-            logger.error("Failed to add schedule", extra={**schedule.info(), "error": str(e)})
+            logger.error(
+                "Failed to add schedule", extra={**schedule.info(), "error": str(e)}
+            )
