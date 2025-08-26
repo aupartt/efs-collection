@@ -12,6 +12,7 @@ from api_carto_client.models.sampling_collection_result import SamplingCollectio
 from api_carto_client.models.sampling_location_collections_entity import (
     SamplingLocationCollectionsEntity,
 )
+from async_lru import alru_cache
 from dateutil.relativedelta import relativedelta
 
 from collecte.schemas import (
@@ -47,6 +48,7 @@ async def _retrieve_sampling_collections(
     return collections.sampling_location_collections
 
 
+@alru_cache
 async def get_esf_id(url: str) -> str | None:
     """Retrieve EFS id from url"""
     if not url:

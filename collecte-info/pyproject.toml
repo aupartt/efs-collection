@@ -9,6 +9,7 @@ dependencies = [
     "aiohttp>=3.12.15",
     "alembic>=1.16.4",
     "api-carto-client",
+    "async-lru>=2.0.5",
     "asyncpg>=0.30.0",
     "crawler",
     "loki-logger-handler>=1.1.2",
