@@ -32,12 +32,16 @@ async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema] | None:
 
     try:
         urls = await _retrieve_active_collections_url()
+
         results = []
         b = settings.CRAWLER_BATCH
+        crawler_logger = logging.getLogger(__name__ + ".crawler")
+
         logger.info(f"Start crawler with batch {b} for {len(urls)} urls")
+
         for i in range(math.ceil(len(urls) / b)):
             _urls = [await buil_request(url) for url in urls[b * i : b * i + b]]
-            batch_results = await start_crawler(_urls, crawler_logger=logger)
+            batch_results = await start_crawler(_urls, crawler_logger=crawler_logger)
             results.extend(batch_results.items)
 
         filtered_results = [result for result in results if result]
