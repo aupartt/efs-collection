@@ -51,7 +51,10 @@ class CollectionEventSchema(BaseModel):
     collection_group_id: int | None = None
 
     def info(self) -> dict:
-        return self.model_dump()
+        return {
+            **self.model_dump(include=["id", "lp_code"]),
+            "date": self.date.isoformat()
+        }
 
 
 class CollectionGroupSchema(BaseModel):
@@ -112,19 +115,21 @@ class CollectionGroupSchema(BaseModel):
             event.collection_group_id = _id
 
     def info(self) -> dict:
-        return self.model_dump(
-            include=[
-                "id",
-                "efs_id",
-                "location_id",
-                "is_public",
-                "is_publishable",
-                "start_date",
-                "end_date",
-                "url",
-                "nature",
-            ]
-        )
+        return {
+            **self.model_dump(
+                include=[
+                    "id",
+                    "efs_id",
+                    "location_id",
+                    "is_public",
+                    "is_publishable",
+                    "url",
+                    "nature",
+                ]
+            ),
+            "start_date": self.start_date.isoformat(),
+            "end_date": self.end_date.isoformat(),
+        }
 
 
 class CollectionSchema(BaseModel):
@@ -206,18 +211,20 @@ class CollectionSchema(BaseModel):
         return url
 
     def info(self) -> dict:
-        return self.model_dump(
-            include=[
-                "id",
-                "efs_id",
-                "is_public",
-                "is_publishable",
-                "date",
-                "fill_ratio",
-                "url",
-                "nature",
-            ]
-        )
+        return {
+            **self.model_dump(
+                include=[
+                    "id",
+                    "efs_id",
+                    "is_public",
+                    "is_publishable",
+                    "fill_ratio",
+                    "url",
+                    "nature",
+                ]
+            ),
+            "date": self.date.isoformat()
+        }
 
     def get_dates(self) -> str:
         """Return the last available date for booking"""
