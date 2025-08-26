@@ -24,7 +24,7 @@ from collecte.services.locations import get_postal_codes
 from collecte.services.utils import check_api, with_api_client
 
 logger = logging.getLogger(__name__)
-api_semaphore = asyncio.Semaphore(10)
+api_semaphore = asyncio.Semaphore(5)
 
 
 @with_api_client
