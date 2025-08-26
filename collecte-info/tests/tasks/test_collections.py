@@ -60,7 +60,7 @@ class TestGetEsfId:
         efs_id = "138799"
         url = self._mock_url(efs_id)
         aiores.head(url)
-        result = await tasks_collections.get_esf_id(url)
+        result = await tasks_collections.get_efs_id(url)
 
         assert result == efs_id
 
@@ -68,16 +68,16 @@ class TestGetEsfId:
     async def test_no_match(self, aiores):
         url = "http://example.com/path/to/page"
         aiores.head(url)
-        result = await tasks_collections.get_esf_id(url)
+        result = await tasks_collections.get_efs_id(url)
 
         assert result is None
 
     @pytest.mark.asyncio
     async def test_empty_url(self):
-        result = await tasks_collections.get_esf_id("")
+        result = await tasks_collections.get_efs_id("")
         assert result is None
 
-        result = await tasks_collections.get_esf_id(None)
+        result = await tasks_collections.get_efs_id(None)
         assert result is None
 
     @pytest.mark.asyncio
@@ -87,7 +87,7 @@ class TestGetEsfId:
 
         mock_log = mocker.patch.object(tasks_collections.logger, "error")
 
-        result = await tasks_collections.get_esf_id(url)
+        result = await tasks_collections.get_efs_id(url)
 
         mock_log.assert_called_once()
         assert result is None
@@ -133,12 +133,12 @@ class TestHandleLocation:
         loc_col = mock_loc_col.schemas[0]
         efs_ids = [str(i) for i in range(len(loc_col.collections))]
 
-        mock_get_esf_id = mocker.patch(
-            "collecte.tasks.collections.get_esf_id", side_effect=efs_ids
+        mock_get_efs_id = mocker.patch(
+            "collecte.tasks.collections.get_efs_id", side_effect=efs_ids
         )
         await tasks_collections._handle_location(loc_col)
 
-        assert mock_get_esf_id.call_count == len(efs_ids)
+        assert mock_get_efs_id.call_count == len(efs_ids)
         for efs_id, collection in zip(efs_ids, loc_col.collections):
             assert collection.efs_id == efs_id
 

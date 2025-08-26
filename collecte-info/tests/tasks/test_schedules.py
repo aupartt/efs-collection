@@ -332,14 +332,14 @@ class TestHandleSchedule:
 class TestHandleSchedulesGroup:
     @pytest.mark.asyncio
     async def test_no_efs_id(self, mocker: MockerFixture, mock_grp_sch):
-        mock_get_esf_id = mocker.patch(
-            "collecte.tasks.schedules.get_esf_id", return_value=None
+        mock_get_efs_id = mocker.patch(
+            "collecte.tasks.schedules.get_efs_id", return_value=None
         )
         mock_log = mocker.patch.object(schedule_tasks.logger, "error")
 
         results = await schedule_tasks._handle_schedules_group(mock_grp_sch.schemas[0])
 
-        mock_get_esf_id.assert_awaited_once()
+        mock_get_efs_id.assert_awaited_once()
         mock_log.assert_called_once()
         assert results is None
 
@@ -347,8 +347,8 @@ class TestHandleSchedulesGroup:
     async def test_success(self, mocker: MockerFixture, mock_grp_sch):
         mock_schedules_group = mock_grp_sch.schemas[0]
 
-        mock_get_esf_id = mocker.patch(
-            "collecte.tasks.schedules.get_esf_id", return_value="foo"
+        mock_get_efs_id = mocker.patch(
+            "collecte.tasks.schedules.get_efs_id", return_value="foo"
         )
         mock_handle_schedule = mocker.patch(
             "collecte.tasks.schedules._handle_schedule",
@@ -357,7 +357,7 @@ class TestHandleSchedulesGroup:
 
         results = await schedule_tasks._handle_schedules_group(mock_schedules_group)
 
-        mock_get_esf_id.assert_awaited_once()
+        mock_get_efs_id.assert_awaited_once()
         mock_handle_schedule.call_count == 2
         assert len(results) == 6
 
