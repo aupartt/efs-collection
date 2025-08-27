@@ -12,7 +12,7 @@ services:
   # ---------------------------------------------------------------------------
 
   grafana:
-    image: grafana/grafana-enterprise
+    image: grafana/grafana-enterprise:12.1.1
     ports:
       - 3000:3000
     restart: unless-stopped
