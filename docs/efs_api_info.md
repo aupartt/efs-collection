@@ -1,92 +1,91 @@
 
-## Pré-requis
+## Prerequisites
 
 * [uv](https://docs.astral.sh/uv/getting-started/installation/)
 
-## Génération du package client en Python
+## Generating the client package in Python
 
-(pour référence, car le package client est déjà inclus dans le dépôt git)
+(for reference, as the client package is already included in the git repository)
 
 ```sh
 pip install openapi-python-client
 openapi-python-client generate --url  https://oudonner.api.efs.sante.fr/carto-api/v3/swagger.json
 ```
 
-## Récupération de tous les lieux de collecte
+## Retrieving all collection locations
 
-A exécuter une seule fois pour récupérer tous les lieux de collecte de Bretagne, tous les fichiers seront stockés dans le répertoire `data` :
+Run this once to retrieve all collection locations in Brittany. All files will be stored in the `data` directory:
 
 ```sh
 cd collecte-info
 uv run get_lieux_collecte.py
-```
 
-## Extraction de la liste des codes postaux
+## Extracting the list of postal codes
 
-Après exécution de l'étape précédente :
+After executing the previous step:
 
 ```sh
 uv run get_codes_postaux.py
 ```
 
-Le script retourne un ensemble de chaînes de caractères.
+The script returns a set of character strings.
 
 
-# Utilisation de l'API collecte
+# Using the collection API
 
 ## Nomenclature
 
-| Anglais | Français | Description |
-|---|---|---|
-| Region | Région | 13 régions contenant un libellé, un acronyme à 4 lettres, un monogramme d'une seule lettre et un code à 3 chiffres stocké sous forme de string |
-| Group | Groupement | Groupement de lieux de collectes, par exemple une commune, une entreprise ou un lycée |
-| Location | Lieu de prélèvement | On peut avoir plusieurs lieux pour un même groupement (ex. Thorigné-Fouillard car la collecte a eu lieu dans différentes salles) |
+| English  | French              | Description                                                                                                                         |
+| -------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Region   | Région              | 13 regions containing a label, a 4-letter acronym, a single-letter monogram, and a 3-digit code stored as a string                  |
+| Group    | Groupement          | Grouping of collection points, for example a municipality, a company, or a high school                                              |
+| Location | Lieu de prélèvement | There may be several locations for the same group (e.g., Thorigné-Fouillard, because the collection took place in different rooms). |
 
-## Recherche de lieux de prélèvement
+## Searching for sampling locations
 
-La recherche de lieux utilise l'endpoint `/samplinglocations/`.
+The location search uses the `/samplinglocations/` endpoint.
 
-1. Lister toutes les régions
+1. List all regions
 
 https://oudonner.api.efs.sante.fr/carto-api/v3/samplinglocation/getregions
 
-2. Lister tous les _groupements_ d'une région
+2. List all the _groups_ in a region
 
-Exemple pour la Bretagne : 
+Example for Brittany:
 
 https://oudonner.api.efs.sante.fr/carto-api/v3/samplinglocation/getgroupements?RegionCode=016
 
-3. Lister tous les _lieux de collecte_ d'un groupement
+3. List all the collection points for a group
 
-Exemple pour Rennes-INSA :
+Example for Rennes-INSA:
 
 https://oudonner.api.efs.sante.fr/carto-api/v3/samplinglocation/searchbygrouplocationcode?GroupCode=F70318
 
-## Recherche d'une collecte
+## Searching for a collection
 
-La recherche de collectes utilise l'endpoint `/samplingcollections/`.
+The search for collections uses the endpoint `/samplingcollections/`.
 
-C'est _a priori impossible_ par groupement ou par lieu de collecte, il faut chercher :
-* par code postal
-* par ville
-* par coordonnées géographiques (autour d'un point ou dans un carré)
+It is _impossible_ to search by group or collection location; you must search:
+* by postal code
+* by city
+* by geographic coordinates (around a point or within a square)
 
-Exemple pour le code postal 35000 :
+Example for postal code 35000:
 
 https://oudonner.api.efs.sante.fr/carto-api/v3/samplingcollection/searchbypostcode?PostCode=35000&UserLatitude=48&UserLongitude=-2
 
-L'API retourne :
-* Une liste des **lieux de collecte** fixes dans le champ `samplingLocationEntities_SF`
-* Une liste de collectes mobiles dans le champ `samplingLocationCollections`
+The API returns:
+* A list of fixed **collection locations** in the `samplingLocationEntities_SF` field
+* A list of mobile collections in the `samplingLocationCollections` field
 
-Pour chaque collecte mobile, on retrouve :
-* Le lieu de collecte
-* Une liste de collectes ayant chacune des métadonnes, notamment :
-  * Un ID unique
-  * La date et les créneaux horaires de collecte
-  * Un lien direct d'inscription
-  * Le nombre de places pour chaque type de prélèvement
+For each mobile collection, the following information is provided:
+* The collection location
+* A list of collections, each with metadata, including:
+  * A unique ID
+  * The date and time slots for collection
+  * A direct registration link
+  * The number of places for each type of sample
 
-Si une collecte est sur plusieurs dates, les collectes des jours suivants apparaissent dans la liste `children` de la collecte correspondant au premier jour. Exemple pour les collectes de Liffré :
+If a collection takes place on several dates, the collections for the following days appear in the `children` list of the collection corresponding to the first day. Example for collections in Liffré:
 
 https://oudonner.api.efs.sante.fr/carto-api/v3/samplingcollection/searchbycityname?CityName=liffr%C3%A9&UserLatitude=48&UserLongitude=-2
