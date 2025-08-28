@@ -16,6 +16,10 @@ __pycache__/
 .vscode
 *.egg-info
 
+# Obsidian
+.obsidian/
+*.base
+
 # Files
 .env
 .coverage
