@@ -4,18 +4,18 @@
 - In Grafana, everything is **JSON**.
 - While there is a feature to sync Grafana dashboards, data sources, and more, directly with a GitHub repo, it (GitSync plugin) is still in heavy testing and not yet fully integrated.
 	- That's why we are versioning dashboards manually for now.
-- Aurélien is the **BEST** 🤦‍♂️
 
 ## Project structure
 In this repo all Dashboards files are located in the folder `/grafana/dashboards/` and use following syntax: `<FolderName>/<DashboardName>.json`
 
-## 🧾 Exporting a dashboard as JSON
+## 📋 Exporting a dashboard as JSON
 To export a dashboard from Grafana into **JSON** file it's simple:
 1. Go to the dashboard you want to export
 2. Make sure you are not in editor mode
 3. You should see an Export button in the top right corner
 4. Make sure to check **Export the dashboard to use in another instance** so it does mock data sources
-5. Copy the content and Voilà ! 😊
+5. Copy the content, and Voilà ! 😊
+
 ## 📥 Importing existing dashboard from JSON
 
 1. Go to the **Dashboard** section of Grafana (and folder if you have one).
