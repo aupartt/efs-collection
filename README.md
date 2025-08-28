@@ -1,15 +1,27 @@
 # Collectes EFS
 
-A comprehensive data collection and analysis system for the French Blood Service (EFS) API. This project retrieves, processes, and stores EFS collection data to provide insights into blood donation schedules and locations across Brittany.
+A comprehensive data collection and analysis system for the French Blood Service (EFS) API. This project retrieves, processes, and stores EFS collection data to provide insights into mobile blood donation schedules and locations across Brittany.
 
-## 📊 What This Project Does
+## ⚒️ What This Project Does
 
 The system automatically:
 - 🗺️ **Discovers** blood donation locations across Brittany
 - 📅 **Retrieves** collection schedules and availability
 - 🕷️ **Crawls** detailed appointment data from EFS websites  
 - 💾 **Stores** everything in SQL database
-- ⏰ **Schedules** regular updates to keep data fresh
+- ⏰ **Schedules** regular updates
+
+So we can:
+- 📊 **Analyze** the data using Grafana
+- 🚨 **Create alerts** for poorly filled collections
+- 👀 **Improve** the visibility of these collections
+
+Next:
+- 🤖 Use AI to generate alerts 
+
+## 📃 Docs
+- [EFS's API details](./docs/efs_api_info.md)
+- [Manage Grafana Dashboards](./docs/grafana-manage_dashboards.md)
 
 ## 🚀 Quick Start
 
@@ -55,22 +67,23 @@ The system automatically:
    
 6. **First run**
 
-   Don't forget to make a first run to init **groups** and **locations**
+   Don't forget to make a first run to initialize **groups** and **locations**
    ```bash
    docker compose run --rm cli --groups --locations
    ```
 
 ## 📋 CLI Usage
 ### Parameters
-| Long | Short | Type | Default | Description |
-|-----------|------|-----------|---------|---|
-| **--file** | **-f** | str | `None` | Path to the data file |
-| **--format** | **-F** | `JSON`, `JSONL` | `JSONL` | Format of the data |
-| **--groups** | **-g** | bool | `False` | Update groups database |
-| **--locations** | **-l** | bool | `False` | Update location database |
-| **--collections** | **-c** | bool | `False` | Update collection and get events snapshot |
-| **--schedules** | **-s** | bool | `False` | Get schedules snapshot |
-| **--crawl** | **-s** | bool | `False` | Start the crawler with nargs* urls |
+| Long              | Short  | Type            | Default | Description                               |
+| ----------------- | ------ | --------------- | ------- | ----------------------------------------- |
+| --ping            | -p     | bool            | False   | Test if the CLI is working                |
+| **--file**        | **-f** | str             | `None`  | Path to the data file                     |
+| **--format**      | **-F** | `JSON`, `JSONL` | `JSONL` | Format of the data                        |
+| **--groups**      | **-g** | bool            | `False` | Update groups database                    |
+| **--locations**   | **-l** | bool            | `False` | Update location database                  |
+| **--collections** | **-c** | bool            | `False` | Update collection and get events snapshot |
+| **--schedules**   | **-s** | bool            | `False` | Get schedules snapshot                    |
+| **--crawl**       | **-s** | bool            | `False` | Start the crawler with nargs* urls        |
 
 ### Start collecte
 
@@ -90,6 +103,15 @@ Make sure to put you file into the `./data/` folder
 docker compose run --rm cli --collections --file ../data/collections.json
 ```
 
+### Test crawl
+You can also test the crawler
+```bash
+# Test the crawler with some urls - The results will be printed
+docker compose run --rm cli --crawl http://foo.bar http://foo.baz
+
+# You can combine the crawl with schedules (usefull if you think there is a problem with a specific collection)
+docker compose run --rm cli --crawl --schedules http://url-to.test
+```
 
 ## ⏰ Automated Scheduling (optional)
 
