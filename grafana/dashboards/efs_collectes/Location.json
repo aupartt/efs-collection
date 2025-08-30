@@ -1,47 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_GRAFANA-POSTGRESQL-DATASOURCE",
-      "label": "grafana-postgresql-datasource",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "grafana-postgresql-datasource",
-      "pluginName": "PostgreSQL"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "geomap",
-      "name": "Geomap",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "12.1.1"
-    },
-    {
-      "type": "datasource",
-      "id": "grafana-postgresql-datasource",
-      "name": "PostgreSQL",
-      "version": "12.1.1"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -61,18 +18,45 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 9,
   "links": [],
   "panels": [
     {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<center>\r\n<h1>\r\nLocalisation <strong>$location_id</strong>\r\n</h1>\r\n</center>",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.1.1",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
+        "uid": "dewb2bc29htdsc"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "fixedColor": "light-blue",
+            "mode": "fixed"
           },
           "mappings": [],
           "thresholds": {
@@ -92,84 +76,47 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 2,
+        "w": 24,
         "x": 0,
-        "y": 0
+        "y": 2
       },
-      "id": 2,
+      "id": 5,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
+        "graphMode": "none",
+        "justifyMode": "center",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/.*/",
           "values": false
         },
         "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
+        "text": {
+          "titleSize": 18,
+          "valueSize": 28
+        },
+        "textMode": "value_and_name",
+        "wideLayout": false
       },
       "pluginVersion": "12.1.1",
       "targets": [
         {
-          "dataset": "collecte",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
-          },
-          "editorMode": "builder",
+          "editorMode": "code",
           "format": "table",
-          "hide": false,
-          "rawSql": "SELECT id, start_date, end_date, is_public, location_id FROM collection_groups ",
-          "refId": "collections",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  sampling_location_code,\r\n  region_code,\r\n  group_code,\r\n  post_code,\r\n  city\r\nFROM locations WHERE id = $location_id;",
+          "refId": "A",
           "sql": {
             "columns": [
               {
                 "parameters": [
                   {
-                    "name": "id",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "start_date",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "end_date",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "is_public",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "location_id",
+                    "name": "*",
                     "type": "functionParameter"
                   }
                 ],
@@ -184,241 +131,76 @@
                 "type": "groupBy"
               }
             ],
-            "whereJsonTree": {
-              "children1": [
-                {
-                  "id": "a8b9b999-cdef-4012-b456-7198b2bc434f",
-                  "properties": {
-                    "field": "location_id",
-                    "fieldSrc": "field",
-                    "operator": "equal",
-                    "value": [
-                      null
-                    ],
-                    "valueSrc": [
-                      "value"
-                    ],
-                    "valueType": [
-                      "number"
-                    ]
-                  },
-                  "type": "rule"
-                }
-              ],
-              "id": "b8aa8b9b-0123-4456-b89a-b198b2ba6f6e",
-              "type": "group"
-            }
+            "limit": 50
           },
-          "table": "collection_groups"
+          "table": "locations"
         }
       ],
-      "title": "New panel",
+      "title": "",
       "transformations": [
         {
-          "id": "filterByValue",
+          "id": "organize",
           "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "equal",
-                  "options": {
-                    "value": "$location_id"
-                  }
-                },
-                "fieldName": "location_id"
-              }
-            ],
-            "match": "any",
-            "type": "include"
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "city": 0,
+              "group_code": 5,
+              "name": 2,
+              "post_code": 1,
+              "region_code": 4,
+              "sampling_location_code": 3
+            },
+            "renameByName": {
+              "city": "Ville",
+              "group_code": "ID Groupe",
+              "post_code": "Code postale",
+              "region_code": "ID Région",
+              "sampling_location_code": "ID Échantillion de lieux"
+            }
           }
         }
       ],
+      "transparent": true,
       "type": "stat"
     },
     {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
-      },
       "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "end_date"
             },
-            "inspect": false
-          },
-          "links": [
-            {
-              "title": "Go to collection",
-              "url": "/d/e332811c-ac13-4f1d-975c-08bcc1b01aab/collection?collection_id=${${__data.fields.id}}"
-            }
-          ],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
+            "properties": []
           }
-        },
-        "overrides": []
+        ]
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
+        "w": 3,
+        "x": 0,
+        "y": 4
       },
-      "id": 3,
+      "id": 7,
       "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
         },
-        "showHeader": true
+        "content": "**Adresse:**<br>\n${location_full_address}\n\n**Nom complémentaire:**<br>\n${location_name}",
+        "mode": "markdown"
       },
       "pluginVersion": "12.1.1",
-      "targets": [
-        {
-          "dataset": "collecte",
-          "editorMode": "builder",
-          "format": "table",
-          "rawSql": "SELECT id, start_date, end_date, nature, is_public, is_publishable, propose_planning_rdv, location_id FROM collection_groups ",
-          "refId": "events",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [
-                  {
-                    "name": "id",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "start_date",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "end_date",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "nature",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "is_public",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "is_publishable",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "propose_planning_rdv",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "location_id",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ]
-          },
-          "table": "collection_groups",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
-          }
-        }
-      ],
-      "transformations": [
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "equal",
-                  "options": {
-                    "value": "${location_id}"
-                  }
-                },
-                "fieldName": "location_id"
-              }
-            ],
-            "match": "any",
-            "type": "include"
-          }
-        }
-      ],
-      "type": "table"
+      "title": "",
+      "type": "text"
     },
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
+        "uid": "dewb2bc29htdsc"
       },
       "fieldConfig": {
         "defaults": {
@@ -447,9 +229,9 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 8
+        "w": 21,
+        "x": 3,
+        "y": 4
       },
       "id": 1,
       "options": {
@@ -459,7 +241,7 @@
           },
           "name": "Layer 0",
           "noRepeat": false,
-          "type": "xyz"
+          "type": "osm-standard"
         },
         "controls": {
           "mouseWheelZoom": true,
@@ -485,7 +267,7 @@
                   "mode": "mod"
                 },
                 "size": {
-                  "fixed": 3,
+                  "fixed": 5,
                   "max": 15,
                   "min": 2
                 },
@@ -521,11 +303,13 @@
         "view": {
           "allLayers": true,
           "id": "fit",
+          "lastOnly": false,
           "lat": 0,
+          "layer": "Layer 1",
           "lon": 0,
           "noRepeat": false,
-          "padding": 15,
-          "zoom": 15
+          "padding": 30,
+          "zoom": 14.5
         }
       },
       "pluginVersion": "12.1.1",
@@ -534,7 +318,7 @@
           "dataset": "collecte",
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
+            "uid": "dewb2bc29htdsc"
           },
           "editorMode": "builder",
           "format": "table",
@@ -615,6 +399,7 @@
           "table": "locations"
         }
       ],
+      "title": "",
       "transformations": [
         {
           "id": "filterByValue",
@@ -636,19 +421,385 @@
         }
       ],
       "type": "geomap"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "dewb2bc29htdsc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [
+            {
+              "title": "Go to collection",
+              "url": "/d/e332811c-ac13-4f1d-975c-08bcc1b01aab/collection?var-collection_id=${__data.fields.id}"
+            }
+          ],
+          "mappings": [
+            {
+              "options": {
+                "false": {
+                  "color": "super-light-red",
+                  "index": 1,
+                  "text": "Non"
+                },
+                "true": {
+                  "color": "light-blue",
+                  "index": 0,
+                  "text": "Oui"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "end_date"
+            },
+            "properties": []
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 3,
+        "x": 0,
+        "y": 12
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "background_solid",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/.*/",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "valueSize": 24
+        },
+        "textMode": "name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "dataset": "collecte",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "dewb2bc29htdsc"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  give_blood,\r\n  give_plasma,\r\n  give_platelet\r\nFROM locations\r\nWHERE id = $location_id;",
+          "refId": "events",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "*",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "locations"
+        }
+      ],
+      "title": "",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "give_blood": "Sang",
+              "give_plasma": "Plasma",
+              "give_platelet": "Plaquette"
+            }
+          }
+        }
+      ],
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "dewb2bc29htdsc"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "id"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "oneClick": true,
+                    "title": "page collecte",
+                    "url": "/d/e332811c-ac13-4f1d-975c-08bcc1b01aab/collection?var-collection_id=${__data.fields.id}"
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "url_blood"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "page collecte efs",
+                    "url": "http://${__data.fields.url_blood}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "url_plasma"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "page collecte efs",
+                    "url": "http://${__data.fields.url_plasma}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "url_platelet"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "page collecte efs",
+                    "url": "http://${__data.fields.url_platelet}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 21,
+        "x": 3,
+        "y": 12
+      },
+      "id": 8,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  *\r\nFROM collection_groups\r\nWHERE location_id = $location_id\r\nORDER BY start_date;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Collectes",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "end_date": "Fin",
+              "id": "",
+              "start_date": "Début"
+            }
+          }
+        },
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "DD/MM/YY",
+            "timeField": "Début",
+            "timezone": "utc",
+            "useTimezone": true
+          }
+        },
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "DD/MM/YY",
+            "timeField": "Fin",
+            "timezone": "utc",
+            "useTimezone": true
+          }
+        }
+      ],
+      "type": "table"
     }
   ],
+  "preload": false,
   "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
       {
-        "current": {},
+        "current": {
+          "text": "1797",
+          "value": "1797"
+        },
         "definition": "SELECT id AS location_id, * FROM locations;",
-        "hide": 2,
+        "label": "ID Localisation",
         "name": "location_id",
         "options": [],
         "query": "SELECT id AS location_id, * FROM locations;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "PLACE  SALVADOR ALLENDE 29700 PLUGUFFAN",
+          "value": "PLACE  SALVADOR ALLENDE 29700 PLUGUFFAN"
+        },
+        "definition": "SELECT full_address FROM locations WHERE id = [[location_id]]",
+        "hide": 2,
+        "name": "location_full_address",
+        "options": [],
+        "query": "SELECT full_address FROM locations WHERE id = [[location_id]]",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "PLUGUFFAN AM",
+          "value": "PLUGUFFAN AM"
+        },
+        "definition": "SELECT name FROM locations WHERE id = [[location_id]]",
+        "hide": 2,
+        "name": "location_name",
+        "options": [],
+        "query": "SELECT name FROM locations WHERE id = [[location_id]]",
         "refresh": 1,
         "regex": "",
         "type": "query"
@@ -663,6 +814,5 @@
   "timezone": "browser",
   "title": "Location",
   "uid": "8e0ace78-cd57-41ef-af38-b617b3791121",
-  "version": 1,
-  "weekStart": ""
+  "version": 45
 }

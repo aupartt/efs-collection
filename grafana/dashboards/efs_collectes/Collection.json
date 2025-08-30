@@ -13,8 +13,14 @@
   "__requires": [
     {
       "type": "panel",
-      "id": "gauge",
-      "name": "Gauge",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "geomap",
+      "name": "Geomap",
       "version": ""
     },
     {
@@ -39,6 +45,12 @@
       "type": "panel",
       "id": "table",
       "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
       "version": ""
     },
     {
@@ -71,6 +83,27 @@
   "links": [],
   "panels": [
     {
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 11,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<center>\r\n<h1>\r\nCollecte \r\n<strong>$collection_id</strong> \r\n<small>\r\n(ajouté le \r\n<strong>$followed_from</strong>)\r\n</small>\r\n</h1>\r\n</center>",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.1.1",
+      "transparent": true,
+      "type": "text"
+    },
+    {
       "datasource": {
         "type": "grafana-postgresql-datasource",
         "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
@@ -78,58 +111,87 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "thresholds"
+            "fixedColor": "light-blue",
+            "mode": "fixed"
           },
           "fieldMinMax": false,
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "false": {
+                  "color": "super-light-red",
+                  "index": 1,
+                  "text": "Non"
+                },
+                "true": {
+                  "color": "super-light-green",
+                  "index": 0,
+                  "text": "Oui"
+                }
+              },
+              "type": "value"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
                 "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
-          },
-          "unit": "d"
+          }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Du"
+            },
+            "properties": []
+          }
+        ]
       },
       "gridPos": {
-        "h": 6,
+        "h": 2,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 2
       },
       "id": 6,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
+        "graphMode": "none",
+        "justifyMode": "center",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/.*/",
           "values": false
         },
         "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
+        "text": {
+          "titleSize": 18,
+          "valueSize": 28
+        },
+        "textMode": "value_and_name",
+        "wideLayout": false
       },
       "pluginVersion": "12.1.1",
       "targets": [
         {
           "dataset": "collecte",
-          "editorMode": "builder",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
+          },
+          "editorMode": "code",
           "format": "table",
-          "rawSql": "SELECT start_date, end_date, id FROM collection_groups ",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  id,\r\n  start_date,\r\n  end_date,\r\n  is_public,\r\n  nature\r\nFROM\r\n  collection_groups ",
           "refId": "A",
           "sql": {
             "columns": [
@@ -170,14 +232,9 @@
               }
             ]
           },
-          "table": "collection_groups",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
-          }
+          "table": "collection_groups"
         }
       ],
-      "title": "New panel",
       "transformations": [
         {
           "id": "filterByValue",
@@ -198,107 +255,51 @@
           }
         },
         {
-          "id": "calculateField",
-          "options": {
-            "alias": "",
-            "binary": {
-              "left": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "end_date"
-                }
-              },
-              "operator": "-",
-              "right": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "start_date"
-                }
-              }
-            },
-            "mode": "binary",
-            "reduce": {
-              "include": [
-                "start_date",
-                "end_date"
-              ],
-              "reducer": "diff"
-            }
-          }
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "total_day_duration",
-            "binary": {
-              "left": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "end_date - start_date"
-                }
-              },
-              "right": {
-                "fixed": "1"
-              }
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            },
-            "replaceFields": false,
-            "window": {
-              "field": "Difference",
-              "reducer": "mean",
-              "windowAlignment": "trailing",
-              "windowSize": 0.1,
-              "windowSizeMode": "percentage"
-            }
-          }
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "day_before_start",
-            "binary": {
-              "left": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "start_date"
-                }
-              },
-              "right": {
-                "matcher": {
-                  "id": "byName",
-                  "options": "end_date"
-                }
-              }
-            },
-            "mode": "binary",
-            "reduce": {
-              "include": [
-                "start_date"
-              ],
-              "reducer": "sum"
-            },
-            "unary": {
-              "fieldName": "start_date",
-              "operator": "abs"
-            }
-          }
-        },
-        {
-          "disabled": true,
           "id": "filterFieldsByName",
           "options": {
             "include": {
               "names": [
                 "start_date",
-                "end_date"
+                "end_date",
+                "nature",
+                "is_public"
               ]
+            }
+          }
+        },
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "DD:MM:YY",
+            "timeField": "start_date",
+            "timezone": "",
+            "useTimezone": true
+          }
+        },
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "DD:MM:YY",
+            "timeField": "end_date",
+            "useTimezone": true
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "end_date": "au",
+              "is_public": "Publique",
+              "nature": "Nature",
+              "start_date": "Du"
             }
           }
         }
       ],
+      "transparent": true,
       "type": "stat"
     },
     {
@@ -309,10 +310,348 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "fixedColor": "red",
-            "mode": "continuous-RdYlGr"
+            "mode": "thresholds"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
           },
           "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 4
+      },
+      "id": 9,
+      "options": {
+        "basemap": {
+          "config": {
+            "server": "streets"
+          },
+          "name": "Layer 0",
+          "type": "osm-standard"
+        },
+        "controls": {
+          "mouseWheelZoom": true,
+          "showAttribution": true,
+          "showDebug": false,
+          "showMeasure": false,
+          "showScale": false,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "config": {
+              "showLegend": false,
+              "style": {
+                "color": {
+                  "fixed": "red"
+                },
+                "opacity": 1,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "fixed": 5,
+                  "max": 15,
+                  "min": 2
+                },
+                "symbol": {
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "symbolAlign": {
+                  "horizontal": "center",
+                  "vertical": "center"
+                },
+                "textConfig": {
+                  "fontSize": 12,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "textAlign": "center",
+                  "textBaseline": "middle"
+                }
+              }
+            },
+            "location": {
+              "mode": "auto"
+            },
+            "name": "Layer 1",
+            "tooltip": true,
+            "type": "markers"
+          }
+        ],
+        "tooltip": {
+          "mode": "details"
+        },
+        "view": {
+          "allLayers": true,
+          "id": "fit",
+          "lat": 0,
+          "lon": 0,
+          "padding": 5,
+          "zoom": 15
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT latitude, longitude, full_address FROM locations l\r\nWHERE EXISTS (\r\n  SELECT 1 FROM collection_groups g \r\n  WHERE \r\n    g.id = $collection_id \r\n    AND g.location_id = l.id\r\n)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
+          }
+        }
+      ],
+      "type": "geomap"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "center",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "links": [],
+          "mappings": [
+            {
+              "options": {
+                "Invalid date": {
+                  "color": "transparent",
+                  "index": 0
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "result": {
+                  "color": "transparent",
+                  "index": 1
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "id"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Allez à la page de l'évènement",
+                    "url": "/d/03de4ca9-b5d2-4a85-8784-589979a18793/event?var-event_id=${__data.fields.id}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 18,
+        "x": 6,
+        "y": 4
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  id,\r\n  date,\r\n  morning_start_time,\r\n  morning_end_time,\r\n  afternoon_start_time,\r\n  afternoon_end_time\r\nFROM\r\n  collection_events e\r\nWHERE EXISTS (\r\n  SELECT 1 FROM collection_groups g WHERE g.id = $collection_id AND g.id = e.collection_group_id \r\n)",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Évènements",
+      "transformations": [
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "DD/MM/YY",
+            "timeField": "date",
+            "useTimezone": true
+          }
+        },
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "HH:mm",
+            "timeField": "morning_start_time",
+            "timezone": "utc",
+            "useTimezone": true
+          }
+        },
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "HH:mm",
+            "timeField": "morning_end_time",
+            "timezone": "utc",
+            "useTimezone": true
+          }
+        },
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "HH:mm",
+            "timeField": "afternoon_start_time",
+            "timezone": "utc",
+            "useTimezone": true
+          }
+        },
+        {
+          "id": "formatTime",
+          "options": {
+            "outputFormat": "HH:mm",
+            "timeField": "afternoon_end_time",
+            "timezone": "utc",
+            "useTimezone": true
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "afternoon_end_time": "Fin après-midi",
+              "afternoon_start_time": "Début après-midi",
+              "date": "",
+              "morning_end_time": "Fin matinée",
+              "morning_start_time": "Début matinée"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
+      },
+      "description": "Taux de remplissage",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "continuous-RdYlGr",
+            "seriesBy": "last"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -327,44 +666,48 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
+        "h": 17,
+        "w": 1,
         "x": 0,
-        "y": 6
+        "y": 10
       },
-      "id": 2,
+      "id": 8,
       "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
+        "displayMode": "basic",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "vertical",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^taux_remplissage$/",
+          "fields": "",
           "values": false
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
+        "showUnfilled": true,
+        "sizing": "auto",
+        "valueMode": "color"
       },
       "pluginVersion": "12.1.1",
       "targets": [
         {
-          "dataset": "collecte",
-          "editorMode": "builder",
+          "editorMode": "code",
           "format": "table",
-          "rawSql": "SELECT * FROM collection_group_snapshots ",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  s.created_at as time,\r\n  s.taux_remplissage as value\r\nFROM\r\n  collection_groups g\r\nLEFT JOIN\r\n  collection_group_snapshots s\r\nON\r\n  g.id = s.collection_group_id\r\nWHERE\r\n  g.id = $collection_id\r\nORDER BY\r\n  s.created_at",
           "refId": "A",
           "sql": {
             "columns": [
               {
-                "parameters": [
-                  {
-                    "name": "*",
-                    "type": "functionParameter"
-                  }
-                ],
+                "parameters": [],
                 "type": "function"
               }
             ],
@@ -375,49 +718,17 @@
                 },
                 "type": "groupBy"
               }
-            ]
+            ],
+            "limit": 50
           },
-          "table": "collection_group_snapshots",
           "datasource": {
             "type": "grafana-postgresql-datasource",
             "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
           }
         }
       ],
-      "title": "Taux remplissage",
-      "transformations": [
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "equal",
-                  "options": {
-                    "value": "$collection_id"
-                  }
-                },
-                "fieldName": "collection_group_id"
-              }
-            ],
-            "match": "all",
-            "type": "include"
-          }
-        },
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "byVariable": false,
-            "include": {
-              "names": [
-                "taux_remplissage",
-                "created_at"
-              ]
-            }
-          }
-        }
-      ],
-      "type": "gauge"
+      "transparent": true,
+      "type": "bargauge"
     },
     {
       "datasource": {
@@ -427,7 +738,185 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-YlRd"
+            "fixedColor": "blue",
+            "mode": "thresholds"
+          },
+          "fieldMinMax": true,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": 0
+              },
+              {
+                "color": "light-blue",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "places_totales"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Total"
+              },
+              {
+                "id": "max",
+                "value": 10000000000000000
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "places_reservees"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Réservées"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "places_restantes"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Restantes"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 5,
+        "x": 1,
+        "y": 10
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.1.1",
+      "repeat": "collection_type",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  s.*\r\nFROM \r\n  collection_groups g\r\nLEFT JOIN\r\n  collection_group_snapshots s\r\nON\r\n  g.id = s.collection_group_id\r\nWHERE \r\n  g.id = $collection_id\r\nORDER BY created_at",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
+          }
+        }
+      ],
+      "title": "Status - ${collection_type:value}",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "collection_group_id": 12,
+              "created_at": 11,
+              "id": 0,
+              "nb_places_reservees_cpa": 7,
+              "nb_places_reservees_pla": 6,
+              "nb_places_reservees_st": 5,
+              "nb_places_restantes_cpa": 10,
+              "nb_places_restantes_pla": 9,
+              "nb_places_restantes_st": 8,
+              "nb_places_totales_cpa": 4,
+              "nb_places_totales_pla": 3,
+              "nb_places_totales_st": 2,
+              "taux_remplissage": 1
+            },
+            "renameByName": {}
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "pattern": "(nb_(.*)_${collection_type:text})|_type"
+            }
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "nb_(.*)_${collection_type:text}",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
           },
           "custom": {
             "axisBorderShow": false,
@@ -435,6 +924,7 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
+            "axisSoftMin": 0,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
@@ -462,135 +952,6 @@
               "mode": "off"
             }
           },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 16,
-        "x": 8,
-        "y": 6
-      },
-      "id": 3,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.1.1",
-      "targets": [
-        {
-          "dataset": "collecte",
-          "editorMode": "builder",
-          "format": "table",
-          "rawSql": "SELECT * FROM collection_group_snapshots ",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [
-                  {
-                    "name": "*",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ]
-          },
-          "table": "collection_group_snapshots",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
-          }
-        }
-      ],
-      "title": "Sang",
-      "transformations": [
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "equal",
-                  "options": {
-                    "value": "$collection_id"
-                  }
-                },
-                "fieldName": "collection_group_id"
-              }
-            ],
-            "match": "all",
-            "type": "include"
-          }
-        },
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "byVariable": false,
-            "include": {
-              "names": [
-                "nb_places_restantes_st",
-                "nb_places_totales_st",
-                "created_at",
-                "nb_places_reservees_st"
-              ]
-            }
-          }
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "links": [
-            {
-              "title": "Go to event",
-              "url": "/d/03de4ca9-b5d2-4a85-8784-589979a18793/event?var-event_id=${__data.fields.event_id}"
-            }
-          ],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -610,108 +971,41 @@
       },
       "gridPos": {
         "h": 17,
-        "w": 8,
-        "x": 0,
-        "y": 14
+        "w": 18,
+        "x": 6,
+        "y": 10
       },
-      "id": 1,
+      "id": 10,
       "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
+        "legend": {
+          "calcs": [
+            "firstNotNull",
+            "lastNotNull"
           ],
-          "show": false
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": false
         },
-        "showHeader": true
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
       },
       "pluginVersion": "12.1.1",
       "targets": [
         {
-          "dataset": "collecte",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
-          },
-          "editorMode": "builder",
-          "format": "table",
-          "rawSql": "SELECT id AS \"collection_id\", start_date, end_date, nature, is_public, is_publishable, propose_planning_rdv, convocation_label_long FROM collection_groups LIMIT 50 ",
-          "refId": "collections",
+          "editorMode": "code",
+          "format": "time_series",
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  created_at as time,\r\n  total_slots as value,\r\n  CONCAT('Evenement ', event_id)::text as metric\r\nFROM\r\n  schedules s\r\nWHERE EXISTS (\r\n  SELECT 1 from collection_groups g WHERE g.id = $collection_id AND g.efs_id = s.efs_id\r\n)\r\nORDER BY created_at",
+          "refId": "A",
           "sql": {
             "columns": [
               {
-                "alias": "\"collection_id\"",
-                "parameters": [
-                  {
-                    "name": "id",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "start_date",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "end_date",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "nature",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "is_public",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "is_publishable",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "propose_planning_rdv",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "convocation_label_long",
-                    "type": "functionParameter"
-                  }
-                ],
+                "parameters": [],
                 "type": "function"
               }
             ],
@@ -725,440 +1019,13 @@
             ],
             "limit": 50
           },
-          "table": "collection_groups"
-        },
-        {
-          "dataset": "collecte",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
-          },
-          "editorMode": "builder",
-          "format": "table",
-          "hide": false,
-          "rawSql": "SELECT id AS \"event_id\", date, morning_start_time, morning_end_time, afternoon_start_time, afternoon_end_time, collection_group_id AS \"collection_id\" FROM collection_events LIMIT 50 ",
-          "refId": "events",
-          "sql": {
-            "columns": [
-              {
-                "alias": "\"event_id\"",
-                "parameters": [
-                  {
-                    "name": "id",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "date",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "morning_start_time",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "morning_end_time",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "afternoon_start_time",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "parameters": [
-                  {
-                    "name": "afternoon_end_time",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              },
-              {
-                "alias": "\"collection_id\"",
-                "parameters": [
-                  {
-                    "name": "collection_group_id",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          },
-          "table": "collection_events"
-        }
-      ],
-      "transformations": [
-        {
-          "id": "joinByField",
-          "options": {
-            "byField": "collection_id",
-            "mode": "outer"
-          }
-        },
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "isNotNull",
-                  "options": {}
-                },
-                "fieldName": "event_id"
-              },
-              {
-                "config": {
-                  "id": "equal",
-                  "options": {
-                    "value": "$collection_id"
-                  }
-                },
-                "fieldName": "collection_id"
-              }
-            ],
-            "match": "all",
-            "type": "include"
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-YlRd"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 16,
-        "x": 8,
-        "y": 14
-      },
-      "id": 4,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.1.1",
-      "targets": [
-        {
-          "dataset": "collecte",
-          "editorMode": "builder",
-          "format": "table",
-          "rawSql": "SELECT * FROM collection_group_snapshots ",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [
-                  {
-                    "name": "*",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ]
-          },
-          "table": "collection_group_snapshots",
           "datasource": {
             "type": "grafana-postgresql-datasource",
             "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
           }
         }
       ],
-      "title": "Plasma",
-      "transformations": [
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "equal",
-                  "options": {
-                    "value": "$collection_id"
-                  }
-                },
-                "fieldName": "collection_group_id"
-              }
-            ],
-            "match": "all",
-            "type": "include"
-          }
-        },
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "byVariable": false,
-            "include": {
-              "names": [
-                "nb_places_restantes_pla",
-                "nb_places_totales_pla",
-                "created_at",
-                "nb_places_reservees_pla"
-              ]
-            }
-          }
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "continuous-YlRd"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 16,
-        "x": 8,
-        "y": 22
-      },
-      "id": 5,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.1.1",
-      "targets": [
-        {
-          "dataset": "collecte",
-          "editorMode": "builder",
-          "format": "table",
-          "rawSql": "SELECT * FROM collection_group_snapshots ",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [
-                  {
-                    "name": "*",
-                    "type": "functionParameter"
-                  }
-                ],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ]
-          },
-          "table": "collection_group_snapshots",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "${DS_GRAFANA-POSTGRESQL-DATASOURCE}"
-          }
-        }
-      ],
-      "title": "Plaquette",
-      "transformations": [
-        {
-          "id": "filterByValue",
-          "options": {
-            "filters": [
-              {
-                "config": {
-                  "id": "equal",
-                  "options": {
-                    "value": "$collection_id"
-                  }
-                },
-                "fieldName": "collection_group_id"
-              }
-            ],
-            "match": "all",
-            "type": "include"
-          }
-        },
-        {
-          "id": "filterFieldsByName",
-          "options": {
-            "byVariable": false,
-            "include": {
-              "names": [
-                "nb_places_restantes_cpa",
-                "nb_places_totales_cpa",
-                "created_at",
-                "nb_places_reservees_cpa"
-              ]
-            }
-          }
-        }
-      ],
+      "title": "Place restantes pour chaque événements",
       "type": "timeseries"
     }
   ],
@@ -1168,10 +1035,52 @@
     "list": [
       {
         "current": {},
-        "definition": "SELECT id AS collection_id FROM collection_groups;",
+        "definition": "SELECT id FROM collection_groups WHERE end_date >= NOW() ORDER BY end_date;",
         "name": "collection_id",
         "options": [],
-        "query": "SELECT id AS collection_id FROM collection_groups;",
+        "query": "SELECT id FROM collection_groups WHERE end_date >= NOW() ORDER BY end_date;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allValue": "st: sang, pl: plasma, pt: plaquette",
+        "allowCustomValue": false,
+        "current": {
+          "text": "$__all",
+          "value": "$__all"
+        },
+        "hide": 2,
+        "includeAll": true,
+        "name": "collection_type",
+        "options": [
+          {
+            "selected": false,
+            "text": "st",
+            "value": "sang"
+          },
+          {
+            "selected": false,
+            "text": "pl",
+            "value": "plasma"
+          },
+          {
+            "selected": false,
+            "text": "pt",
+            "value": "plaquette"
+          }
+        ],
+        "query": "st : sang,pl : plasma,pt : plaquette",
+        "type": "custom"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {},
+        "definition": "SELECT to_char(created_at, 'DD/MM/YYYY') FROM collection_groups WHERE id = [[collection_id]]",
+        "hide": 2,
+        "name": "followed_from",
+        "options": [],
+        "query": "SELECT to_char(created_at, 'DD/MM/YYYY') FROM collection_groups WHERE id = [[collection_id]]",
         "refresh": 1,
         "regex": "",
         "type": "query"
@@ -1186,6 +1095,6 @@
   "timezone": "browser",
   "title": "Collection",
   "uid": "e332811c-ac13-4f1d-975c-08bcc1b01aab",
-  "version": 1,
+  "version": 103,
   "weekStart": ""
 }
