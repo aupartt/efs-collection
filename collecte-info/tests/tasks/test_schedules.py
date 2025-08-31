@@ -2,7 +2,7 @@ from datetime import datetime, time
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from crawler.crawler.models import LocationEvents
+from crawler.models import LocationEvents
 from pytest_mock import MockerFixture
 
 import collecte.tasks.schedules as schedule_tasks
