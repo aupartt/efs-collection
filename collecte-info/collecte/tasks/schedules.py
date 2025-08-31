@@ -18,10 +18,10 @@ logger = logging.getLogger(__name__)
 async def _retrieve_active_collections_url() -> list[str]:
     """Retrieve all active collections from the database and return their URL"""
     active_collections = await get_active_collections()
-    return list({collection.url for collection in active_collections if collection})
+    return list(collection.url for collection in active_collections)
 
 
-async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema] | None:
+async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema]:
     """Retrieves active collections urls
     then call the crawler to get corresponding schedules
     """
@@ -40,20 +40,21 @@ async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema] | None:
         logger.info(f"Start crawler with batch {b} for {len(urls)} urls")
 
         for i in range(math.ceil(len(urls) / b)):
-            _urls = [await buil_request(url) for url in urls[b * i : b * i + b]]
+            _urls = [await buil_request(url) for url in urls[i * b : ( i + 1 ) * b]]
             batch_results = await start_crawler(_urls, crawler_logger=crawler_logger)
             results.extend(batch_results.items)
 
-        filtered_results = [result for result in results if result]
+        filtered_results = [result for result in results]
         logger.info(f"Total schedules scraped : {len(filtered_results)}")
         return filtered_results
     except Exception as e:
         logger.error("Failed to retrieve schedules from crawler", extra={"error": e})
+        return []
 
 
 async def _match_event(
     schedule: ScheduleSchema, event: CollectionEventSchema
-) -> ScheduleSchema | None:
+) -> ScheduleSchema:
     """Match the schedule with the event and return the schedule with the event id.
     - It may have multiple events for the same day but with different timetables.
     """
@@ -96,6 +97,7 @@ async def _match_event(
             "Failed to match schedule with event",
             extra={"event_id": event.id, **schedule.info(), "error": str(e)},
         )
+        return []
 
 
 async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
@@ -138,15 +140,20 @@ async def _handle_schedules_group(
         schedules_group.efs_id = efs_id
         schedules = schedules_group.build()
 
-        tasks = [_handle_schedule(schedule) for schedule in schedules if bool(schedule.timetables)]
+        tasks = [
+            _handle_schedule(schedule)
+            for schedule in schedules
+            if bool(schedule.timetables)
+        ]
         results = await asyncio.gather(*tasks)
 
-        return [item for items in results for item in items if item]
+        return [item for items in results for item in items]
     except Exception as e:
         logger.error(
             "Failed to handle ScheduleGroup",
             extra={**schedules_group.info(), "error": str(e)},
         )
+        return []
 
 
 async def update_schedules(
@@ -175,18 +182,11 @@ async def update_schedules(
         tasks = [
             _handle_schedules_group(schedules_group, efs_processor)
             for schedules_group in schedules_groups
-            if schedules_group
         ]
         results = await asyncio.gather(*tasks)
 
     # Add scedules
-    tasks = [
-        add_schedule(schedule)
-        for schedules in results
-        if schedules
-        for schedule in schedules
-        if schedule
-    ]
+    tasks = [add_schedule(schedule) for schedules in results for schedule in schedules]
     results = await asyncio.gather(*tasks)
 
     logger.info("Successfully processed schedules", extra={"n_schedules": len(results)})
