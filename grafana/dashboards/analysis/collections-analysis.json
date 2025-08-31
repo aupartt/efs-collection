@@ -839,8 +839,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Main - Analysis",
-  "uid": "main-analysis",
+  "title": "Collections - Analysis",
+  "uid": "collections-analysis",
   "version": 1,
   "weekStart": ""
 }
