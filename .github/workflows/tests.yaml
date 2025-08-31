@@ -29,16 +29,13 @@ jobs:
       with:
         version: "0.8.14"
 
-    - name: Install the project
-      working-directory: ./collecte-info
-      run: uv sync --locked --all-extras --dev
-
     - name: Install the project and local dependencies
       working-directory: ./collecte-info
-      run: |
-        uv pip install -e ../crawler
-        uv pip install -e ../api-carto-client
-        uv sync --locked --all-extras --dev
+      run: uv sync --locked --all-extras --dev
+    
+    - name: List installed packages
+      working-directory: ./collecte-info
+      run: uv pip list
 
     - name: Run tests
       working-directory: ./collecte-info
