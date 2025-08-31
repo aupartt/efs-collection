@@ -4,10 +4,12 @@ While there is a feature to sync Grafana provisioned dashboards, data sources, a
 - That's why we are versioning dashboards manually for now.
 
 ## 🗄️ Dashboards structure
-In this repo all Dashboards files are located in the folder `/grafana/dashboards/` and use following syntax: `<dashboard-category>/<dashboard-name>.json`. <br>
+In this repo all Dashboards files are located in the folder `./grafana/dashboards/` and use following syntax: `<dashboard-category>/<dashboard-name>.json`. <br>
 Grafana will automatically sync with `dashboards/` and **update**/**create** when it detect changes.
 
 ## 📄 Create a new Dashboard
+> While we could create new Dashboard directly from the UI, generating them from a file directly let us manage UIDs avoiding long unreadable ones -> shorter urls and better data links visibility.
+
 To create a new dashboard add a **JSON** file with implicit name in the corresponding folder.
 - The `uid` has to be unique.
 - While you can have similar title in different folders, to avoid any future problems, it's best to make the `title` also unique.
@@ -15,7 +17,7 @@ To create a new dashboard add a **JSON** file with implicit name in the correspo
 // dashboards/monitoring/app-ressources.json
 
 {
-	"title": "App Ressources",
+	"title": "App - Ressources",
 	"uid": "app-monitoring-ressources"
 }
 ``` 
