@@ -59,13 +59,22 @@ async def _match_event(
     - It may have multiple events for the same day but with different timetables.
     """
     try:
+        logger.debug(f"Matching schedule {schedule.info()} with event {event.info()}")
         # Get basic informations
         is_morning = all([event.morning_start_time, event.morning_end_time])
         is_afternoon = all([event.afternoon_start_time, event.afternoon_end_time])
         is_all_day = all([event.morning_start_time, event.afternoon_end_time]) or all(
             [is_morning, is_afternoon]
         )
+        logger.debug(
+            f"""
+            Event {event.info()} - {"is" if is_morning else "not"}morning, 
+            {"is" if is_afternoon else "not"}_afternoon, 
+            {"is" if is_all_day else "not"}_all_day
+            """
+        )
         if not any([is_morning, is_afternoon, is_all_day]):
+            logger.debug(f"Event {event.info()} don't have timerange")
             raise ValueError("The event have no timerange")
 
         # No error, we can assign ID
@@ -83,6 +92,9 @@ async def _match_event(
             min_value = event.afternoon_start_time
             max_value = event.afternoon_end_time
 
+        logger.debug(
+            f"Processing the match with min_value={min_value} and max_value={max_value}"
+        )
         new_schedule = schedule.model_copy()
         new_schedule.timetables = {
             k: v
@@ -103,6 +115,7 @@ async def _match_event(
 async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
     """Retrieve events related to a schedule and match the schedule for each event"""
     try:
+        logger.debug(f"Handling schedule {schedule.info()}")
         events: list[CollectionEventSchema] = await retrieve_events(schedule)
         schedules = []
 
@@ -116,6 +129,9 @@ async def _handle_schedule(schedule: ScheduleSchema) -> list[ScheduleSchema]:
             schedules.append(schedule)
         else:
             # Multiple events: We have to split the schedule (mostly morning / afternoon)
+            logger.debug(
+                f"Matching {len(events)} events for schedule {schedule.info()}"
+            )
             tasks = [_match_event(schedule, event) for event in events]
             schedules = await asyncio.gather(*tasks)
 
