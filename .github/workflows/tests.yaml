@@ -33,6 +33,13 @@ jobs:
       working-directory: ./collecte-info
       run: uv sync --locked --all-extras --dev
 
+    - name: Install the project and local dependencies
+      working-directory: ./collecte-info
+      run: |
+        uv pip install -e ../crawler
+        uv pip install -e ../api-carto-client
+        uv sync --locked --all-extras --dev
+
     - name: Run tests
       working-directory: ./collecte-info
       run: uv run pytest
