@@ -53,7 +53,7 @@ class TestGetSchedulesFromCrawler:
         mock_retrieve_active_collections_url.assert_awaited_once()
         mock_start_crawler.assert_awaited()
         mock_log.assert_called_once()
-        assert results is None
+        assert results == []
 
     @pytest.mark.asyncio
     async def test_not_found_urls(self, mocker: MockerFixture):
@@ -96,7 +96,7 @@ class TestGetSchedulesFromCrawler:
     @pytest.mark.asyncio
     async def test_found(self, mocker: MockerFixture):
         mock_urls = [f"http://foo.com/{i}" for i in range(20)]
-        mock_crawler_resp = [None] + [
+        mock_crawler_resp = [
             MagicMock(
                 spec=LocationEvents, url=url, time=datetime(2025, 11, 11), events=[]
             )
@@ -123,7 +123,7 @@ class TestGetSchedulesFromCrawler:
 
         mock_retrieve_active_collections_url.assert_awaited_once()
         assert mock_start_crawler.await_count == 4
-        assert len(results) == 19
+        assert len(results) == 20
 
 
 class TestMatchEvent:
@@ -243,7 +243,7 @@ class TestMatchEvent:
         )
 
         mock_log.assert_called_once()
-        assert result is None
+        assert result == []
 
 
 class TestHandleSchedule:
@@ -340,7 +340,7 @@ class TestHandleSchedulesGroup:
 
         mock_ebp.get_efs_id.assert_awaited_once()
         mock_log.assert_called_once()
-        assert results is None
+        assert results == []
 
     @pytest.mark.asyncio
     async def test_success(self, mocker: MockerFixture, mock_grp_sch):
