@@ -947,6 +947,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Event Details",
-  "uid": "event-details",
+  "uid": "event-main-details",
   "version": 1
 }

@@ -1425,7 +1425,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Main - EFS",
-  "uid": "main-efs",
+  "title": "Global - Overview",
+  "uid": "global-main-overview",
   "version": 1
 }

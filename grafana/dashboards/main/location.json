@@ -839,7 +839,7 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Location - Details",
-  "uid": "location-details",
+  "uid": "location-main-details",
   "version": 1,
   "weekStart": ""
 }

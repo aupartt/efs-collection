@@ -1082,7 +1082,7 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Collection Details",
-  "uid": "collection-details",
+  "uid": "collection-main-details",
   "version": 1,
   "weekStart": ""
 }
