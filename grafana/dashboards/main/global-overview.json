@@ -1,0 +1,1431 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": 1,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": false,
+      "title": "New link",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 6,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<center>\n<h1>Futures collectes mobiles (EFS) en <strong>Bretagne</strong>.</h1>\n</center>",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.1.1",
+      "title": "",
+      "transparent": true,
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "Postgres"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "actions": [],
+          "color": {
+            "fixedColor": "super-light-red",
+            "mode": "shades"
+          },
+          "custom": {
+            "align": "center",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": false,
+            "inspect": false,
+            "minWidth": 100,
+            "width": 130
+          },
+          "fieldMinMax": false,
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "jours_avant_debut (min)"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Débute dans (j)"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "dark-red",
+                      "value": 0
+                    },
+                    {
+                      "color": "semi-dark-red",
+                      "value": 7
+                    },
+                    {
+                      "color": "orange",
+                      "value": 15
+                    },
+                    {
+                      "color": "green",
+                      "value": 30
+                    },
+                    {
+                      "color": "dark-green",
+                      "value": 60
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "taux_remplissage (lastNotNull)"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Taux de remplissage"
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge",
+                  "valueDisplayMode": "color"
+                }
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "custom.width"
+              },
+              {
+                "id": "max",
+                "value": 100
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "percentage",
+                  "steps": [
+                    {
+                      "color": "dark-red",
+                      "value": 0
+                    },
+                    {
+                      "color": "red",
+                      "value": 3
+                    },
+                    {
+                      "color": "#EAB839",
+                      "value": 10
+                    },
+                    {
+                      "color": "light-yellow",
+                      "value": 30
+                    },
+                    {
+                      "color": "light-green",
+                      "value": 60
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.align",
+                "value": "left"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "jours_avant_fin (max)"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Fini dans (j)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "location_id"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "ID"
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "page du lieux",
+                    "url": "/d/location-details/location?var-location_id=${__value.raw}"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Jours avant fin"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 144
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Jours avant début"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 166
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "collection_group_id"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 285
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "lien (lastNotNull)"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "-"
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "page de la localisation",
+                    "url": "/d/location-details/location?var-location_id=${__data.fields.location_id}"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 19,
+        "w": 9,
+        "x": 0,
+        "y": 2
+      },
+      "id": 5,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "count"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "dataset": "collecte",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  -- 'voir' as lien,\r\n  -1 as location_test,\r\n  g.location_id,\r\n  g.start_date, \r\n  g.end_date,\r\n  DATE_PART('day', g.start_date - NOW()) + 1 AS \"jours_avant_debut\",\r\n  DATE_PART('day', g.end_date - NOW()) + 1 AS \"jours_avant_fin\",\r\n  sub.taux_remplissage,\r\n  sub.created_at\r\nFROM \r\n  collection_groups g\r\nINNER JOIN (\r\n  SELECT\r\n    s.collection_group_id,\r\n    s.taux_remplissage,\r\n    s.created_at\r\n  FROM\r\n    collection_group_snapshots s\r\n) sub ON sub.collection_group_id = g.id\r\nINNER JOIN locations l ON l.id = g.location_id\r\nWHERE \r\n  g.end_date >= NOW()",
+          "refId": "Collections",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "start_date",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "end_date",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "location_id",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "orderBy": {
+              "property": {
+                "name": "start_date",
+                "type": "string"
+              },
+              "type": "property"
+            },
+            "orderByDirection": "DESC",
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "a8bb8ba8-cdef-4012-b456-7198af80965f",
+                  "properties": {
+                    "field": "start_date",
+                    "fieldSrc": "field",
+                    "operator": "greater_or_equal",
+                    "value": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "datetime"
+                    ]
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "999aa9bb-0123-4456-b89a-b198aee1b9a8",
+              "type": "group"
+            }
+          },
+          "table": "collection_groups"
+        }
+      ],
+      "title": "Prochains lieux recevant des collectes",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "${location_id}"
+                  }
+                },
+                "fieldName": "location_test"
+              },
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "${location_id}"
+                  }
+                },
+                "fieldName": "location_id"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        },
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              " ": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "collection_group_id": {
+                "aggregations": []
+              },
+              "end_date": {
+                "aggregations": [
+                  "max"
+                ]
+              },
+              "group_code": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "jours_avant_debut": {
+                "aggregations": [
+                  "min"
+                ],
+                "operation": "aggregate"
+              },
+              "jours_avant_fin": {
+                "aggregations": [
+                  "max"
+                ],
+                "operation": "aggregate"
+              },
+              "lien": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "location_id": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "sampling_location_code": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "start_date": {
+                "aggregations": [
+                  "min"
+                ]
+              },
+              "taux_remplissage": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              }
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {
+              "group_code (lastNotNull)": 2,
+              "jours_avant_debut (min)": 4,
+              "jours_avant_fin (max)": 5,
+              "lien (lastNotNull)": 0,
+              "location_id": 1,
+              "sampling_location_code (lastNotNull)": 3,
+              "taux_remplissage (lastNotNull)": 6
+            },
+            "renameByName": {}
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "jours_avant_debut (min)"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "Postgres"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "light-red",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 5,
+        "x": 9,
+        "y": 2
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 18,
+          "valueSize": 36
+        },
+        "textMode": "value_and_name",
+        "wideLayout": false
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "dataset": "collecte",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
+          "editorMode": "builder",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(id) AS \"sang\" FROM collection_groups WHERE COALESCE(url_blood, '') <> '' ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"sang\"",
+                "name": "COUNT",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "8b8b8889-cdef-4012-b456-7198ab0b0518",
+                  "properties": {
+                    "field": "start_date",
+                    "fieldSrc": "field",
+                    "operator": "greater_or_equal",
+                    "value": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "datetime"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "89889b8a-4567-489a-bcde-f198b27f762f",
+                  "properties": {
+                    "field": "url_blood",
+                    "fieldSrc": "field",
+                    "operator": "is_not_empty",
+                    "value": [],
+                    "valueSrc": [],
+                    "valueType": []
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "99ba98b8-0123-4456-b89a-b198aaf9b5ef",
+              "type": "group"
+            },
+            "whereString": "COALESCE(url_blood, '') <> ''"
+          },
+          "table": "collection_groups"
+        }
+      ],
+      "title": "",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "Postgres"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "orange",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 5,
+        "x": 14,
+        "y": 2
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 18,
+          "valueSize": 36
+        },
+        "textMode": "value_and_name",
+        "wideLayout": false
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "dataset": "collecte",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
+          "editorMode": "builder",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(id) AS \"plasma\" FROM collection_groups WHERE COALESCE(url_plasma, '') <> '' ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"plasma\"",
+                "name": "COUNT",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "8b8b8889-cdef-4012-b456-7198ab0b0518",
+                  "properties": {
+                    "field": "start_date",
+                    "fieldSrc": "field",
+                    "operator": "greater_or_equal",
+                    "value": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "datetime"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "89889b8a-4567-489a-bcde-f198b27f762f",
+                  "properties": {
+                    "field": "url_plasma",
+                    "fieldSrc": "field",
+                    "operator": "is_not_empty",
+                    "value": [],
+                    "valueSrc": [],
+                    "valueType": []
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "99ba98b8-0123-4456-b89a-b198aaf9b5ef",
+              "type": "group"
+            },
+            "whereString": "COALESCE(url_plasma, '') <> ''"
+          },
+          "table": "collection_groups"
+        }
+      ],
+      "title": "",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "Postgres"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "yellow",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 5,
+        "x": 19,
+        "y": 2
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {
+          "titleSize": 18,
+          "valueSize": 36
+        },
+        "textMode": "value_and_name",
+        "wideLayout": false
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "dataset": "collecte",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
+          "editorMode": "builder",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(id) AS \"plaquette\" FROM collection_groups WHERE COALESCE(url_platelet, '') <> '' ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"plaquette\"",
+                "name": "COUNT",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "whereJsonTree": {
+              "children1": [
+                {
+                  "id": "8b8b8889-cdef-4012-b456-7198ab0b0518",
+                  "properties": {
+                    "field": "start_date",
+                    "fieldSrc": "field",
+                    "operator": "greater_or_equal",
+                    "value": [
+                      null
+                    ],
+                    "valueSrc": [
+                      "value"
+                    ],
+                    "valueType": [
+                      "datetime"
+                    ]
+                  },
+                  "type": "rule"
+                },
+                {
+                  "id": "8b8a9a88-0123-4456-b89a-b198b27fe2b6",
+                  "properties": {
+                    "field": "url_platelet",
+                    "fieldSrc": "field",
+                    "operator": "is_not_empty",
+                    "value": [],
+                    "valueSrc": [],
+                    "valueType": []
+                  },
+                  "type": "rule"
+                }
+              ],
+              "id": "99ba98b8-0123-4456-b89a-b198aaf9b5ef",
+              "type": "group"
+            },
+            "whereString": "COALESCE(url_platelet, '') <> ''"
+          },
+          "table": "collection_groups"
+        }
+      ],
+      "title": "",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "Postgres"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "links": [
+            {
+              "title": "page du lieux",
+              "url": "/d/location-details/location?var-location_id=${__data.fields.location_id}"
+            }
+          ],
+          "mappings": [
+            {
+              "options": {
+                "plaquette": {
+                  "color": "light-yellow",
+                  "index": 2
+                },
+                "plasma": {
+                  "color": "light-orange",
+                  "index": 1
+                },
+                "sang": {
+                  "color": "light-red",
+                  "index": 0
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 17,
+        "w": 15,
+        "x": 9,
+        "y": 4
+      },
+      "id": 1,
+      "options": {
+        "basemap": {
+          "config": {
+            "server": "topo",
+            "showLabels": true,
+            "theme": "auto"
+          },
+          "name": "Layer 0",
+          "opacity": 1,
+          "type": "xyz"
+        },
+        "controls": {
+          "mouseWheelZoom": true,
+          "showAttribution": true,
+          "showDebug": false,
+          "showMeasure": false,
+          "showScale": false,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "config": {
+              "showLegend": true,
+              "style": {
+                "color": {
+                  "fixed": "light-red"
+                },
+                "opacity": 1,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "field": "n_events",
+                  "fixed": 3,
+                  "max": 7,
+                  "min": 4
+                },
+                "symbol": {
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "symbolAlign": {
+                  "horizontal": "center",
+                  "vertical": "center"
+                },
+                "textConfig": {
+                  "fontSize": 12,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "textAlign": "center",
+                  "textBaseline": "middle"
+                }
+              }
+            },
+            "filterData": {
+              "id": "byRefId",
+              "options": "Sang"
+            },
+            "layer-tooltip": false,
+            "name": "Sang",
+            "tooltip": true,
+            "type": "markers"
+          },
+          {
+            "config": {
+              "showLegend": true,
+              "style": {
+                "color": {
+                  "fixed": "light-orange"
+                },
+                "opacity": 1,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "field": "n_events",
+                  "fixed": 5,
+                  "max": 7,
+                  "min": 5
+                },
+                "symbol": {
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "symbolAlign": {
+                  "horizontal": "center",
+                  "vertical": "center"
+                },
+                "textConfig": {
+                  "fontSize": 12,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "textAlign": "center",
+                  "textBaseline": "middle"
+                }
+              }
+            },
+            "filterData": {
+              "id": "byRefId",
+              "options": "Plasma"
+            },
+            "location": {
+              "mode": "auto"
+            },
+            "name": "Plasma",
+            "tooltip": true,
+            "type": "markers"
+          },
+          {
+            "config": {
+              "showLegend": true,
+              "style": {
+                "color": {
+                  "fixed": "light-yellow"
+                },
+                "opacity": 1,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "field": "n_events",
+                  "fixed": 5,
+                  "max": 7,
+                  "min": 4
+                },
+                "symbol": {
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "symbolAlign": {
+                  "horizontal": "center",
+                  "vertical": "center"
+                },
+                "textConfig": {
+                  "fontSize": 12,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "textAlign": "center",
+                  "textBaseline": "middle"
+                }
+              }
+            },
+            "filterData": {
+              "id": "byRefId",
+              "options": "Plaquette"
+            },
+            "location": {
+              "mode": "auto"
+            },
+            "name": "Plaquette",
+            "tooltip": true,
+            "type": "markers"
+          }
+        ],
+        "tooltip": {
+          "mode": "details"
+        },
+        "view": {
+          "allLayers": true,
+          "id": "coords",
+          "lat": 48.165405,
+          "lon": -2.909317,
+          "padding": 15,
+          "zoom": 8.43
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  -1 as location_test,\r\n  l.id as location_id,\r\n  l.latitude, \r\n  l.longitude, \r\n  l.full_address,\r\n  l.give_blood,\r\n  l.give_plasma,\r\n  l.give_platelet,\r\n  sub.n_events,\r\n  sub.min_date,\r\n  sub.max_date\r\nFROM\r\n  locations l\r\nINNER JOIN (\r\n  SELECT \r\n    g.location_id,\r\n    COUNT(g.id) AS n_events,\r\n    MIN(g.start_date) AS min_date,\r\n    MAX(g.end_date) AS max_date\r\n  FROM\r\n    collection_groups g\r\n  WHERE g.end_date >= NOW()\r\n  GROUP BY\r\n    g.location_id\r\n) sub ON l.id = sub.location_id\r\nWHERE\r\n  l.give_blood IS true",
+          "refId": "Sang",
+          "sql": {
+            "columns": [
+              {
+                "alias": "\"n_events\"",
+                "name": "COUNT",
+                "parameters": [
+                  {
+                    "name": "id",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"min_date\"",
+                "name": "MIN",
+                "parameters": [
+                  {
+                    "name": "start_date",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "alias": "\"max_date\"",
+                "name": "MAX",
+                "parameters": [
+                  {
+                    "name": "end_date",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "location_id",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "name": "location_id",
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "whereJsonTree": {
+              "children1": [],
+              "id": "9bbb9baa-0123-4456-b89a-b198edae3d92",
+              "type": "group"
+            }
+          },
+          "table": "collection_groups"
+        },
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  -1 as location_test,\r\n  l.id as location_id,\r\n  l.latitude, \r\n  l.longitude, \r\n  l.full_address,\r\n  l.give_blood,\r\n  l.give_plasma,\r\n  l.give_platelet,\r\n  sub.n_events,\r\n  sub.min_date,\r\n  sub.max_date\r\nFROM\r\n  locations l\r\nINNER JOIN (\r\n  SELECT \r\n    g.location_id,\r\n    COUNT(g.id) AS n_events,\r\n    MIN(g.start_date) AS min_date,\r\n    MAX(g.end_date) AS max_date\r\n  FROM\r\n    collection_groups g\r\n  WHERE g.end_date >= NOW()\r\n  GROUP BY\r\n    g.location_id\r\n) sub ON l.id = sub.location_id\r\nWHERE\r\n  l.give_plasma IS true",
+          "refId": "Plasma",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT\r\n  -1 as location_test,\r\n  l.id as location_id,\r\n  l.latitude, \r\n  l.longitude, \r\n  l.full_address,\r\n  l.give_blood,\r\n  l.give_plasma,\r\n  l.give_platelet,\r\n  sub.n_events,\r\n  sub.min_date,\r\n  sub.max_date\r\nFROM\r\n  locations l\r\nINNER JOIN (\r\n  SELECT \r\n    g.location_id,\r\n    COUNT(g.id) AS n_events,\r\n    MIN(g.start_date) AS min_date,\r\n    MAX(g.end_date) AS max_date\r\n  FROM\r\n    collection_groups g\r\n  WHERE g.end_date >= NOW()\r\n  GROUP BY\r\n    g.location_id\r\n) sub ON l.id = sub.location_id\r\nWHERE\r\n  l.give_platelet IS true",
+          "refId": "Plaquette",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "",
+      "transformations": [
+        {
+          "id": "filterByValue",
+          "options": {
+            "filters": [
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "${location_id}"
+                  }
+                },
+                "fieldName": "location_test"
+              },
+              {
+                "config": {
+                  "id": "equal",
+                  "options": {
+                    "value": "${location_id}"
+                  }
+                },
+                "fieldName": "location_id"
+              }
+            ],
+            "match": "any",
+            "type": "include"
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "include": {
+              "names": [
+                "location_id",
+                "latitude",
+                "longitude",
+                "full_address",
+                "n_events",
+                "min_date",
+                "max_date"
+              ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {}
+        }
+      ],
+      "type": "geomap"
+    }
+  ],
+  "preload": false,
+  "refresh": "1d",
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": "-1",
+        "allowCustomValue": false,
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "definition": "SELECT l.id \nFROM locations l \nWHERE EXISTS (\n    SELECT 1 \n    FROM collection_groups g \n    WHERE g.location_id = l.id \n    AND g.end_date >= NOW()\n);",
+        "includeAll": true,
+        "label": "ID du Lieux",
+        "name": "location_id",
+        "options": [],
+        "query": "SELECT l.id \nFROM locations l \nWHERE EXISTS (\n    SELECT 1 \n    FROM collection_groups g \n    WHERE g.location_id = l.id \n    AND g.end_date >= NOW()\n);",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "$__all",
+          "value": "$__all"
+        },
+        "hide": 2,
+        "includeAll": true,
+        "name": "collection_type",
+        "options": [
+          {
+            "selected": false,
+            "text": "blood",
+            "value": "sang"
+          },
+          {
+            "selected": false,
+            "text": "plasma",
+            "value": "plasma"
+          },
+          {
+            "selected": false,
+            "text": "platelet",
+            "value": "plaquette"
+          }
+        ],
+        "query": "blood : sang, plasma : plasma, platelet : plaquette",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Global - Overview",
+  "uid": "global-main-overview",
+  "version": 1
+}

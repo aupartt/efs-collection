@@ -21,7 +21,7 @@ Next:
 
 ## 📃 Docs
 - [EFS's API details](./docs/efs_api_info.md)
-- [Manage Grafana Dashboards](./docs/grafana-manage_dashboards.md)
+- [Manage Grafana Dashboards](./docs/grafana-dashboards-provisioning.md)
 
 ## 🚀 Quick Start
 

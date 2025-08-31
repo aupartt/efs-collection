@@ -1,5 +1,0 @@
-{
-  "error": {
-    "message": "Datasource ${DS_GRAFANA-POSTGRESQL-DATASOURCE} was not found"
-  }
-}

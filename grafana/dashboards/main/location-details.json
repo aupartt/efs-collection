@@ -1,4 +1,41 @@
 {
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "geomap",
+      "name": "Geomap",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "12.1.1"
+    },
+    {
+      "type": "datasource",
+      "uid": "Postgres"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -18,14 +55,10 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 9,
+  "id": null,
   "links": [],
   "panels": [
     {
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "gridPos": {
         "h": 2,
         "w": 24,
@@ -43,14 +76,13 @@
         "mode": "markdown"
       },
       "pluginVersion": "12.1.1",
-      "title": "",
       "transparent": true,
       "type": "text"
     },
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "dewb2bc29htdsc"
+        "uid": "Postgres"
       },
       "fieldConfig": {
         "defaults": {
@@ -133,10 +165,13 @@
             ],
             "limit": 50
           },
-          "table": "locations"
+          "table": "locations",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          }
         }
       ],
-      "title": "",
       "transformations": [
         {
           "id": "organize",
@@ -194,13 +229,12 @@
         "mode": "markdown"
       },
       "pluginVersion": "12.1.1",
-      "title": "",
       "type": "text"
     },
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "dewb2bc29htdsc"
+        "uid": "Postgres"
       },
       "fieldConfig": {
         "defaults": {
@@ -318,7 +352,7 @@
           "dataset": "collecte",
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "dewb2bc29htdsc"
+            "uid": "Postgres"
           },
           "editorMode": "builder",
           "format": "table",
@@ -399,7 +433,6 @@
           "table": "locations"
         }
       ],
-      "title": "",
       "transformations": [
         {
           "id": "filterByValue",
@@ -425,7 +458,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "dewb2bc29htdsc"
+        "uid": "Postgres"
       },
       "fieldConfig": {
         "defaults": {
@@ -434,8 +467,8 @@
           },
           "links": [
             {
-              "title": "Go to collection",
-              "url": "/d/e332811c-ac13-4f1d-975c-08bcc1b01aab/collection?var-collection_id=${__data.fields.id}"
+              "title": "page de collecte",
+              "url": "/d/collection-details/collection?var-collection_id=${__data.fields.id}"
             }
           ],
           "mappings": [
@@ -512,7 +545,7 @@
           "dataset": "collecte",
           "datasource": {
             "type": "grafana-postgresql-datasource",
-            "uid": "dewb2bc29htdsc"
+            "uid": "Postgres"
           },
           "editorMode": "code",
           "format": "table",
@@ -544,7 +577,6 @@
           "table": "locations"
         }
       ],
-      "title": "",
       "transformations": [
         {
           "id": "organize",
@@ -566,7 +598,7 @@
     {
       "datasource": {
         "type": "grafana-postgresql-datasource",
-        "uid": "dewb2bc29htdsc"
+        "uid": "Postgres"
       },
       "fieldConfig": {
         "defaults": {
@@ -607,8 +639,8 @@
                 "value": [
                   {
                     "oneClick": true,
-                    "title": "page collecte",
-                    "url": "/d/e332811c-ac13-4f1d-975c-08bcc1b01aab/collection?var-collection_id=${__data.fields.id}"
+                    "title": "page de collecte",
+                    "url": "/d/collection-details/collection?var-collection_id=${__data.fields.id}"
                   }
                 ]
               },
@@ -715,6 +747,10 @@
               }
             ],
             "limit": 50
+          },
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
           }
         }
       ],
@@ -755,16 +791,12 @@
       "type": "table"
     }
   ],
-  "preload": false,
   "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
       {
-        "current": {
-          "text": "1797",
-          "value": "1797"
-        },
+        "current": {},
         "definition": "SELECT id AS location_id, * FROM locations;",
         "label": "ID Localisation",
         "name": "location_id",
@@ -776,10 +808,7 @@
       },
       {
         "allowCustomValue": false,
-        "current": {
-          "text": "PLACE  SALVADOR ALLENDE 29700 PLUGUFFAN",
-          "value": "PLACE  SALVADOR ALLENDE 29700 PLUGUFFAN"
-        },
+        "current": {},
         "definition": "SELECT full_address FROM locations WHERE id = [[location_id]]",
         "hide": 2,
         "name": "location_full_address",
@@ -791,10 +820,7 @@
       },
       {
         "allowCustomValue": false,
-        "current": {
-          "text": "PLUGUFFAN AM",
-          "value": "PLUGUFFAN AM"
-        },
+        "current": {},
         "definition": "SELECT name FROM locations WHERE id = [[location_id]]",
         "hide": 2,
         "name": "location_name",
@@ -812,7 +838,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Location",
-  "uid": "8e0ace78-cd57-41ef-af38-b617b3791121",
-  "version": 45
+  "title": "Location - Details",
+  "uid": "location-main-details",
+  "version": 1,
+  "weekStart": ""
 }
