@@ -27,6 +27,8 @@ services:
     volumes:
       - ./grafana/dashboards:/etc/grafana/dashboards
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards/${ENVIRONMENT:-dev}-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - grafana-storage:/var/lib/grafana
     networks:
       - app_network
 
@@ -133,7 +135,7 @@ services:
 volumes:
   efs_postgres:
     driver: local
-  grafana-cache:
+  grafana-storage:
   loki-storage:
   # rabbitmq_data:
   #   driver: local
