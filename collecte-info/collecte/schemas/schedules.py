@@ -24,7 +24,8 @@ class ScheduleSchema(BaseModel):
     created_at: datetime
 
     # Data
-    collecte_type: str
+    collect_type: str
+    location: str | None
     timetables: dict[time, int]
 
     @computed_field
@@ -48,7 +49,7 @@ class ScheduleSchema(BaseModel):
 
     def info(self) -> dict:
         return {
-            **self.model_dump(include=["event_id", "efs_id", "url", "collecte_type"]),
+            **self.model_dump(include=["event_id", "efs_id", "url", "collect_type"]),
             "date": self.date.isoformat(),
         }
 
@@ -90,7 +91,6 @@ class ScheduleEventSchema(BaseModel):
 
     date: str
     # total_slots: int = Field(..., alias="slots") Changed into @computed_field of ScheduleSchema
-    collecte_type: str = Field(..., alias="type")
     timetables: dict[str, int] = Field(default_factory=dict, alias="schedules")
 
 
@@ -102,11 +102,13 @@ class ScheduleGroupSchema(BaseModel):
     efs_id: str | None = None
 
     url: str
+    location: str | None
+    collect_type: str = Field(..., alias="events_type")
     created_at: datetime = Field(..., alias="time")
     events: list[ScheduleEventSchema]
 
     def info(self) -> dict:
-        return self.model_dump(include=["efs_id", "url"])
+        return self.model_dump(include=["efs_id", "url", "location"])
 
     def build(self) -> list[ScheduleSchema]:
         schedules = []

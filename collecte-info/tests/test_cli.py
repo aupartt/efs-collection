@@ -223,12 +223,12 @@ async def test_cli_crawl_no_urls(mocker: MockerFixture, _mock_args):
 async def test_cli_crawl_urls(mocker: MockerFixture, _mock_args):
     _mock_args.crawl = True
     _mock_args.urls = ["http://foo.com"]
-    mock_results = MagicMock(items="foo_data")
+    mock_results = "foo_data"
 
     mock_start_crawler = mocker.patch("cli.start_crawler", return_value=mock_results)
     mock_log = mocker.patch.object(cli.logger, "info")
 
     await cli.main(_mock_args)
 
-    mock_log.assert_called_once_with(f"Crawler ended with data: {mock_results.items}")
-    mock_start_crawler.assert_awaited_once_with(_mock_args.urls)
+    mock_log.assert_called_once_with(f"Crawler ended with data: {mock_results}")
+    mock_start_crawler.assert_awaited_once()

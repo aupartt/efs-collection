@@ -1,20 +1,30 @@
 from datetime import datetime
+from typing import Literal
+
+from bs4 import NavigableString, PageElement, Tag
 from pydantic import BaseModel
-from typing import Dict, Literal
 
-Schedules = Dict[str, int]
+Schedules = dict[str, int]
+Locator = PageElement | Tag | NavigableString
 
-EventType = Literal["plasma", "blood", "platelets"]
+CollectType = Literal["plasma", "blood", "platelets"]
 
 
 class Event(BaseModel):
     date: str
     slots: int
-    type: EventType
     schedules: Schedules
 
 
 class LocationEvents(BaseModel):
     url: str
+    location: str
+    events_type: CollectType
     time: datetime
     events: list[Event]
+
+
+class Result[T](BaseModel):
+    success: bool
+    value: T | None = None
+    error: str | None = None

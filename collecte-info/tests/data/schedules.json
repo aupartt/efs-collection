@@ -2,11 +2,12 @@
     {
         "url": "https://efs.link/S92Ti",
         "time": "2025-08-10T09:00:40.324822Z",
+        "location": "foo1",
+        "events_type": "blood",
         "events": [
             {
                 "date": "09/09/2025",
                 "slots": 176,
-                "type": "blood",
                 "schedules": {
                     "09h00": 1,
                     "09h05": 2,
@@ -121,7 +122,6 @@
             {
                 "date": "10/09/2025",
                 "slots": 223,
-                "type": "blood",
                 "schedules": {
                     "09h00": 3,
                     "09h05": 2,
@@ -236,7 +236,6 @@
             {
                 "date": "11/09/2025",
                 "slots": 116,
-                "type": "blood",
                 "schedules": {
                     "09h30": 3,
                     "09h35": 2,
@@ -311,11 +310,12 @@
     {
         "url": "https://efs.link/Vcib7",
         "time": "2025-08-10T09:00:39.337881Z",
+        "location": "foo2",
+        "events_type": "blood",
         "events": [
             {
                 "date": "01/10/2025",
                 "slots": 76,
-                "type": "blood",
                 "schedules": {
                     "12h00": 1,
                     "12h05": 2,
@@ -373,11 +373,12 @@
     {
         "url": "https://efs.link/5GiMN",
         "time": "2025-08-10T09:00:46.733066Z",
+        "location": "foo3",
+        "events_type": "blood",
         "events": [
             {
                 "date": "14/10/2025",
                 "slots": 85,
-                "type": "blood",
                 "schedules": {
                     "12h00": 1,
                     "12h05": 2,
