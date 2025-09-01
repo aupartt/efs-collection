@@ -1,41 +1,4 @@
 {
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "geomap",
-      "name": "Geomap",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "12.1.1"
-    },
-    {
-      "type": "datasource",
-      "uid": "Postgres"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "text",
-      "name": "Text",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -55,10 +18,14 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 2,
   "links": [],
   "panels": [
     {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 2,
         "w": 24,
@@ -76,6 +43,7 @@
         "mode": "markdown"
       },
       "pluginVersion": "12.1.1",
+      "title": "",
       "transparent": true,
       "type": "text"
     },
@@ -138,6 +106,10 @@
       "pluginVersion": "12.1.1",
       "targets": [
         {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
@@ -165,13 +137,10 @@
             ],
             "limit": 50
           },
-          "table": "locations",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "Postgres"
-          }
+          "table": "locations"
         }
       ],
+      "title": "",
       "transformations": [
         {
           "id": "organize",
@@ -229,6 +198,7 @@
         "mode": "markdown"
       },
       "pluginVersion": "12.1.1",
+      "title": "",
       "type": "text"
     },
     {
@@ -356,6 +326,7 @@
           },
           "editorMode": "builder",
           "format": "table",
+          "hide": false,
           "rawSql": "SELECT id, full_address, latitude, longitude FROM locations ",
           "refId": "locations",
           "sql": {
@@ -433,6 +404,7 @@
           "table": "locations"
         }
       ],
+      "title": "",
       "transformations": [
         {
           "id": "filterByValue",
@@ -577,6 +549,7 @@
           "table": "locations"
         }
       ],
+      "title": "",
       "transformations": [
         {
           "id": "organize",
@@ -726,6 +699,10 @@
       "pluginVersion": "12.1.1",
       "targets": [
         {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
@@ -747,10 +724,6 @@
               }
             ],
             "limit": 50
-          },
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "Postgres"
           }
         }
       ],
@@ -791,17 +764,19 @@
       "type": "table"
     }
   ],
+  "preload": false,
   "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
       {
+        "allowCustomValue": false,
         "current": {},
-        "definition": "SELECT id AS location_id, * FROM locations;",
+        "definition": "SELECT cg.location_id FROM collection_groups cg WHERE cg.end_date >= NOW();",
         "label": "ID Localisation",
         "name": "location_id",
         "options": [],
-        "query": "SELECT id AS location_id, * FROM locations;",
+        "query": "SELECT cg.location_id FROM collection_groups cg WHERE cg.end_date >= NOW();",
         "refresh": 1,
         "regex": "",
         "type": "query"
@@ -840,6 +815,5 @@
   "timezone": "browser",
   "title": "Location - Details",
   "uid": "location-main-details",
-  "version": 1,
-  "weekStart": ""
+  "version": 2
 }
