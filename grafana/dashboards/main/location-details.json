@@ -468,7 +468,7 @@
           "links": [
             {
               "title": "page de collecte",
-              "url": "/d/collection-details/collection?var-collection_id=${__data.fields.id}"
+              "url": "/d/collection-main-details/collection?var-collection_id=${__data.fields.id}"
             }
           ],
           "mappings": [
@@ -640,7 +640,7 @@
                   {
                     "oneClick": true,
                     "title": "page de collecte",
-                    "url": "/d/collection-details/collection?var-collection_id=${__data.fields.id}"
+                    "url": "/d/collection-main-details/collection?var-collection_id=${__data.fields.id}"
                   }
                 ]
               },

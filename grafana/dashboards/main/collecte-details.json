@@ -501,7 +501,7 @@
                 "value": [
                   {
                     "title": "Allez à la page de l'évènement",
-                    "url": "/d/event-details/event?var-event_id=${__data.fields.id}"
+                    "url": "/d/event-main-details/event?var-event_id=${__data.fields.id}"
                   }
                 ]
               }

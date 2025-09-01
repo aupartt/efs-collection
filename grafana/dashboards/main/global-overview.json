@@ -246,7 +246,7 @@
                 "value": [
                   {
                     "title": "page du lieux",
-                    "url": "/d/location-details/location?var-location_id=${__value.raw}"
+                    "url": "/d/location-main-details/location?var-location_id=${__value.raw}"
                   }
                 ]
               }
@@ -303,7 +303,7 @@
                 "value": [
                   {
                     "title": "page de la localisation",
-                    "url": "/d/location-details/location?var-location_id=${__data.fields.location_id}"
+                    "url": "/d/location-main-details/location?var-location_id=${__data.fields.location_id}"
                   }
                 ]
               }
@@ -962,7 +962,7 @@
           "links": [
             {
               "title": "page du lieux",
-              "url": "/d/location-details/location?var-location_id=${__data.fields.location_id}"
+              "url": "/d/location-main-details/location?var-location_id=${__data.fields.location_id}"
             }
           ],
           "mappings": [
