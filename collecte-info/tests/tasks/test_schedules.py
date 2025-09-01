@@ -2,6 +2,7 @@ from datetime import datetime, time
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from crawlee import Request
 from crawler.models import LocationEvents
 from pytest_mock import MockerFixture
 
@@ -20,7 +21,8 @@ class TestRetrieveActiveCollectionsUrl:
         result = await schedule_tasks._retrieve_active_collections_url()
 
         mock_get_active_collections.assert_called_once()
-        assert result == [schema.url for schema in mock_grp_col.schemas]
+        assert isinstance(result[0], Request)
+        assert len(result) == len(mock_grp_col.schemas)
 
     @pytest.mark.asyncio
     async def test_not_found(self, mocker: MockerFixture, mock_grp_col):
@@ -98,12 +100,10 @@ class TestGetSchedulesFromCrawler:
         mock_urls = [f"http://foo.com/{i}" for i in range(20)]
         mock_crawler_resp = [
             MagicMock(
-                spec=LocationEvents, url=url, time=datetime(2025, 11, 11), events=[]
+                spec=LocationEvents, location="foo", url=url, time=datetime(2025, 11, 11), events=[]
             )
             for url in mock_urls
         ]
-        mock_settings = MagicMock(CRAWLER_BATCH=5)
-        mocker.patch("collecte.tasks.schedules.settings", mock_settings)
 
         mock_retrieve_active_collections_url = mocker.patch(
             "collecte.tasks.schedules._retrieve_active_collections_url",
@@ -111,18 +111,13 @@ class TestGetSchedulesFromCrawler:
         )
         mock_start_crawler = mocker.patch(
             "collecte.tasks.schedules.start_crawler",
-            side_effect=[
-                MagicMock(items=mock_crawler_resp[:5]),
-                MagicMock(items=mock_crawler_resp[5:10]),
-                MagicMock(items=mock_crawler_resp[10:15]),
-                MagicMock(items=mock_crawler_resp[15:20]),
-            ],
+            return_value=mock_crawler_resp,
         )
 
         results = await schedule_tasks._get_schedules_from_crawler()
 
         mock_retrieve_active_collections_url.assert_awaited_once()
-        assert mock_start_crawler.await_count == 4
+        mock_start_crawler.assert_awaited_once()
         assert len(results) == 20
 
 
@@ -236,37 +231,19 @@ class TestMatchEvent:
         mock_schedule = _mock_schedule
         mock_event = _mock_event(False, False, False, False)
 
-        mock_log = mocker.patch.object(schedule_tasks.logger, "error")
+        mock_log = mocker.patch.object(schedule_tasks.logger, "warning")
 
         result = await schedule_tasks._match_event(
             schedule=mock_schedule, event=mock_event
         )
 
         mock_log.assert_called_once()
-        assert result == []
+        assert result is None
 
 
 class TestHandleSchedule:
     @pytest.mark.asyncio
-    async def test_found_one(self, mocker: MockerFixture, mock_sch, mock_evt_col):
-        mock_events = [mock_evt_col.schemas[0]]
-        mock_events[0].id = 42
-
-        mock_retrieve_events = mocker.patch(
-            "collecte.tasks.schedules.retrieve_events", return_value=mock_events
-        )
-        mock_match_event = mocker.patch("collecte.tasks.schedules._match_event")
-
-        results = await schedule_tasks._handle_schedule(mock_sch.schemas[0])
-
-        mock_retrieve_events.assert_called_once()
-        mock_match_event.assert_not_called()
-        assert len(results) == 1
-        assert isinstance(results[0], ScheduleSchema)
-        assert results[0].event_id == mock_events[0].id
-
-    @pytest.mark.asyncio
-    async def test_found_many(self, mocker: MockerFixture, mock_sch, mock_evt_col):
+    async def test_found(self, mocker: MockerFixture, mock_sch, mock_evt_col):
         mock_events = mock_evt_col.schemas[:2]
         mock_results = [
             mock_sch.schemas[:2],
@@ -334,7 +311,7 @@ class TestHandleSchedulesGroup:
     async def test_no_efs_id(self, mocker: MockerFixture, mock_grp_sch):
         mock_ebp = MagicMock()
         mock_ebp.get_efs_id = AsyncMock(return_value=None)
-        mock_log = mocker.patch.object(schedule_tasks.logger, "error")
+        mock_log = mocker.patch.object(schedule_tasks.logger, "warning")
 
         results = await schedule_tasks._handle_schedules_group(mock_grp_sch.schemas[0], mock_ebp)
 

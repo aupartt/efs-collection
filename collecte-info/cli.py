@@ -2,7 +2,7 @@ import argparse
 import asyncio
 import json
 
-from crawler.crawler import start_crawler
+from crawler import start_crawler
 
 from collecte.core.logging import configure_logger
 from collecte.tasks.collections import update_collections
@@ -92,8 +92,8 @@ async def main(params: argparse.Namespace):
         return
 
     if params.crawl:
-        results = await start_crawler(params.urls)
-        data = results.items
+        results = await start_crawler(params.urls, crawler_logger=logger)
+        data = results
         logger.info(f"Crawler ended with data: {data}")
 
     if params.file:
