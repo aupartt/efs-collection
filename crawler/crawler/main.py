@@ -24,9 +24,9 @@ async def start_crawler(
         statistics_log_format=statistics_log_format,
         max_requests_per_crawl=max_requests_per_crawl,
         parser=parser,
-        configure_logging=False,  # if crawler_logger else True,
+        configure_logging=False if crawler_logger else True,
         request_handler=collect_handler,
-        # _logger=crawler_logger,
+        _logger=crawler_logger,
     )
 
     try:
