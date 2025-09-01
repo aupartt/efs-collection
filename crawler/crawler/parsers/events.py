@@ -72,7 +72,7 @@ async def parse_events(context: BeautifulSoupCrawlingContext) -> Result[list[Eve
     events_element = context.soup.select(".timeslot-item")
     if not events_element:
         logger.warning("No events found.", extra={"url": context.request.url})
-        return
+        return Result(success=False, error="NO_EVENT_FOUND")
     logger.info(
         f"Found {len(events_element)} events.", extra={"url": context.request.url}
     )
