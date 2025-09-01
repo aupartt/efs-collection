@@ -14,9 +14,6 @@ COPY ./collecte-info/uv.lock ./collecte-info/pyproject.toml ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uvx playwright install chromium --with-deps
-
 # App
 COPY ./collecte-info/collecte ./collecte
 COPY ./collecte-info/cli.py ./cli.py
