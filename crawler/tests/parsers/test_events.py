@@ -94,7 +94,7 @@ async def test_parse_event_success(mocker: MockerFixture):
         AsyncMock(return_value=8),
     )
 
-    result = await parsers._parse_event("http://foo.bar", MagicMock())
+    result = await parsers._parse_event("http://foo.bar", 1, MagicMock())
 
     mock_parse_date.assert_awaited_once()
     mock_parse_schedules.assert_awaited_once()
@@ -110,7 +110,7 @@ async def test_parse_event_success(mocker: MockerFixture):
 async def test_parse_event_error(mocker):
     mock_soup = BeautifulSoup("<div></div>")
 
-    result = await parsers._parse_event("http://foo.bar", mock_soup.select_one("div"))
+    result = await parsers._parse_event("http://foo.bar", 1, mock_soup.select_one("div"))
 
     assert isinstance(result, Result)
     assert not result.success
@@ -158,4 +158,5 @@ async def test_parse_events_no_events(mocker, _mock_context):
 
     result = await parsers.parse_events(mock_context)
 
-    assert result is None
+    assert not result.success
+    assert result.error == "NO_EVENT_FOUND"

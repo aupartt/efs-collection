@@ -9,18 +9,6 @@ import crawler.parsers.location as parsers
 from crawler.models import Result
 
 
-@pytest.fixture()
-def _mock_context():
-    def sub(soup=None):
-        mock_request = MagicMock(url="http://foo.bar")
-        mock_context = MagicMock(BeautifulSoupCrawlingContext, request=mock_request)
-        if soup:
-            mock_context.soup = soup
-        return mock_context
-
-    return sub
-
-
 @pytest.mark.asyncio
 async def test_parse_location_success(mocker: MockerFixture, _mock_context):
     mock_context = _mock_context()
