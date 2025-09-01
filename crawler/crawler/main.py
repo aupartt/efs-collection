@@ -13,7 +13,7 @@ async def start_crawler(
     urls: list[str],
     request_handled_timeout: int = 60 * 2,
     max_request_retries: int = 3,
-    max_requests_per_crawl: int = 100,
+    max_requests_per_crawl: int = 1000,
     crawler_logger: logging.Logger = None,
     statistics_log_format: str = "inline",
     parser: str = "html.parser",
