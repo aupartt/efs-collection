@@ -1,4 +1,3 @@
-from .crawler import start_crawler
-
+from .main import start_crawler
 
 __all__ = ["start_crawler"]
