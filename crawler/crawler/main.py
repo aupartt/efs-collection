@@ -30,8 +30,8 @@ async def start_crawler(
     )
 
     try:
-        stats = await crawler.run(urls)
-        logger.info("Crawler ended.", extra=stats.to_dict())
+        await crawler.run(urls)
+        logger.info("Crawler ended.")
         data = await crawler.get_data()
         return data.items
     except Exception as e:
