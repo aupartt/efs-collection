@@ -17,12 +17,13 @@ class ScheduleModel(Base):
 
     # Details
     date: Mapped[date]
+    location: Mapped[str | None]  # Found on the webpage (not linked to Locations)
     url: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
     # Data
     total_slots: Mapped[int]
-    collecte_type: Mapped[str]
+    collect_type: Mapped[str]
     timetables: Mapped[dict]
     timetable_min: Mapped[time]
     timetable_max: Mapped[time]
