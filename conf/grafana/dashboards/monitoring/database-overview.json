@@ -215,7 +215,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 3,
         "w": 24,
         "x": 0,
         "y": 4
@@ -236,7 +236,7 @@
         },
         "showPercentChange": false,
         "textMode": "value_and_name",
-        "wideLayout": false
+        "wideLayout": true
       },
       "pluginVersion": "12.1.1",
       "targets": [
@@ -265,7 +265,7 @@
           }
         }
       ],
-      "title": "",
+      "title": "Global performance stats",
       "type": "stat"
     },
     {
@@ -300,7 +300,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 7
       },
       "id": 2,
       "maxPerRow": 8,
@@ -385,10 +385,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 3,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 16
       },
       "id": 6,
       "options": {
@@ -406,7 +406,7 @@
         },
         "showPercentChange": false,
         "textMode": "value_and_name",
-        "wideLayout": false
+        "wideLayout": true
       },
       "pluginVersion": "12.1.1",
       "targets": [
@@ -435,7 +435,7 @@
           }
         }
       ],
-      "title": "",
+      "title": "Global table stats",
       "type": "stat"
     },
     {
@@ -466,7 +466,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 19
       },
       "id": 3,
       "maxPerRow": 8,
@@ -559,5 +559,5 @@
   "timezone": "browser",
   "title": "Database - Overview",
   "uid": "database-overview",
-  "version": 14
+  "version": 16
 }
