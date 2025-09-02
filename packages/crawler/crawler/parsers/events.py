@@ -42,12 +42,14 @@ async def _parse_event_schedules(event_locator: Locator) -> Schedules:
     return schedules
 
 
-async def _parse_event(url: str, event_id, event_locator) -> Result[Event]:
+async def _parse_event(url: str, event_id: int, event_locator: Locator) -> Result[Event]:
     """Parse the date, available slots and detailed schedules from an event."""
     try:
         date = await _parse_event_date(event_locator)
         slots = await _parse_event_slots(event_locator)
-        schedules = await _parse_event_schedules(event_locator)
+        schedules = Schedules()
+        if slots > 0:
+            schedules = await _parse_event_schedules(event_locator)
 
         event = Event(date=date, slots=slots, schedules=schedules)
         return Result(success=True, value=event)
@@ -73,9 +75,7 @@ async def parse_events(context: BeautifulSoupCrawlingContext) -> Result[list[Eve
     if not events_element:
         logger.warning("No events found.", extra={"url": context.request.url})
         return Result(success=False, error="NO_EVENT_FOUND")
-    logger.info(
-        f"Found {len(events_element)} events.", extra={"url": context.request.url}
-    )
+    logger.info(f"Found {len(events_element)} events.", extra={"url": context.request.url})
 
     events = []
     for event_id, event_locator in enumerate(events_element):
