@@ -19,7 +19,7 @@ class Event(BaseModel):
 class LocationEvents(BaseModel):
     url: str
     location: str
-    events_type: CollectType
+    collect_type: CollectType
     time: datetime
     events: list[Event]
 

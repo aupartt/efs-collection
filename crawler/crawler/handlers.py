@@ -26,10 +26,10 @@ async def collect_handler(context: BeautifulSoupCrawlingContext) -> LocationEven
         data["location"] = location.value
 
         # Parse events type
-        event_type_result = await parse_collect_type(context)
-        if not event_type_result.success:
+        collect_type_result = await parse_collect_type(context)
+        if not collect_type_result.success:
             return
-        data["events_type"] = event_type_result.value
+        data["collect_type"] = collect_type_result.value
 
         # Parse all events
         events_result = await parse_events(context)
@@ -40,4 +40,4 @@ async def collect_handler(context: BeautifulSoupCrawlingContext) -> LocationEven
         location_events = LocationEvents(**data, time=datetime.now(UTC))
         await context.push_data(location_events.model_dump_json())
     except Exception as e:
-        logger.error(f"Error in request handler: {e}")
+        context.log.error(f"Error in request handler: {e}")

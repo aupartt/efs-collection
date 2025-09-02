@@ -103,7 +103,7 @@ class ScheduleGroupSchema(BaseModel):
 
     url: str
     location: str | None
-    collect_type: str = Field(..., alias="events_type")
+    collect_type: str = Field(..., alias="collect_type")
     created_at: datetime = Field(..., alias="time")
     events: list[ScheduleEventSchema]
 
