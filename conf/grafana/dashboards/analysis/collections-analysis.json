@@ -1,35 +1,4 @@
 {
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "12.1.1"
-    },
-    {
-      "type": "datasource",
-      "uid": "Postgres"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "xychart",
-      "name": "XY Chart",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -49,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 7,
   "links": [],
   "panels": [
     {
@@ -172,6 +141,10 @@
       "pluginVersion": "12.1.1",
       "targets": [
         {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
           "editorMode": "builder",
           "format": "table",
           "rawSql": "SELECT id AS \"collection_group_id\", start_date, end_date, is_public, is_publishable FROM collection_groups ",
@@ -234,11 +207,7 @@
               }
             ]
           },
-          "table": "collection_groups",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "Postgres"
-          }
+          "table": "collection_groups"
         },
         {
           "datasource": {
@@ -477,7 +446,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic-by-name",
+            "mode": "palette-classic",
             "seriesBy": "last"
           },
           "custom": {
@@ -569,6 +538,10 @@
       "pluginVersion": "12.1.1",
       "targets": [
         {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
@@ -596,11 +569,7 @@
             ],
             "limit": 50
           },
-          "table": "collection_groups",
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "Postgres"
-          }
+          "table": "collection_groups"
         }
       ],
       "title": "Taux de Remplissage - Vue Temporelle Unifiée",
@@ -828,6 +797,7 @@
       "type": "xychart"
     }
   ],
+  "preload": false,
   "schemaVersion": 41,
   "tags": [],
   "templating": {
@@ -841,6 +811,5 @@
   "timezone": "browser",
   "title": "Collections - Analysis",
   "uid": "collections-analysis",
-  "version": 1,
-  "weekStart": ""
+  "version": 1
 }
