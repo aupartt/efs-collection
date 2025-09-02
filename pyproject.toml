@@ -1,0 +1,10 @@
+[tool.uv.sources]
+api-carto-client = { workspace = true }
+crawler = { workspace = true }
+collector = { workspace = true }  # Add this
+
+[tool.uv.workspace]
+members = [
+    "packages/*",
+    "collector",  # Add collector to workspace
+]
