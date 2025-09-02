@@ -76,7 +76,7 @@ services:
       - app_network
 
   alembic:
-    image: collecte-info:latest
+    image: collector:latest
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
