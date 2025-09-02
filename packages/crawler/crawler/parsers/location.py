@@ -43,9 +43,7 @@ async def parse_collect_type(
         if not result.success:
             return Result(success=False, error=result.error)
 
-        logger.info(
-            f"Collect type found: {result.value}.", extra={"url": context.request.url}
-        )
+        logger.info(f"Collect type found: {result.value}.", extra={"url": context.request.url})
         return Result(success=True, value=result.value)
     except Exception as e:
         logger.error(

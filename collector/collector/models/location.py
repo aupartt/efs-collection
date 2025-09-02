@@ -33,9 +33,7 @@ class LocationModel(Base):
     # Address info
     name: Mapped[str | None]
     city: Mapped[str | None]
-    post_code: Mapped[str] = mapped_column(
-        String(10), index=True
-    )  # Used for collections lookup
+    post_code: Mapped[str] = mapped_column(String(10), index=True)  # Used for collections lookup
     full_address: Mapped[str]
     address1: Mapped[str | None]
     address2: Mapped[str | None]
@@ -62,9 +60,7 @@ class LocationModel(Base):
     phone: Mapped[str | None]
 
     # Relationships
-    group_code: Mapped[str] = mapped_column(
-        String(10), ForeignKey("groups.gr_code", ondelete="CASCADE"), index=True
-    )
+    group_code: Mapped[str] = mapped_column(String(10), ForeignKey("groups.gr_code", ondelete="CASCADE"), index=True)
     group: Mapped["GroupModel"] = relationship(back_populates="locations")
     collections: Mapped[list["CollectionGroupModel"]] = relationship(
         back_populates="location", cascade="all, delete-orphan"

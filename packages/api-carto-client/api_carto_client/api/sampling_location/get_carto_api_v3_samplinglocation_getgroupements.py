@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Optional, Union, cast
+from typing import Any, cast
 
 import httpx
 
@@ -29,8 +29,8 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[Any, list["SamplingGroupEntity"]]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Any | list["SamplingGroupEntity"] | None:
     if response.status_code == 200:
         response_200 = []
         _response_200 = response.json()
@@ -53,8 +53,8 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[Any, list["SamplingGroupEntity"]]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[Any | list["SamplingGroupEntity"]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -65,9 +65,9 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     region_code: str,
-) -> Response[Union[Any, list["SamplingGroupEntity"]]]:
+) -> Response[Any | list["SamplingGroupEntity"]]:
     """Retourne la liste des régions
 
     Args:
@@ -94,9 +94,9 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     region_code: str,
-) -> Optional[Union[Any, list["SamplingGroupEntity"]]]:
+) -> Any | list["SamplingGroupEntity"] | None:
     """Retourne la liste des régions
 
     Args:
@@ -118,9 +118,9 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     region_code: str,
-) -> Response[Union[Any, list["SamplingGroupEntity"]]]:
+) -> Response[Any | list["SamplingGroupEntity"]]:
     """Retourne la liste des régions
 
     Args:
@@ -145,9 +145,9 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     region_code: str,
-) -> Optional[Union[Any, list["SamplingGroupEntity"]]]:
+) -> Any | list["SamplingGroupEntity"] | None:
     """Retourne la liste des régions
 
     Args:

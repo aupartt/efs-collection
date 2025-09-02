@@ -157,27 +157,15 @@ class CollectionSchema(BaseModel):
 
     # Capacity info
     taux_remplissage: float | None = Field(alias="tauxRemplissage", default=None)
-    nb_places_restantes_st: int | None = Field(
-        alias="nbPlacesRestantesST", default=None
-    )
+    nb_places_restantes_st: int | None = Field(alias="nbPlacesRestantesST", default=None)
     nb_places_totales_st: int | None = Field(alias="nbPlacesTotalesST", default=None)
-    nb_places_reservees_st: int | None = Field(
-        alias="nbPlacesReserveesST", default=None
-    )
-    nb_places_restantes_pla: int | None = Field(
-        alias="nbPlacesRestantesPLA", default=None
-    )
+    nb_places_reservees_st: int | None = Field(alias="nbPlacesReserveesST", default=None)
+    nb_places_restantes_pla: int | None = Field(alias="nbPlacesRestantesPLA", default=None)
     nb_places_totales_pla: int | None = Field(alias="nbPlacesTotalesPLA", default=None)
-    nb_places_reservees_pla: int | None = Field(
-        alias="nbPlacesReserveesPLA", default=None
-    )
-    nb_places_restantes_cpa: int | None = Field(
-        alias="nbPlacesRestantesCPA", default=None
-    )
+    nb_places_reservees_pla: int | None = Field(alias="nbPlacesReserveesPLA", default=None)
+    nb_places_restantes_cpa: int | None = Field(alias="nbPlacesRestantesCPA", default=None)
     nb_places_totales_cpa: int | None = Field(alias="nbPlacesTotalesCPA", default=None)
-    nb_places_reservees_cpa: int | None = Field(
-        alias="nbPlacesReserveesCPA", default=None
-    )
+    nb_places_reservees_cpa: int | None = Field(alias="nbPlacesReserveesCPA", default=None)
 
     # URLs for booking
     url_blood: str | None = Field(alias="urlBlood", default=None)
@@ -185,9 +173,7 @@ class CollectionSchema(BaseModel):
     url_platelet: str | None = Field(alias="urlPlatelet", default=None)
 
     # Text descriptions
-    convocation_label_long: str | None = Field(
-        alias="convocationLabelLong", default=None
-    )
+    convocation_label_long: str | None = Field(alias="convocationLabelLong", default=None)
     convocation_label_sms: str | None = Field(alias="convocationLabelSMS", default=None)
 
     # Handle children collections

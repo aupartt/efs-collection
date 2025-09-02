@@ -14,14 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 async def _retrieve_active_collections_url() -> list[str]:
-    """Retrieve all active collections from the database 
+    """Retrieve all active collections from the database
     then create Request object with their URL
     """
     active_collections = await get_active_collections()
-    return [
-        Request.from_url(c.url, unique_key=f"{c.url}:{uuid.uuid4()}")
-        for c in active_collections
-    ]
+    return [Request.from_url(c.url, unique_key=f"{c.url}:{uuid.uuid4()}") for c in active_collections]
 
 
 async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema]:
@@ -50,16 +47,12 @@ async def _get_schedules_from_crawler() -> list[ScheduleGroupSchema]:
         return []
 
 
-async def _match_event(
-    schedule: ScheduleSchema, event: CollectionEventSchema
-) -> ScheduleSchema | None:
+async def _match_event(schedule: ScheduleSchema, event: CollectionEventSchema) -> ScheduleSchema | None:
     """Match the schedule with the event and return the schedule with the event id."""
     try:
         is_morning = bool(event.morning_start_time and event.morning_end_time)
         is_afternoon = bool(event.afternoon_start_time and event.afternoon_end_time)
-        is_all_day = (is_morning and is_afternoon) or bool(
-            event.morning_start_time and event.afternoon_end_time
-        )
+        is_all_day = (is_morning and is_afternoon) or bool(event.morning_start_time and event.afternoon_end_time)
 
         if not (is_morning or is_afternoon or is_all_day):
             logger.warning("Event has no time range.", extra=event.info())
@@ -73,15 +66,11 @@ async def _match_event(
             return new_schedule
 
         # Determine the correct time range to filter by.
-        min_value = (
-            event.morning_start_time if is_morning else event.afternoon_start_time
-        )
+        min_value = event.morning_start_time if is_morning else event.afternoon_start_time
         max_value = event.morning_end_time if is_morning else event.afternoon_end_time
 
         # Filter timetables based on the determined time range.
-        new_schedule.timetables = {
-            k: v for k, v in schedule.timetables.items() if min_value <= k <= max_value
-        }
+        new_schedule.timetables = {k: v for k, v in schedule.timetables.items() if min_value <= k <= max_value}
 
         return new_schedule
 

@@ -165,9 +165,7 @@ class CrawleeLogFormatter(logging.Formatter):
         # Basically just print the traceback and indent it a bit
         exception_string = ""
         if record.exc_text:
-            exception_string = "\n" + textwrap.indent(
-                record.exc_text.rstrip(), _LOG_MESSAGE_INDENT
-            )
+            exception_string = "\n" + textwrap.indent(record.exc_text.rstrip(), _LOG_MESSAGE_INDENT)
         else:
             exception_string = ""
 
@@ -180,6 +178,4 @@ class CrawleeLogFormatter(logging.Formatter):
 
 # Silence HTTPX logger
 httpx_logger = logging.getLogger("httpx")
-httpx_logger.setLevel(
-    logging.DEBUG if settings.LOGGING_LEVEL == "DEBUG" else logging.WARNING
-)
+httpx_logger.setLevel(logging.DEBUG if settings.LOGGING_LEVEL == "DEBUG" else logging.WARNING)

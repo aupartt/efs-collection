@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union, cast
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 
@@ -19,19 +19,19 @@ class SamplingTownEntity:
         lon (Union[Unset, float]): Longitude
     """
 
-    nom: Union[None, Unset, str] = UNSET
-    code_postal: Union[None, Unset, str] = UNSET
-    lat: Union[Unset, float] = UNSET
-    lon: Union[Unset, float] = UNSET
+    nom: None | Unset | str = UNSET
+    code_postal: None | Unset | str = UNSET
+    lat: Unset | float = UNSET
+    lon: Unset | float = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        nom: Union[None, Unset, str]
+        nom: None | Unset | str
         if isinstance(self.nom, Unset):
             nom = UNSET
         else:
             nom = self.nom
 
-        code_postal: Union[None, Unset, str]
+        code_postal: None | Unset | str
         if isinstance(self.code_postal, Unset):
             code_postal = UNSET
         else:
@@ -59,21 +59,21 @@ class SamplingTownEntity:
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
 
-        def _parse_nom(data: object) -> Union[None, Unset, str]:
+        def _parse_nom(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         nom = _parse_nom(d.pop("nom", UNSET))
 
-        def _parse_code_postal(data: object) -> Union[None, Unset, str]:
+        def _parse_code_postal(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         code_postal = _parse_code_postal(d.pop("codePostal", UNSET))
 

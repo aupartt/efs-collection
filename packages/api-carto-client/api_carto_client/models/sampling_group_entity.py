@@ -1,6 +1,6 @@
 import datetime
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union, cast
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from dateutil.parser import isoparse
@@ -20,24 +20,24 @@ class SamplingGroupEntity:
         gr_desd (Union[None, Unset, datetime.datetime]):
     """
 
-    gr_code: Union[None, Unset, str] = UNSET
-    gr_lib: Union[None, Unset, str] = UNSET
-    gr_desd: Union[None, Unset, datetime.datetime] = UNSET
+    gr_code: None | Unset | str = UNSET
+    gr_lib: None | Unset | str = UNSET
+    gr_desd: None | Unset | datetime.datetime = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        gr_code: Union[None, Unset, str]
+        gr_code: None | Unset | str
         if isinstance(self.gr_code, Unset):
             gr_code = UNSET
         else:
             gr_code = self.gr_code
 
-        gr_lib: Union[None, Unset, str]
+        gr_lib: None | Unset | str
         if isinstance(self.gr_lib, Unset):
             gr_lib = UNSET
         else:
             gr_lib = self.gr_lib
 
-        gr_desd: Union[None, Unset, str]
+        gr_desd: None | Unset | str
         if isinstance(self.gr_desd, Unset):
             gr_desd = UNSET
         elif isinstance(self.gr_desd, datetime.datetime):
@@ -61,25 +61,25 @@ class SamplingGroupEntity:
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
 
-        def _parse_gr_code(data: object) -> Union[None, Unset, str]:
+        def _parse_gr_code(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         gr_code = _parse_gr_code(d.pop("grCode", UNSET))
 
-        def _parse_gr_lib(data: object) -> Union[None, Unset, str]:
+        def _parse_gr_lib(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         gr_lib = _parse_gr_lib(d.pop("grLib", UNSET))
 
-        def _parse_gr_desd(data: object) -> Union[None, Unset, datetime.datetime]:
+        def _parse_gr_desd(data: object) -> None | Unset | datetime.datetime:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -92,7 +92,7 @@ class SamplingGroupEntity:
                 return gr_desd_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union[None, Unset, datetime.datetime], data)
+            return cast(None | Unset | datetime.datetime, data)
 
         gr_desd = _parse_gr_desd(d.pop("grDesd", UNSET))
 

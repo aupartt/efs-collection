@@ -37,9 +37,7 @@ async def load_collection_groups() -> list[CollectionGroupSchema]:
         return await sqlalchemy_to_pydantic(collections, CollectionGroupSchema)
 
 
-async def get_collection(
-    session: AsyncSession, efs_id: str
-) -> CollectionGroupModel | None:
+async def get_collection(session: AsyncSession, efs_id: str) -> CollectionGroupModel | None:
     stmt = select(CollectionGroupModel).filter_by(efs_id=efs_id)
     results = await session.execute(stmt)
     return results.scalar_one_or_none()
@@ -49,22 +47,16 @@ async def get_active_collections() -> list[CollectionGroupSchema]:
     """Filter and return all collection that have not already ended"""
     async with get_db() as session:
         try:
-            stmt = select(CollectionGroupModel).where(
-                CollectionGroupModel.end_date >= datetime.now()
-            )
+            stmt = select(CollectionGroupModel).where(CollectionGroupModel.end_date >= datetime.now())
             results = await session.execute(stmt)
             collections = results.scalars().all()
             return await sqlalchemy_to_pydantic(collections, CollectionGroupSchema)
         except Exception as e:
-            logger.error(
-                "Failed to retrieve active collections", extra={"error": str(e)}
-            )
+            logger.error("Failed to retrieve active collections", extra={"error": str(e)})
             return []
 
 
-async def get_event(
-    session: AsyncSession, event_id: int
-) -> CollectionEventModel | None:
+async def get_event(session: AsyncSession, event_id: int) -> CollectionEventModel | None:
     stmt = select(CollectionEventModel).filter_by(id=event_id)
     results = await session.execute(stmt)
     return results.scalar_one_or_none()
@@ -102,9 +94,7 @@ async def _handle_collection(
                 # Don't handle collection without efs_id
                 # This is usually because the collection is not already available
                 if not collection.efs_id:
-                    logger.warning(
-                        "Collection doesn't have EFS_ID", extra={**collection.info()}
-                    )
+                    logger.warning("Collection doesn't have EFS_ID", extra={**collection.info()})
                     return
 
                 collection_db = await get_collection(session, collection.efs_id)
@@ -155,9 +145,7 @@ async def _handle_event(event: CollectionEventSchema) -> CollectionEventModel:
                 await session.refresh(event_db)
                 return event_db
             except Exception as e:
-                logger.error(
-                    "Failed to handle event", extra={**event.info(), "error": str(e)}
-                )
+                logger.error("Failed to handle event", extra={**event.info(), "error": str(e)})
 
 
 async def _handle_snapshot(

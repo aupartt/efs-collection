@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union, cast
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 
@@ -19,31 +19,31 @@ class SamplingRegionEntity:
         code (Union[None, Unset, str]): Code de la région
     """
 
-    libelle: Union[None, Unset, str] = UNSET
-    acronyme: Union[None, Unset, str] = UNSET
-    monogramme: Union[None, Unset, str] = UNSET
-    code: Union[None, Unset, str] = UNSET
+    libelle: None | Unset | str = UNSET
+    acronyme: None | Unset | str = UNSET
+    monogramme: None | Unset | str = UNSET
+    code: None | Unset | str = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        libelle: Union[None, Unset, str]
+        libelle: None | Unset | str
         if isinstance(self.libelle, Unset):
             libelle = UNSET
         else:
             libelle = self.libelle
 
-        acronyme: Union[None, Unset, str]
+        acronyme: None | Unset | str
         if isinstance(self.acronyme, Unset):
             acronyme = UNSET
         else:
             acronyme = self.acronyme
 
-        monogramme: Union[None, Unset, str]
+        monogramme: None | Unset | str
         if isinstance(self.monogramme, Unset):
             monogramme = UNSET
         else:
             monogramme = self.monogramme
 
-        code: Union[None, Unset, str]
+        code: None | Unset | str
         if isinstance(self.code, Unset):
             code = UNSET
         else:
@@ -67,39 +67,39 @@ class SamplingRegionEntity:
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
 
-        def _parse_libelle(data: object) -> Union[None, Unset, str]:
+        def _parse_libelle(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         libelle = _parse_libelle(d.pop("libelle", UNSET))
 
-        def _parse_acronyme(data: object) -> Union[None, Unset, str]:
+        def _parse_acronyme(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         acronyme = _parse_acronyme(d.pop("acronyme", UNSET))
 
-        def _parse_monogramme(data: object) -> Union[None, Unset, str]:
+        def _parse_monogramme(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         monogramme = _parse_monogramme(d.pop("monogramme", UNSET))
 
-        def _parse_code(data: object) -> Union[None, Unset, str]:
+        def _parse_code(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         code = _parse_code(d.pop("code", UNSET))
 

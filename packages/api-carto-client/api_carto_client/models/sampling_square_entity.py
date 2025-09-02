@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union
+from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 
@@ -19,10 +19,10 @@ class SamplingSquareEntity:
         south_west_longitude (Union[Unset, float]): Longitude Sud-Ouest
     """
 
-    north_east_latitude: Union[Unset, float] = UNSET
-    north_east_longitude: Union[Unset, float] = UNSET
-    south_west_latitude: Union[Unset, float] = UNSET
-    south_west_longitude: Union[Unset, float] = UNSET
+    north_east_latitude: Unset | float = UNSET
+    north_east_longitude: Unset | float = UNSET
+    south_west_latitude: Unset | float = UNSET
+    south_west_longitude: Unset | float = UNSET
 
     def to_dict(self) -> dict[str, Any]:
         north_east_latitude = self.north_east_latitude

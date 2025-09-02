@@ -1,6 +1,6 @@
 import datetime
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from dateutil.parser import isoparse
@@ -53,40 +53,40 @@ class SamplingLocationCollectionsEntity:
         url_platelets (Union[None, Unset, str]): Url de prise de RDV pour les plaquettes
     """
 
-    collections: Union[None, Unset, list["SamplingCollectionEntity"]] = UNSET
-    address1: Union[None, Unset, str] = UNSET
-    address2: Union[None, Unset, str] = UNSET
-    city: Union[None, Unset, str] = UNSET
-    convocation_label: Union[None, Unset, str] = UNSET
-    distance: Union[Unset, float] = UNSET
-    full_address: Union[None, Unset, str] = UNSET
-    give_blood: Union[Unset, int] = UNSET
-    give_plasma: Union[Unset, int] = UNSET
-    give_platelet: Union[Unset, int] = UNSET
-    region_code: Union[None, Unset, str] = UNSET
-    group_code: Union[None, Unset, str] = UNSET
-    latitude: Union[Unset, float] = UNSET
-    longitude: Union[Unset, float] = UNSET
-    name: Union[None, Unset, str] = UNSET
-    post_code: Union[None, Unset, str] = UNSET
-    sampling_location_code: Union[None, Unset, str] = UNSET
-    horaires: Union[None, Unset, str] = UNSET
-    infos: Union[None, Unset, str] = UNSET
-    metro: Union[None, Unset, str] = UNSET
-    bus: Union[None, Unset, str] = UNSET
-    tram: Union[None, Unset, str] = UNSET
-    parking: Union[None, Unset, str] = UNSET
-    debut_infos: Union[None, Unset, datetime.datetime] = UNSET
-    fin_infos: Union[None, Unset, datetime.datetime] = UNSET
-    ville: Union[None, Unset, str] = UNSET
-    id: Union[None, Unset, int] = UNSET
-    phone: Union[None, Unset, str] = UNSET
-    url_blood: Union[None, Unset, str] = UNSET
-    url_plasma: Union[None, Unset, str] = UNSET
-    url_platelets: Union[None, Unset, str] = UNSET
+    collections: None | Unset | list["SamplingCollectionEntity"] = UNSET
+    address1: None | Unset | str = UNSET
+    address2: None | Unset | str = UNSET
+    city: None | Unset | str = UNSET
+    convocation_label: None | Unset | str = UNSET
+    distance: Unset | float = UNSET
+    full_address: None | Unset | str = UNSET
+    give_blood: Unset | int = UNSET
+    give_plasma: Unset | int = UNSET
+    give_platelet: Unset | int = UNSET
+    region_code: None | Unset | str = UNSET
+    group_code: None | Unset | str = UNSET
+    latitude: Unset | float = UNSET
+    longitude: Unset | float = UNSET
+    name: None | Unset | str = UNSET
+    post_code: None | Unset | str = UNSET
+    sampling_location_code: None | Unset | str = UNSET
+    horaires: None | Unset | str = UNSET
+    infos: None | Unset | str = UNSET
+    metro: None | Unset | str = UNSET
+    bus: None | Unset | str = UNSET
+    tram: None | Unset | str = UNSET
+    parking: None | Unset | str = UNSET
+    debut_infos: None | Unset | datetime.datetime = UNSET
+    fin_infos: None | Unset | datetime.datetime = UNSET
+    ville: None | Unset | str = UNSET
+    id: None | Unset | int = UNSET
+    phone: None | Unset | str = UNSET
+    url_blood: None | Unset | str = UNSET
+    url_plasma: None | Unset | str = UNSET
+    url_platelets: None | Unset | str = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        collections: Union[None, Unset, list[dict[str, Any]]]
+        collections: None | Unset | list[dict[str, Any]]
         if isinstance(self.collections, Unset):
             collections = UNSET
         elif isinstance(self.collections, list):
@@ -98,25 +98,25 @@ class SamplingLocationCollectionsEntity:
         else:
             collections = self.collections
 
-        address1: Union[None, Unset, str]
+        address1: None | Unset | str
         if isinstance(self.address1, Unset):
             address1 = UNSET
         else:
             address1 = self.address1
 
-        address2: Union[None, Unset, str]
+        address2: None | Unset | str
         if isinstance(self.address2, Unset):
             address2 = UNSET
         else:
             address2 = self.address2
 
-        city: Union[None, Unset, str]
+        city: None | Unset | str
         if isinstance(self.city, Unset):
             city = UNSET
         else:
             city = self.city
 
-        convocation_label: Union[None, Unset, str]
+        convocation_label: None | Unset | str
         if isinstance(self.convocation_label, Unset):
             convocation_label = UNSET
         else:
@@ -124,7 +124,7 @@ class SamplingLocationCollectionsEntity:
 
         distance = self.distance
 
-        full_address: Union[None, Unset, str]
+        full_address: None | Unset | str
         if isinstance(self.full_address, Unset):
             full_address = UNSET
         else:
@@ -136,13 +136,13 @@ class SamplingLocationCollectionsEntity:
 
         give_platelet = self.give_platelet
 
-        region_code: Union[None, Unset, str]
+        region_code: None | Unset | str
         if isinstance(self.region_code, Unset):
             region_code = UNSET
         else:
             region_code = self.region_code
 
-        group_code: Union[None, Unset, str]
+        group_code: None | Unset | str
         if isinstance(self.group_code, Unset):
             group_code = UNSET
         else:
@@ -152,61 +152,61 @@ class SamplingLocationCollectionsEntity:
 
         longitude = self.longitude
 
-        name: Union[None, Unset, str]
+        name: None | Unset | str
         if isinstance(self.name, Unset):
             name = UNSET
         else:
             name = self.name
 
-        post_code: Union[None, Unset, str]
+        post_code: None | Unset | str
         if isinstance(self.post_code, Unset):
             post_code = UNSET
         else:
             post_code = self.post_code
 
-        sampling_location_code: Union[None, Unset, str]
+        sampling_location_code: None | Unset | str
         if isinstance(self.sampling_location_code, Unset):
             sampling_location_code = UNSET
         else:
             sampling_location_code = self.sampling_location_code
 
-        horaires: Union[None, Unset, str]
+        horaires: None | Unset | str
         if isinstance(self.horaires, Unset):
             horaires = UNSET
         else:
             horaires = self.horaires
 
-        infos: Union[None, Unset, str]
+        infos: None | Unset | str
         if isinstance(self.infos, Unset):
             infos = UNSET
         else:
             infos = self.infos
 
-        metro: Union[None, Unset, str]
+        metro: None | Unset | str
         if isinstance(self.metro, Unset):
             metro = UNSET
         else:
             metro = self.metro
 
-        bus: Union[None, Unset, str]
+        bus: None | Unset | str
         if isinstance(self.bus, Unset):
             bus = UNSET
         else:
             bus = self.bus
 
-        tram: Union[None, Unset, str]
+        tram: None | Unset | str
         if isinstance(self.tram, Unset):
             tram = UNSET
         else:
             tram = self.tram
 
-        parking: Union[None, Unset, str]
+        parking: None | Unset | str
         if isinstance(self.parking, Unset):
             parking = UNSET
         else:
             parking = self.parking
 
-        debut_infos: Union[None, Unset, str]
+        debut_infos: None | Unset | str
         if isinstance(self.debut_infos, Unset):
             debut_infos = UNSET
         elif isinstance(self.debut_infos, datetime.datetime):
@@ -214,7 +214,7 @@ class SamplingLocationCollectionsEntity:
         else:
             debut_infos = self.debut_infos
 
-        fin_infos: Union[None, Unset, str]
+        fin_infos: None | Unset | str
         if isinstance(self.fin_infos, Unset):
             fin_infos = UNSET
         elif isinstance(self.fin_infos, datetime.datetime):
@@ -222,37 +222,37 @@ class SamplingLocationCollectionsEntity:
         else:
             fin_infos = self.fin_infos
 
-        ville: Union[None, Unset, str]
+        ville: None | Unset | str
         if isinstance(self.ville, Unset):
             ville = UNSET
         else:
             ville = self.ville
 
-        id: Union[None, Unset, int]
+        id: None | Unset | int
         if isinstance(self.id, Unset):
             id = UNSET
         else:
             id = self.id
 
-        phone: Union[None, Unset, str]
+        phone: None | Unset | str
         if isinstance(self.phone, Unset):
             phone = UNSET
         else:
             phone = self.phone
 
-        url_blood: Union[None, Unset, str]
+        url_blood: None | Unset | str
         if isinstance(self.url_blood, Unset):
             url_blood = UNSET
         else:
             url_blood = self.url_blood
 
-        url_plasma: Union[None, Unset, str]
+        url_plasma: None | Unset | str
         if isinstance(self.url_plasma, Unset):
             url_plasma = UNSET
         else:
             url_plasma = self.url_plasma
 
-        url_platelets: Union[None, Unset, str]
+        url_platelets: None | Unset | str
         if isinstance(self.url_platelets, Unset):
             url_platelets = UNSET
         else:
@@ -332,7 +332,7 @@ class SamplingLocationCollectionsEntity:
 
         d = dict(src_dict)
 
-        def _parse_collections(data: object) -> Union[None, Unset, list["SamplingCollectionEntity"]]:
+        def _parse_collections(data: object) -> None | Unset | list["SamplingCollectionEntity"]:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -350,54 +350,54 @@ class SamplingLocationCollectionsEntity:
                 return collections_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union[None, Unset, list["SamplingCollectionEntity"]], data)
+            return cast(None | Unset | list["SamplingCollectionEntity"], data)
 
         collections = _parse_collections(d.pop("collections", UNSET))
 
-        def _parse_address1(data: object) -> Union[None, Unset, str]:
+        def _parse_address1(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         address1 = _parse_address1(d.pop("address1", UNSET))
 
-        def _parse_address2(data: object) -> Union[None, Unset, str]:
+        def _parse_address2(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         address2 = _parse_address2(d.pop("address2", UNSET))
 
-        def _parse_city(data: object) -> Union[None, Unset, str]:
+        def _parse_city(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         city = _parse_city(d.pop("city", UNSET))
 
-        def _parse_convocation_label(data: object) -> Union[None, Unset, str]:
+        def _parse_convocation_label(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         convocation_label = _parse_convocation_label(d.pop("convocationLabel", UNSET))
 
         distance = d.pop("distance", UNSET)
 
-        def _parse_full_address(data: object) -> Union[None, Unset, str]:
+        def _parse_full_address(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         full_address = _parse_full_address(d.pop("fullAddress", UNSET))
 
@@ -407,21 +407,21 @@ class SamplingLocationCollectionsEntity:
 
         give_platelet = d.pop("givePlatelet", UNSET)
 
-        def _parse_region_code(data: object) -> Union[None, Unset, str]:
+        def _parse_region_code(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         region_code = _parse_region_code(d.pop("regionCode", UNSET))
 
-        def _parse_group_code(data: object) -> Union[None, Unset, str]:
+        def _parse_group_code(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         group_code = _parse_group_code(d.pop("groupCode", UNSET))
 
@@ -429,88 +429,88 @@ class SamplingLocationCollectionsEntity:
 
         longitude = d.pop("longitude", UNSET)
 
-        def _parse_name(data: object) -> Union[None, Unset, str]:
+        def _parse_name(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         name = _parse_name(d.pop("name", UNSET))
 
-        def _parse_post_code(data: object) -> Union[None, Unset, str]:
+        def _parse_post_code(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         post_code = _parse_post_code(d.pop("postCode", UNSET))
 
-        def _parse_sampling_location_code(data: object) -> Union[None, Unset, str]:
+        def _parse_sampling_location_code(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         sampling_location_code = _parse_sampling_location_code(d.pop("samplingLocationCode", UNSET))
 
-        def _parse_horaires(data: object) -> Union[None, Unset, str]:
+        def _parse_horaires(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         horaires = _parse_horaires(d.pop("horaires", UNSET))
 
-        def _parse_infos(data: object) -> Union[None, Unset, str]:
+        def _parse_infos(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         infos = _parse_infos(d.pop("infos", UNSET))
 
-        def _parse_metro(data: object) -> Union[None, Unset, str]:
+        def _parse_metro(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         metro = _parse_metro(d.pop("metro", UNSET))
 
-        def _parse_bus(data: object) -> Union[None, Unset, str]:
+        def _parse_bus(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         bus = _parse_bus(d.pop("bus", UNSET))
 
-        def _parse_tram(data: object) -> Union[None, Unset, str]:
+        def _parse_tram(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         tram = _parse_tram(d.pop("tram", UNSET))
 
-        def _parse_parking(data: object) -> Union[None, Unset, str]:
+        def _parse_parking(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         parking = _parse_parking(d.pop("parking", UNSET))
 
-        def _parse_debut_infos(data: object) -> Union[None, Unset, datetime.datetime]:
+        def _parse_debut_infos(data: object) -> None | Unset | datetime.datetime:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -523,11 +523,11 @@ class SamplingLocationCollectionsEntity:
                 return debut_infos_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union[None, Unset, datetime.datetime], data)
+            return cast(None | Unset | datetime.datetime, data)
 
         debut_infos = _parse_debut_infos(d.pop("debutInfos", UNSET))
 
-        def _parse_fin_infos(data: object) -> Union[None, Unset, datetime.datetime]:
+        def _parse_fin_infos(data: object) -> None | Unset | datetime.datetime:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -540,61 +540,61 @@ class SamplingLocationCollectionsEntity:
                 return fin_infos_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union[None, Unset, datetime.datetime], data)
+            return cast(None | Unset | datetime.datetime, data)
 
         fin_infos = _parse_fin_infos(d.pop("finInfos", UNSET))
 
-        def _parse_ville(data: object) -> Union[None, Unset, str]:
+        def _parse_ville(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         ville = _parse_ville(d.pop("ville", UNSET))
 
-        def _parse_id(data: object) -> Union[None, Unset, int]:
+        def _parse_id(data: object) -> None | Unset | int:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, int], data)
+            return cast(None | Unset | int, data)
 
         id = _parse_id(d.pop("id", UNSET))
 
-        def _parse_phone(data: object) -> Union[None, Unset, str]:
+        def _parse_phone(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         phone = _parse_phone(d.pop("phone", UNSET))
 
-        def _parse_url_blood(data: object) -> Union[None, Unset, str]:
+        def _parse_url_blood(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         url_blood = _parse_url_blood(d.pop("urlBlood", UNSET))
 
-        def _parse_url_plasma(data: object) -> Union[None, Unset, str]:
+        def _parse_url_plasma(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         url_plasma = _parse_url_plasma(d.pop("urlPlasma", UNSET))
 
-        def _parse_url_platelets(data: object) -> Union[None, Unset, str]:
+        def _parse_url_platelets(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         url_platelets = _parse_url_platelets(d.pop("urlPlatelets", UNSET))
 

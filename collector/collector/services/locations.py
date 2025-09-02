@@ -29,9 +29,7 @@ async def get_postal_codes() -> list[str]:
         return results.scalars().all()
 
 
-async def get_location(
-    session: AsyncSession, location: LocationSchema
-) -> LocationModel | None:
+async def get_location(session: AsyncSession, location: LocationSchema) -> LocationModel | None:
     """Return the id of the location object in the database"""
     stmt = select(LocationModel).where(
         LocationModel.name == location.name,
@@ -59,9 +57,7 @@ async def add_location(location: LocationSchema) -> LocationModel | None:
                     location_db = LocationModel(**location.model_dump())
                     session.add(location_db)
                 else:
-                    for key, value in location.model_dump(
-                        exclude={"id", "group_code", "collections"}
-                    ).items():
+                    for key, value in location.model_dump(exclude={"id", "group_code", "collections"}).items():
                         setattr(location_db, key, value)
 
                 await session.commit()

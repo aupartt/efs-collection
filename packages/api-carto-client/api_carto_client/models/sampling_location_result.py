@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 
@@ -22,11 +22,11 @@ class SamplingLocationResult:
         sampling_location_entities (Union[None, Unset, list['SamplingLocationEntity']]): Lieux de prélèvement mobiles
     """
 
-    sampling_location_entities_sf: Union[None, Unset, list["SamplingLocationSFEntity"]] = UNSET
-    sampling_location_entities: Union[None, Unset, list["SamplingLocationEntity"]] = UNSET
+    sampling_location_entities_sf: None | Unset | list["SamplingLocationSFEntity"] = UNSET
+    sampling_location_entities: None | Unset | list["SamplingLocationEntity"] = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        sampling_location_entities_sf: Union[None, Unset, list[dict[str, Any]]]
+        sampling_location_entities_sf: None | Unset | list[dict[str, Any]]
         if isinstance(self.sampling_location_entities_sf, Unset):
             sampling_location_entities_sf = UNSET
         elif isinstance(self.sampling_location_entities_sf, list):
@@ -38,7 +38,7 @@ class SamplingLocationResult:
         else:
             sampling_location_entities_sf = self.sampling_location_entities_sf
 
-        sampling_location_entities: Union[None, Unset, list[dict[str, Any]]]
+        sampling_location_entities: None | Unset | list[dict[str, Any]]
         if isinstance(self.sampling_location_entities, Unset):
             sampling_location_entities = UNSET
         elif isinstance(self.sampling_location_entities, list):
@@ -67,7 +67,7 @@ class SamplingLocationResult:
 
         d = dict(src_dict)
 
-        def _parse_sampling_location_entities_sf(data: object) -> Union[None, Unset, list["SamplingLocationSFEntity"]]:
+        def _parse_sampling_location_entities_sf(data: object) -> None | Unset | list["SamplingLocationSFEntity"]:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -87,13 +87,13 @@ class SamplingLocationResult:
                 return sampling_location_entities_sf_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union[None, Unset, list["SamplingLocationSFEntity"]], data)
+            return cast(None | Unset | list["SamplingLocationSFEntity"], data)
 
         sampling_location_entities_sf = _parse_sampling_location_entities_sf(
             d.pop("samplingLocationEntities_SF", UNSET)
         )
 
-        def _parse_sampling_location_entities(data: object) -> Union[None, Unset, list["SamplingLocationEntity"]]:
+        def _parse_sampling_location_entities(data: object) -> None | Unset | list["SamplingLocationEntity"]:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -113,7 +113,7 @@ class SamplingLocationResult:
                 return sampling_location_entities_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union[None, Unset, list["SamplingLocationEntity"]], data)
+            return cast(None | Unset | list["SamplingLocationEntity"], data)
 
         sampling_location_entities = _parse_sampling_location_entities(d.pop("samplingLocationEntities", UNSET))
 

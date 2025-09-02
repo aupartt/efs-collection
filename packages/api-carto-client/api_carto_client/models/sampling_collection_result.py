@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 
@@ -23,11 +23,11 @@ class SamplingCollectionResult:
             collectes mobiles
     """
 
-    sampling_location_entities_sf: Union[None, Unset, list["SamplingLocationSFEntity"]] = UNSET
-    sampling_location_collections: Union[None, Unset, list["SamplingLocationCollectionsEntity"]] = UNSET
+    sampling_location_entities_sf: None | Unset | list["SamplingLocationSFEntity"] = UNSET
+    sampling_location_collections: None | Unset | list["SamplingLocationCollectionsEntity"] = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        sampling_location_entities_sf: Union[None, Unset, list[dict[str, Any]]]
+        sampling_location_entities_sf: None | Unset | list[dict[str, Any]]
         if isinstance(self.sampling_location_entities_sf, Unset):
             sampling_location_entities_sf = UNSET
         elif isinstance(self.sampling_location_entities_sf, list):
@@ -39,7 +39,7 @@ class SamplingCollectionResult:
         else:
             sampling_location_entities_sf = self.sampling_location_entities_sf
 
-        sampling_location_collections: Union[None, Unset, list[dict[str, Any]]]
+        sampling_location_collections: None | Unset | list[dict[str, Any]]
         if isinstance(self.sampling_location_collections, Unset):
             sampling_location_collections = UNSET
         elif isinstance(self.sampling_location_collections, list):
@@ -68,7 +68,7 @@ class SamplingCollectionResult:
 
         d = dict(src_dict)
 
-        def _parse_sampling_location_entities_sf(data: object) -> Union[None, Unset, list["SamplingLocationSFEntity"]]:
+        def _parse_sampling_location_entities_sf(data: object) -> None | Unset | list["SamplingLocationSFEntity"]:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -88,7 +88,7 @@ class SamplingCollectionResult:
                 return sampling_location_entities_sf_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union[None, Unset, list["SamplingLocationSFEntity"]], data)
+            return cast(None | Unset | list["SamplingLocationSFEntity"], data)
 
         sampling_location_entities_sf = _parse_sampling_location_entities_sf(
             d.pop("samplingLocationEntities_SF", UNSET)
@@ -96,7 +96,7 @@ class SamplingCollectionResult:
 
         def _parse_sampling_location_collections(
             data: object,
-        ) -> Union[None, Unset, list["SamplingLocationCollectionsEntity"]]:
+        ) -> None | Unset | list["SamplingLocationCollectionsEntity"]:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -116,7 +116,7 @@ class SamplingCollectionResult:
                 return sampling_location_collections_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union[None, Unset, list["SamplingLocationCollectionsEntity"]], data)
+            return cast(None | Unset | list["SamplingLocationCollectionsEntity"], data)
 
         sampling_location_collections = _parse_sampling_location_collections(
             d.pop("samplingLocationCollections", UNSET)

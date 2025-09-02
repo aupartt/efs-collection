@@ -1,6 +1,6 @@
 import datetime
 from http import HTTPStatus
-from typing import Any, Optional, Union, cast
+from typing import Any, cast
 
 import httpx
 
@@ -13,16 +13,16 @@ from ...types import UNSET, Response, Unset
 def _get_kwargs(
     *,
     city_name: str,
-    hide_private_collects: Union[Unset, bool] = UNSET,
-    hide_non_publiable_collects: Union[Unset, bool] = UNSET,
-    max_date: Union[Unset, datetime.datetime] = UNSET,
-    min_date: Union[Unset, datetime.datetime] = UNSET,
-    locations_only: Union[Unset, bool] = UNSET,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-    page: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
+    hide_private_collects: Unset | bool = UNSET,
+    hide_non_publiable_collects: Unset | bool = UNSET,
+    max_date: Unset | datetime.datetime = UNSET,
+    min_date: Unset | datetime.datetime = UNSET,
+    locations_only: Unset | bool = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+    page: Unset | int = UNSET,
+    limit: Unset | int = UNSET,
     user_latitude: float,
     user_longitude: float,
 ) -> dict[str, Any]:
@@ -34,12 +34,12 @@ def _get_kwargs(
 
     params["HideNonPubliableCollects"] = hide_non_publiable_collects
 
-    json_max_date: Union[Unset, str] = UNSET
+    json_max_date: Unset | str = UNSET
     if not isinstance(max_date, Unset):
         json_max_date = max_date.isoformat()
     params["MaxDate"] = json_max_date
 
-    json_min_date: Union[Unset, str] = UNSET
+    json_min_date: Unset | str = UNSET
     if not isinstance(min_date, Unset):
         json_min_date = min_date.isoformat()
     params["MinDate"] = json_min_date
@@ -72,8 +72,8 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[Any, SamplingCollectionResult]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Any | SamplingCollectionResult | None:
     if response.status_code == 200:
         response_200 = SamplingCollectionResult.from_dict(response.json())
 
@@ -91,8 +91,8 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[Any, SamplingCollectionResult]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[Any | SamplingCollectionResult]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -103,21 +103,21 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     city_name: str,
-    hide_private_collects: Union[Unset, bool] = UNSET,
-    hide_non_publiable_collects: Union[Unset, bool] = UNSET,
-    max_date: Union[Unset, datetime.datetime] = UNSET,
-    min_date: Union[Unset, datetime.datetime] = UNSET,
-    locations_only: Union[Unset, bool] = UNSET,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-    page: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
+    hide_private_collects: Unset | bool = UNSET,
+    hide_non_publiable_collects: Unset | bool = UNSET,
+    max_date: Unset | datetime.datetime = UNSET,
+    min_date: Unset | datetime.datetime = UNSET,
+    locations_only: Unset | bool = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+    page: Unset | int = UNSET,
+    limit: Unset | int = UNSET,
     user_latitude: float,
     user_longitude: float,
-) -> Response[Union[Any, SamplingCollectionResult]]:
+) -> Response[Any | SamplingCollectionResult]:
     """Retourne une liste de collectes situés dans une ville.
 
     Args:
@@ -168,21 +168,21 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     city_name: str,
-    hide_private_collects: Union[Unset, bool] = UNSET,
-    hide_non_publiable_collects: Union[Unset, bool] = UNSET,
-    max_date: Union[Unset, datetime.datetime] = UNSET,
-    min_date: Union[Unset, datetime.datetime] = UNSET,
-    locations_only: Union[Unset, bool] = UNSET,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-    page: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
+    hide_private_collects: Unset | bool = UNSET,
+    hide_non_publiable_collects: Unset | bool = UNSET,
+    max_date: Unset | datetime.datetime = UNSET,
+    min_date: Unset | datetime.datetime = UNSET,
+    locations_only: Unset | bool = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+    page: Unset | int = UNSET,
+    limit: Unset | int = UNSET,
     user_latitude: float,
     user_longitude: float,
-) -> Optional[Union[Any, SamplingCollectionResult]]:
+) -> Any | SamplingCollectionResult | None:
     """Retourne une liste de collectes situés dans une ville.
 
     Args:
@@ -228,21 +228,21 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     city_name: str,
-    hide_private_collects: Union[Unset, bool] = UNSET,
-    hide_non_publiable_collects: Union[Unset, bool] = UNSET,
-    max_date: Union[Unset, datetime.datetime] = UNSET,
-    min_date: Union[Unset, datetime.datetime] = UNSET,
-    locations_only: Union[Unset, bool] = UNSET,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-    page: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
+    hide_private_collects: Unset | bool = UNSET,
+    hide_non_publiable_collects: Unset | bool = UNSET,
+    max_date: Unset | datetime.datetime = UNSET,
+    min_date: Unset | datetime.datetime = UNSET,
+    locations_only: Unset | bool = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+    page: Unset | int = UNSET,
+    limit: Unset | int = UNSET,
     user_latitude: float,
     user_longitude: float,
-) -> Response[Union[Any, SamplingCollectionResult]]:
+) -> Response[Any | SamplingCollectionResult]:
     """Retourne une liste de collectes situés dans une ville.
 
     Args:
@@ -291,21 +291,21 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     city_name: str,
-    hide_private_collects: Union[Unset, bool] = UNSET,
-    hide_non_publiable_collects: Union[Unset, bool] = UNSET,
-    max_date: Union[Unset, datetime.datetime] = UNSET,
-    min_date: Union[Unset, datetime.datetime] = UNSET,
-    locations_only: Union[Unset, bool] = UNSET,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-    page: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
+    hide_private_collects: Unset | bool = UNSET,
+    hide_non_publiable_collects: Unset | bool = UNSET,
+    max_date: Unset | datetime.datetime = UNSET,
+    min_date: Unset | datetime.datetime = UNSET,
+    locations_only: Unset | bool = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+    page: Unset | int = UNSET,
+    limit: Unset | int = UNSET,
     user_latitude: float,
     user_longitude: float,
-) -> Optional[Union[Any, SamplingCollectionResult]]:
+) -> Any | SamplingCollectionResult | None:
     """Retourne une liste de collectes situés dans une ville.
 
     Args:

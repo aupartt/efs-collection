@@ -27,9 +27,7 @@ api_semaphore = asyncio.Semaphore(5)
 
 
 @with_api_client
-async def _retrieve_sampling_collections(
-    client: Client, post_code: str
-) -> list[SamplingLocationCollectionsEntity]:
+async def _retrieve_sampling_collections(client: Client, post_code: str) -> list[SamplingLocationCollectionsEntity]:
     """Retrieve collections from the API"""
     collections: SamplingCollectionResult = await api_search_collection.asyncio(
         client=client,
@@ -52,21 +50,15 @@ async def _get_collections_locations() -> list[dict]:
         return []
 
     postal_codes = await get_postal_codes()
-    tasks = [
-        _retrieve_sampling_collections(postal_code) for postal_code in postal_codes
-    ]
+    tasks = [_retrieve_sampling_collections(postal_code) for postal_code in postal_codes]
     _locations = await asyncio.gather(*tasks)
 
-    locations = [
-        collection.to_dict() for sublist in _locations for collection in sublist
-    ]
+    locations = [collection.to_dict() for sublist in _locations for collection in sublist]
 
     return locations
 
 
-async def _handle_location(
-    location: LocationSchema, efs_processor: EFSBatchProcessor
-) -> None:
+async def _handle_location(location: LocationSchema, efs_processor: EFSBatchProcessor) -> None:
     """Handle a single location and filter collections without urls"""
 
     async def _add_efs_id(collection: CollectionSchema) -> CollectionSchema | None:
@@ -77,9 +69,7 @@ async def _handle_location(
         collection.efs_id = efs_id
         return collection
 
-    tasks = [
-        _add_efs_id(collection) for collection in location.collections if collection.url
-    ]
+    tasks = [_add_efs_id(collection) for collection in location.collections if collection.url]
     location.collections = await asyncio.gather(*tasks)
 
 
@@ -90,11 +80,7 @@ async def _transform_location_collections(location: LocationSchema) -> None:
         group_collection: CollectionGroupSchema = collection.as_group(from_db=False)
         return group_collection
 
-    tasks = [
-        _collection_to_group(collection)
-        for collection in location.collections
-        if collection
-    ]
+    tasks = [_collection_to_group(collection) for collection in location.collections if collection]
     location.collections = await asyncio.gather(*tasks)
 
 
@@ -122,9 +108,7 @@ async def update_collections(locations: list[dict] = None) -> None:
         _ = await asyncio.gather(*tasks)
 
     # Transform collections to group collections
-    tasks = [
-        _transform_location_collections(location) for location in locations if location
-    ]
+    tasks = [_transform_location_collections(location) for location in locations if location]
     await asyncio.gather(*tasks)
 
     # Save all collections to database

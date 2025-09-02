@@ -17,11 +17,7 @@ class EFSBatchProcessor:
 
     async def __aenter__(self):
         timeout = ClientTimeout(total=45, connect=15, sock_read=15)
-        connector = TCPConnector(
-            limit=100,
-            limit_per_host=20,
-            keepalive_timeout=30
-        )
+        connector = TCPConnector(limit=100, limit_per_host=20, keepalive_timeout=30)
         self.session = ClientSession(timeout=timeout, connector=connector)
         return self
 

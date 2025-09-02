@@ -8,3 +8,14 @@ members = [
     "packages/*",
     "collector",  # Add collector to workspace
 ]
+
+[tool.ruff]
+line-length = 120
+include = [
+    "packages/",
+    "collector/cli.py",
+    "collector/collector/"
+]
+
+[tool.ruff.lint]
+select = ["F", "I", "UP"]

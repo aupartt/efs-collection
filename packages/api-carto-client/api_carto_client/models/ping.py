@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union, cast
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 
@@ -17,17 +17,17 @@ class Ping:
         environment (Union[None, Unset, str]): Le nom de l'environnement.
     """
 
-    version: Union[None, Unset, str] = UNSET
-    environment: Union[None, Unset, str] = UNSET
+    version: None | Unset | str = UNSET
+    environment: None | Unset | str = UNSET
 
     def to_dict(self) -> dict[str, Any]:
-        version: Union[None, Unset, str]
+        version: None | Unset | str
         if isinstance(self.version, Unset):
             version = UNSET
         else:
             version = self.version
 
-        environment: Union[None, Unset, str]
+        environment: None | Unset | str
         if isinstance(self.environment, Unset):
             environment = UNSET
         else:
@@ -47,21 +47,21 @@ class Ping:
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
 
-        def _parse_version(data: object) -> Union[None, Unset, str]:
+        def _parse_version(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         version = _parse_version(d.pop("version", UNSET))
 
-        def _parse_environment(data: object) -> Union[None, Unset, str]:
+        def _parse_environment(data: object) -> None | Unset | str:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | Unset | str, data)
 
         environment = _parse_environment(d.pop("environment", UNSET))
 

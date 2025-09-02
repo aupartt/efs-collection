@@ -33,13 +33,9 @@ async def _retrieve_region(client: Client, name: str) -> SamplingRegionEntity:
 
 
 @with_api_client
-async def _retrieve_groups(
-    client: Client, region: SamplingRegionEntity
-) -> list[GroupSchema]:
+async def _retrieve_groups(client: Client, region: SamplingRegionEntity) -> list[GroupSchema]:
     """Retrieve groups for a region from API"""
-    groups: list[SamplingGroupEntity] = await api_get_groupements.asyncio(
-        client=client, region_code=region.code
-    )
+    groups: list[SamplingGroupEntity] = await api_get_groupements.asyncio(client=client, region_code=region.code)
     return await api_to_pydantic(groups, GroupSchema)
 
 
@@ -63,6 +59,4 @@ async def update_groups(groups: list[GroupSchema] = None) -> None:
 
     groups_processed = await save_groups(groups)
 
-    logger.info(
-        "Successfully processed groups", extra={"n_groups": len(groups_processed)}
-    )
+    logger.info("Successfully processed groups", extra={"n_groups": len(groups_processed)})

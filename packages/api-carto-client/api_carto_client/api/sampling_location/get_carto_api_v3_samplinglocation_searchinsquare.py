@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Optional, Union, cast
+from typing import Any, cast
 
 import httpx
 
@@ -15,11 +15,11 @@ def _get_kwargs(
     north_east_longitude: float,
     south_west_latitude: float,
     south_west_longitude: float,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-    page: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+    page: Unset | int = UNSET,
+    limit: Unset | int = UNSET,
     user_latitude: float,
     user_longitude: float,
 ) -> dict[str, Any]:
@@ -59,8 +59,8 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[Any, SamplingLocationResult]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Any | SamplingLocationResult | None:
     if response.status_code == 200:
         response_200 = SamplingLocationResult.from_dict(response.json())
 
@@ -78,8 +78,8 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[Any, SamplingLocationResult]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[Any | SamplingLocationResult]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -90,19 +90,19 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     north_east_latitude: float,
     north_east_longitude: float,
     south_west_latitude: float,
     south_west_longitude: float,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-    page: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+    page: Unset | int = UNSET,
+    limit: Unset | int = UNSET,
     user_latitude: float,
     user_longitude: float,
-) -> Response[Union[Any, SamplingLocationResult]]:
+) -> Response[Any | SamplingLocationResult]:
     """Retourne une liste de lieux de prélévement dans un carré à partir des coordonnées du point Nord-Est
     et du point Sud-Ouest.
 
@@ -150,19 +150,19 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     north_east_latitude: float,
     north_east_longitude: float,
     south_west_latitude: float,
     south_west_longitude: float,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-    page: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+    page: Unset | int = UNSET,
+    limit: Unset | int = UNSET,
     user_latitude: float,
     user_longitude: float,
-) -> Optional[Union[Any, SamplingLocationResult]]:
+) -> Any | SamplingLocationResult | None:
     """Retourne une liste de lieux de prélévement dans un carré à partir des coordonnées du point Nord-Est
     et du point Sud-Ouest.
 
@@ -205,19 +205,19 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     north_east_latitude: float,
     north_east_longitude: float,
     south_west_latitude: float,
     south_west_longitude: float,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-    page: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+    page: Unset | int = UNSET,
+    limit: Unset | int = UNSET,
     user_latitude: float,
     user_longitude: float,
-) -> Response[Union[Any, SamplingLocationResult]]:
+) -> Response[Any | SamplingLocationResult]:
     """Retourne une liste de lieux de prélévement dans un carré à partir des coordonnées du point Nord-Est
     et du point Sud-Ouest.
 
@@ -263,19 +263,19 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     north_east_latitude: float,
     north_east_longitude: float,
     south_west_latitude: float,
     south_west_longitude: float,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-    page: Union[Unset, int] = UNSET,
-    limit: Union[Unset, int] = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+    page: Unset | int = UNSET,
+    limit: Unset | int = UNSET,
     user_latitude: float,
     user_longitude: float,
-) -> Optional[Union[Any, SamplingLocationResult]]:
+) -> Any | SamplingLocationResult | None:
     """Retourne une liste de lieux de prélévement dans un carré à partir des coordonnées du point Nord-Est
     et du point Sud-Ouest.
 

@@ -1,6 +1,6 @@
 import datetime
 from http import HTTPStatus
-from typing import Any, Optional, Union, cast
+from typing import Any, cast
 
 import httpx
 
@@ -14,21 +14,21 @@ def _get_kwargs(
     *,
     center_latitude: float,
     center_longitude: float,
-    city: Union[Unset, str] = UNSET,
-    post_code: Union[Unset, str] = UNSET,
+    city: Unset | str = UNSET,
+    post_code: Unset | str = UNSET,
     map_width: float,
     map_height: float,
-    padding: Union[Unset, float] = UNSET,
-    padding_one_res: Union[Unset, float] = UNSET,
-    limit: Union[Unset, int] = UNSET,
-    distance_limit: Union[Unset, float] = UNSET,
-    hide_private_collects: Union[Unset, bool] = UNSET,
-    hide_non_publiable_collects: Union[Unset, bool] = UNSET,
-    max_date: Union[Unset, datetime.datetime] = UNSET,
-    min_date: Union[Unset, datetime.datetime] = UNSET,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
+    padding: Unset | float = UNSET,
+    padding_one_res: Unset | float = UNSET,
+    limit: Unset | int = UNSET,
+    distance_limit: Unset | float = UNSET,
+    hide_private_collects: Unset | bool = UNSET,
+    hide_non_publiable_collects: Unset | bool = UNSET,
+    max_date: Unset | datetime.datetime = UNSET,
+    min_date: Unset | datetime.datetime = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
 ) -> dict[str, Any]:
     params: dict[str, Any] = {}
 
@@ -56,12 +56,12 @@ def _get_kwargs(
 
     params["HideNonPubliableCollects"] = hide_non_publiable_collects
 
-    json_max_date: Union[Unset, str] = UNSET
+    json_max_date: Unset | str = UNSET
     if not isinstance(max_date, Unset):
         json_max_date = max_date.isoformat()
     params["MaxDate"] = json_max_date
 
-    json_min_date: Union[Unset, str] = UNSET
+    json_min_date: Unset | str = UNSET
     if not isinstance(min_date, Unset):
         json_min_date = min_date.isoformat()
     params["MinDate"] = json_min_date
@@ -84,8 +84,8 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[Any, SamplingSquareEntity]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Any | SamplingSquareEntity | None:
     if response.status_code == 200:
         response_200 = SamplingSquareEntity.from_dict(response.json())
 
@@ -103,8 +103,8 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[Any, SamplingSquareEntity]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[Any | SamplingSquareEntity]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -115,25 +115,25 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     center_latitude: float,
     center_longitude: float,
-    city: Union[Unset, str] = UNSET,
-    post_code: Union[Unset, str] = UNSET,
+    city: Unset | str = UNSET,
+    post_code: Unset | str = UNSET,
     map_width: float,
     map_height: float,
-    padding: Union[Unset, float] = UNSET,
-    padding_one_res: Union[Unset, float] = UNSET,
-    limit: Union[Unset, int] = UNSET,
-    distance_limit: Union[Unset, float] = UNSET,
-    hide_private_collects: Union[Unset, bool] = UNSET,
-    hide_non_publiable_collects: Union[Unset, bool] = UNSET,
-    max_date: Union[Unset, datetime.datetime] = UNSET,
-    min_date: Union[Unset, datetime.datetime] = UNSET,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-) -> Response[Union[Any, SamplingSquareEntity]]:
+    padding: Unset | float = UNSET,
+    padding_one_res: Unset | float = UNSET,
+    limit: Unset | int = UNSET,
+    distance_limit: Unset | float = UNSET,
+    hide_private_collects: Unset | bool = UNSET,
+    hide_non_publiable_collects: Unset | bool = UNSET,
+    max_date: Unset | datetime.datetime = UNSET,
+    min_date: Unset | datetime.datetime = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+) -> Response[Any | SamplingSquareEntity]:
     """Retourne les coordonées de zoom de la carte incluant les collectes de la recherche.
 
     Args:
@@ -192,25 +192,25 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     center_latitude: float,
     center_longitude: float,
-    city: Union[Unset, str] = UNSET,
-    post_code: Union[Unset, str] = UNSET,
+    city: Unset | str = UNSET,
+    post_code: Unset | str = UNSET,
     map_width: float,
     map_height: float,
-    padding: Union[Unset, float] = UNSET,
-    padding_one_res: Union[Unset, float] = UNSET,
-    limit: Union[Unset, int] = UNSET,
-    distance_limit: Union[Unset, float] = UNSET,
-    hide_private_collects: Union[Unset, bool] = UNSET,
-    hide_non_publiable_collects: Union[Unset, bool] = UNSET,
-    max_date: Union[Unset, datetime.datetime] = UNSET,
-    min_date: Union[Unset, datetime.datetime] = UNSET,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-) -> Optional[Union[Any, SamplingSquareEntity]]:
+    padding: Unset | float = UNSET,
+    padding_one_res: Unset | float = UNSET,
+    limit: Unset | int = UNSET,
+    distance_limit: Unset | float = UNSET,
+    hide_private_collects: Unset | bool = UNSET,
+    hide_non_publiable_collects: Unset | bool = UNSET,
+    max_date: Unset | datetime.datetime = UNSET,
+    min_date: Unset | datetime.datetime = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+) -> Any | SamplingSquareEntity | None:
     """Retourne les coordonées de zoom de la carte incluant les collectes de la recherche.
 
     Args:
@@ -264,25 +264,25 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     center_latitude: float,
     center_longitude: float,
-    city: Union[Unset, str] = UNSET,
-    post_code: Union[Unset, str] = UNSET,
+    city: Unset | str = UNSET,
+    post_code: Unset | str = UNSET,
     map_width: float,
     map_height: float,
-    padding: Union[Unset, float] = UNSET,
-    padding_one_res: Union[Unset, float] = UNSET,
-    limit: Union[Unset, int] = UNSET,
-    distance_limit: Union[Unset, float] = UNSET,
-    hide_private_collects: Union[Unset, bool] = UNSET,
-    hide_non_publiable_collects: Union[Unset, bool] = UNSET,
-    max_date: Union[Unset, datetime.datetime] = UNSET,
-    min_date: Union[Unset, datetime.datetime] = UNSET,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-) -> Response[Union[Any, SamplingSquareEntity]]:
+    padding: Unset | float = UNSET,
+    padding_one_res: Unset | float = UNSET,
+    limit: Unset | int = UNSET,
+    distance_limit: Unset | float = UNSET,
+    hide_private_collects: Unset | bool = UNSET,
+    hide_non_publiable_collects: Unset | bool = UNSET,
+    max_date: Unset | datetime.datetime = UNSET,
+    min_date: Unset | datetime.datetime = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+) -> Response[Any | SamplingSquareEntity]:
     """Retourne les coordonées de zoom de la carte incluant les collectes de la recherche.
 
     Args:
@@ -339,25 +339,25 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     center_latitude: float,
     center_longitude: float,
-    city: Union[Unset, str] = UNSET,
-    post_code: Union[Unset, str] = UNSET,
+    city: Unset | str = UNSET,
+    post_code: Unset | str = UNSET,
     map_width: float,
     map_height: float,
-    padding: Union[Unset, float] = UNSET,
-    padding_one_res: Union[Unset, float] = UNSET,
-    limit: Union[Unset, int] = UNSET,
-    distance_limit: Union[Unset, float] = UNSET,
-    hide_private_collects: Union[Unset, bool] = UNSET,
-    hide_non_publiable_collects: Union[Unset, bool] = UNSET,
-    max_date: Union[Unset, datetime.datetime] = UNSET,
-    min_date: Union[Unset, datetime.datetime] = UNSET,
-    give_blood: Union[Unset, bool] = UNSET,
-    give_plasma: Union[Unset, bool] = UNSET,
-    give_platelets: Union[Unset, bool] = UNSET,
-) -> Optional[Union[Any, SamplingSquareEntity]]:
+    padding: Unset | float = UNSET,
+    padding_one_res: Unset | float = UNSET,
+    limit: Unset | int = UNSET,
+    distance_limit: Unset | float = UNSET,
+    hide_private_collects: Unset | bool = UNSET,
+    hide_non_publiable_collects: Unset | bool = UNSET,
+    max_date: Unset | datetime.datetime = UNSET,
+    min_date: Unset | datetime.datetime = UNSET,
+    give_blood: Unset | bool = UNSET,
+    give_plasma: Unset | bool = UNSET,
+    give_platelets: Unset | bool = UNSET,
+) -> Any | SamplingSquareEntity | None:
     """Retourne les coordonées de zoom de la carte incluant les collectes de la recherche.
 
     Args:

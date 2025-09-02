@@ -22,9 +22,7 @@ class CollectionGroupModel(Base):
                 if isinstance(kw[key], list):
                     # Create a list of instances for the relationship
                     kw[key] = [
-                        mapper.relationships[key].entity.class_(**item)
-                        if isinstance(item, dict)
-                        else item
+                        mapper.relationships[key].entity.class_(**item) if isinstance(item, dict) else item
                         for item in kw[key]
                     ]
                 elif isinstance(kw[key], dict):
@@ -33,9 +31,7 @@ class CollectionGroupModel(Base):
         super().__init__(**kw)
 
     __tablename__ = "collection_groups"
-    __table_args__ = (
-        UniqueConstraint("efs_id", "nature", name="unique_collection_group"),
-    )
+    __table_args__ = (UniqueConstraint("efs_id", "nature", name="unique_collection_group"),)
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     efs_id: Mapped[str | None] = mapped_column(unique=True, nullable=True, index=True)
@@ -60,23 +56,17 @@ class CollectionGroupModel(Base):
     convocation_label_sms: Mapped[str | None]
 
     # Metadata
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(UTC)
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
     # Relationships
-    group_code: Mapped[str] = mapped_column(
-        ForeignKey("groups.gr_code", ondelete="CASCADE")
-    )
+    group_code: Mapped[str] = mapped_column(ForeignKey("groups.gr_code", ondelete="CASCADE"))
     events: Mapped[list["CollectionEventModel"]] = relationship(
         back_populates="collection_group", cascade="all, delete-orphan"
     )
     snapshots: Mapped[list["CollectionGroupSnapshotModel"]] = relationship(
         back_populates="collection_group", cascade="all, delete-orphan"
     )
-    location_id: Mapped[int] = mapped_column(
-        ForeignKey("locations.id", ondelete="CASCADE")
-    )
+    location_id: Mapped[int] = mapped_column(ForeignKey("locations.id", ondelete="CASCADE"))
     location: Mapped["LocationModel"] = relationship(back_populates="collections")
 
 
@@ -96,20 +86,12 @@ class CollectionEventModel(Base):
     afternoon_end_time: Mapped[time | None] = None
 
     # Metadata
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(UTC)
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC))
 
     # Relationships
-    collection_group_id: Mapped[int] = mapped_column(
-        ForeignKey("collection_groups.id", ondelete="CASCADE")
-    )
-    collection_group: Mapped["CollectionGroupModel"] = relationship(
-        back_populates="events"
-    )
-    snapshots: Mapped[list["ScheduleModel"]] = relationship(
-        back_populates="event", cascade="all, delete-orphan"
-    )
+    collection_group_id: Mapped[int] = mapped_column(ForeignKey("collection_groups.id", ondelete="CASCADE"))
+    collection_group: Mapped["CollectionGroupModel"] = relationship(back_populates="events")
+    snapshots: Mapped[list["ScheduleModel"]] = relationship(back_populates="event", cascade="all, delete-orphan")
 
 
 class CollectionGroupSnapshotModel(Base):
@@ -137,14 +119,8 @@ class CollectionGroupSnapshotModel(Base):
     nb_places_reservees_cpa: Mapped[int | None]
 
     # Metadata
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(UTC), index=True
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(UTC), index=True)
 
     # Relationships
-    collection_group_id: Mapped[int] = mapped_column(
-        ForeignKey("collection_groups.id", ondelete="CASCADE")
-    )
-    collection_group: Mapped["CollectionGroupModel"] = relationship(
-        back_populates="snapshots"
-    )
+    collection_group_id: Mapped[int] = mapped_column(ForeignKey("collection_groups.id", ondelete="CASCADE"))
+    collection_group: Mapped["CollectionGroupModel"] = relationship(back_populates="snapshots")
