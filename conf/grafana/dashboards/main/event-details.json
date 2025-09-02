@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
-  "id": 3,
+  "id": 9,
   "links": [],
   "panels": [
     {
@@ -605,7 +605,7 @@
           "format": "table",
           "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT * FROM schedules WHERE event_id = $event_id",
+          "rawSql": "SELECT * FROM schedules WHERE event_id = $event_id ORDER BY created_at;",
           "refId": "Schedules",
           "sql": {
             "columns": [
