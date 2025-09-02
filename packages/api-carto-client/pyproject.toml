@@ -1,0 +1,29 @@
+[project]
+name = "api-carto-client"
+version = "v3"
+description = "A client library for accessing API Carto"
+authors = []
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "httpx",
+  "attrs",
+  "python-dateutil",
+]
+
+[tool.setuptools]
+packages = [
+    {include = "api_carto_client"},
+]
+include = ["CHANGELOG.md", "api_carto_client/py.typed"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 120
+exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["F", "I", "UP"]
