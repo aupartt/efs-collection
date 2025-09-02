@@ -3,7 +3,7 @@
         "url": "https://efs.link/S92Ti",
         "time": "2025-08-10T09:00:40.324822Z",
         "location": "foo1",
-        "events_type": "blood",
+        "collect_type": "blood",
         "events": [
             {
                 "date": "09/09/2025",
@@ -311,7 +311,7 @@
         "url": "https://efs.link/Vcib7",
         "time": "2025-08-10T09:00:39.337881Z",
         "location": "foo2",
-        "events_type": "blood",
+        "collect_type": "blood",
         "events": [
             {
                 "date": "01/10/2025",
@@ -374,7 +374,7 @@
         "url": "https://efs.link/5GiMN",
         "time": "2025-08-10T09:00:46.733066Z",
         "location": "foo3",
-        "events_type": "blood",
+        "collect_type": "blood",
         "events": [
             {
                 "date": "14/10/2025",
