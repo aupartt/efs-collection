@@ -26,6 +26,7 @@ packages = ["crawler"]
 include-package-data = true
 
 [tool.ruff]
+line-length = 120
 exclude = [".venv", "storage"]
 
 [tool.ruff.lint]
