@@ -7,44 +7,46 @@ from bs4 import BeautifulSoup
 from pytest_mock import MockerFixture
 
 from crawler.handlers import collect_handler
-from crawler.models import LocationEvents
+from crawler.models import LocationEvents, Result
 
 logging.basicConfig(level=logging.DEBUG)
 
 
+@pytest.fixture()
+def mock_html():
+    return """
+    <html>
+      <div class="card-rdv">
+        <div class="top">
+          Ch'Hawaii
+        </div>
+      </div>
+      <div id='map-timeslot__don-type'>
+        <select>
+          <option value='Sang' selected></option>
+          <option value='Plasma'></option>
+          <option value='Plaquette'></option>
+        </select>
+      </div>
+      <div>
+        <div class="timeslot-item" data-date="19/09/2025">
+          <div class="timeslot-item__header"><div class="place">4 places</div></div>
+          <div class="time-block__item">14h25<br><span class="place">1 place</span></div>
+          <div class="time-block__item">14h30<br><span class="place">2 place</span></div>
+          <div class="time-block__item">14h35<br><span class="place">1 place</span></div>
+        </div>
+        <div class="timeslot-item" data-date="20/09/2025">
+          <div class="timeslot-item__header"><div class="place">5 places</div></div>
+          <div class="time-block__item">13h25<br><span class="place">2 place</span></div>
+          <div class="time-block__item">13h30<br><span class="place">0 place</span></div>
+          <div class="time-block__item">13h35<br><span class="place">3 place</span></div>
+        </div>
+      </div>
+    </html>
+    """
+
 @pytest.mark.asyncio
-async def test_start_crawler_success(mocker: MockerFixture, _mock_context):
-    # Mock HTML content
-    mock_html = """
-  <html>
-    <div class="card-rdv">
-      <div class="top">
-        Ch'Hawaii
-      </div>
-    </div>
-    <div id='map-timeslot__don-type'>
-      <select>
-        <option value='Sang' selected></option>
-        <option value='Plasma'></option>
-        <option value='Plaquette'></option>
-      </select>
-    </div>
-    <div>
-      <div class="timeslot-item" data-date="19/09/2025">
-        <div class="timeslot-item__header"><div class="place">4 places</div></div>
-        <div class="time-block__item">14h25<br><span class="place">1 place</span></div>
-        <div class="time-block__item">14h30<br><span class="place">2 place</span></div>
-        <div class="time-block__item">14h35<br><span class="place">1 place</span></div>
-      </div>
-      <div class="timeslot-item" data-date="20/09/2025">
-        <div class="timeslot-item__header"><div class="place">5 places</div></div>
-        <div class="time-block__item">13h25<br><span class="place">2 place</span></div>
-        <div class="time-block__item">13h30<br><span class="place">0 place</span></div>
-        <div class="time-block__item">13h35<br><span class="place">3 place</span></div>
-      </div>
-    </div>
-  </html>
-  """
+async def test_start_crawler_success(mocker: MockerFixture, _mock_context, mock_html):
     mock_soup = BeautifulSoup(mock_html, features="html.parser")
     mock_context = _mock_context(soup=mock_soup, url="http://efscollect.fr")
     mock_context.push_data = AsyncMock()
@@ -60,7 +62,7 @@ async def test_start_crawler_success(mocker: MockerFixture, _mock_context):
             **{
                 "url": "http://efscollect.fr",
                 "location": "Ch'Hawaii",
-                "events_type": "blood",
+                "collect_type": "blood",
                 "time": now.isoformat(),
                 "events": [
                     {
@@ -77,3 +79,55 @@ async def test_start_crawler_success(mocker: MockerFixture, _mock_context):
             }
         ).model_dump_json()
     )
+
+@pytest.mark.asyncio
+async def test_start_crawler_error(mocker: MockerFixture, _mock_context, mock_html):
+    mock_soup = BeautifulSoup(mock_html, features="html.parser")
+    mock_context = _mock_context(soup=mock_soup, url="http://efscollect.fr")
+    mock_context.push_data = AsyncMock()
+
+    mocker.patch("crawler.handlers.parse_location", side_effect=Exception("foo"))
+
+    await collect_handler(mock_context)
+
+    mock_context.push_data.assert_not_awaited()
+    mock_context.log.error.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_start_crawler_failed_location(mocker: MockerFixture, _mock_context, mock_html):
+    mock_soup = BeautifulSoup(mock_html, features="html.parser")
+    mock_context = _mock_context(soup=mock_soup, url="http://efscollect.fr")
+    mock_context.push_data = AsyncMock()
+
+    mocker.patch("crawler.handlers.parse_location", return_value=Result(success=False, error="FOO"))
+
+    await collect_handler(mock_context)
+
+    mock_context.push_data.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_start_crawler_failed_collect_type(mocker: MockerFixture, _mock_context, mock_html):
+    mock_soup = BeautifulSoup(mock_html, features="html.parser")
+    mock_context = _mock_context(soup=mock_soup, url="http://efscollect.fr")
+    mock_context.push_data = AsyncMock()
+
+    mocker.patch("crawler.handlers.parse_collect_type", return_value=Result(success=False, error="FOO"))
+
+    await collect_handler(mock_context)
+
+    mock_context.push_data.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_start_crawler_failed_parse_events(mocker: MockerFixture, _mock_context, mock_html):
+    mock_soup = BeautifulSoup(mock_html, features="html.parser")
+    mock_context = _mock_context(soup=mock_soup, url="http://efscollect.fr")
+    mock_context.push_data = AsyncMock()
+
+    mocker.patch("crawler.handlers.parse_events", return_value=Result(success=False, error="FOO"))
+
+    await collect_handler(mock_context)
+
+    mock_context.push_data.assert_not_awaited()
