@@ -2,7 +2,7 @@
 
 A comprehensive data collection and analysis system for the French Blood Service (EFS) API. This project retrieves, processes, and stores EFS collection data to provide insights into mobile blood donation schedules and locations across Brittany.
 
-## ⚒️ What This Project Does
+## 🤔 What This Project Does
 
 The system automatically:
 - 🗺️ **Discovers** blood donation locations across Brittany
@@ -142,3 +142,18 @@ You can use `run-collectes.sh` and `crontab-collectes` to schedule automated dat
    crontab -e
    # Copy the lines from crontab-collectes file
 ```
+
+# ⚒️ Development
+This project uses uv workspace with a global pyproject.toml so you don't need to change directories to manage packages or run tests.
+
+**Install all project and development dependencies for the entire monorepo.**
+
+```bash
+uv sync --dev
+```
+
+**Run all tests from the project root.**
+```bash
+uv run pytest
+```
+

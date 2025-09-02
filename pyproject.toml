@@ -19,3 +19,8 @@ include = [
 
 [tool.ruff.lint]
 select = ["F", "I", "UP"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.11",
+]

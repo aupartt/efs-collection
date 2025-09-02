@@ -9,6 +9,9 @@ members = [
     "crawler",
 ]
 
+[manifest.dependency-groups]
+dev = [{ name = "ruff", specifier = ">=0.12.11" }]
+
 [[package]]
 name = "aio-pika"
 version = "9.5.7"
