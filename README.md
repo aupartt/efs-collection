@@ -128,7 +128,7 @@ You can use `run-collectes.sh` and `crontab-collectes` to schedule automated dat
 **Setup automated scheduling**
 ```bash
    # 1. Copy the script
-   sudo cp run-collectes.sh /usr/local/bin/
+   sudo cp ./conf/scheduling/run-collectes.sh /usr/local/bin/
    sudo chmod +x /usr/local/bin/run-collectes.sh
 
    # 2. Update the path in the script
