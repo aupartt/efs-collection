@@ -143,7 +143,7 @@ You can use `run-collectes.sh` and `crontab-collectes` to schedule automated dat
    # Copy the lines from crontab-collectes file
 ```
 
-# ⚒️ Development
+## ⚒️ Development
 This project uses uv workspace with a global pyproject.toml so you don't need to change directories to manage packages or run tests.
 
 **Install all project and development dependencies for the entire monorepo.**
