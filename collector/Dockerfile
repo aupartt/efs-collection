@@ -1,30 +1,30 @@
+# Start with a suitable base image
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
-COPY ./api-carto-client /api-carto-client
-COPY ./crawler /crawler
-
+# Set the working directory for the entire project
 WORKDIR /app
 
+# Copy the entire monorepo structure
+# This includes all pyproject.toml and uv.lock files
+COPY ./packages/ ./packages/
+COPY ./collector/ ./collector/ 
+COPY ./uv.lock ./pyproject.toml ./
+
+# Set environment variables for UV
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 
-# Config
-COPY ./collecte-info/uv.lock ./collecte-info/pyproject.toml ./
-
+# Use a single UV command to sync all workspace members and their dependencies
+# Use --workspace to indicate UV should treat this as a monorepo
+# --no-dev to avoid installing dev dependencies in the final image
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev
 
-# App
-COPY ./collecte-info/collecte ./collecte
-COPY ./collecte-info/cli.py ./cli.py
-
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
-
+# Set the PATH and PYTHONPATH for the application
 ENV PATH="/app/.venv/bin:$PATH"
-ENV PYTHONPATH="/app"
+ENV PYTHONPATH="/app/collector"
 ENV PYTHONUNBUFFERED=1
 
-
-# -u to enable log to be printed with docker compose run
+# Use the installed cli.py as the entrypoint
+# The entrypoint should now be to the main application's CLI module, which is inside the 'collector' folder
 ENTRYPOINT ["python", "-u", "-m", "cli"]

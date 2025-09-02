@@ -55,8 +55,8 @@ services:
   cli:
     build: 
       context: .
-      dockerfile: ./collecte-info/Dockerfile
-    image: collecte-info:latest
+      dockerfile: ./collector/Dockerfile
+    image: collector:latest
     environment:
       ENVIRONMENT: ${ENVIRONMENT:-dev}
       POSTGRES_USER: ${POSTGRES_USER}
