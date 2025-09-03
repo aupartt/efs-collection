@@ -910,9 +910,27 @@
           }
         },
         {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "field": "schedule"
+              }
+            ]
+          }
+        },
+        {
           "id": "prepareTimeSeries",
           "options": {
             "format": "multi"
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "places \\(sum\\) (\\d+h)",
+            "renamePattern": "$1"
           }
         }
       ],
@@ -948,5 +966,5 @@
   "timezone": "browser",
   "title": "Event - Details",
   "uid": "event-main-details",
-  "version": 1
+  "version": 2
 }
