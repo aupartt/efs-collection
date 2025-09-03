@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 1,
+  "id": 10,
   "links": [
     {
       "asDropdown": false,
@@ -100,7 +100,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "jours_avant_debut (min)"
+              "options": "jours_avant_debut (firstNotNull)"
             },
             "properties": [
               {
@@ -153,7 +153,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "taux_remplissage (lastNotNull)"
+              "options": "taux_remplissage (firstNotNull)"
             },
             "properties": [
               {
@@ -222,7 +222,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "jours_avant_fin (max)"
+              "options": "jours_avant_fin (firstNotNull)"
             },
             "properties": [
               {
@@ -247,63 +247,6 @@
                   {
                     "title": "page du lieux",
                     "url": "/d/location-main-details/location?var-location_id=${__value.raw}"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Jours avant fin"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 144
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Jours avant début"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 166
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "collection_group_id"
-            },
-            "properties": [
-              {
-                "id": "custom.width",
-                "value": 285
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "lien (lastNotNull)"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "-"
-              },
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "page de la localisation",
-                    "url": "/d/location-main-details/location?var-location_id=${__data.fields.location_id}"
                   }
                 ]
               }
@@ -344,7 +287,7 @@
           "format": "table",
           "hide": false,
           "rawQuery": true,
-          "rawSql": "SELECT\r\n  -- 'voir' as lien,\r\n  -1 as location_test,\r\n  g.location_id,\r\n  g.start_date, \r\n  g.end_date,\r\n  DATE_PART('day', g.start_date - NOW()) + 1 AS \"jours_avant_debut\",\r\n  DATE_PART('day', g.end_date - NOW()) + 1 AS \"jours_avant_fin\",\r\n  sub.taux_remplissage,\r\n  sub.created_at\r\nFROM \r\n  collection_groups g\r\nINNER JOIN (\r\n  SELECT\r\n    s.collection_group_id,\r\n    s.taux_remplissage,\r\n    s.created_at\r\n  FROM\r\n    collection_group_snapshots s\r\n) sub ON sub.collection_group_id = g.id\r\nINNER JOIN locations l ON l.id = g.location_id\r\nWHERE \r\n  g.end_date >= NOW()",
+          "rawSql": "SELECT\r\n  -1 as location_test,\r\n  g.location_id,\r\n  g.start_date, \r\n  g.end_date,\r\n  DATE_PART('day', g.start_date - NOW()) + 1 AS \"jours_avant_debut\",\r\n  DATE_PART('day', g.end_date - NOW()) + 1 AS \"jours_avant_fin\",\r\n  sub.taux_remplissage,\r\n  sub.created_at\r\nFROM \r\n  collection_groups g\r\nINNER JOIN (\r\n  SELECT\r\n    s.collection_group_id,\r\n    s.taux_remplissage,\r\n    s.created_at\r\n  FROM\r\n    collection_group_snapshots s\r\n) sub ON sub.collection_group_id = g.id\r\nINNER JOIN locations l ON l.id = g.location_id\r\nWHERE \r\n  g.end_date >= NOW()",
           "refId": "Collections",
           "sql": {
             "columns": [
@@ -450,6 +393,18 @@
           }
         },
         {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "start_date"
+              }
+            ]
+          }
+        },
+        {
           "id": "groupBy",
           "options": {
             "fields": {
@@ -475,13 +430,13 @@
               },
               "jours_avant_debut": {
                 "aggregations": [
-                  "min"
+                  "firstNotNull"
                 ],
                 "operation": "aggregate"
               },
               "jours_avant_fin": {
                 "aggregations": [
-                  "max"
+                  "firstNotNull"
                 ],
                 "operation": "aggregate"
               },
@@ -508,7 +463,7 @@
               },
               "taux_remplissage": {
                 "aggregations": [
-                  "lastNotNull"
+                  "firstNotNull"
                 ],
                 "operation": "aggregate"
               }
@@ -530,18 +485,6 @@
               "taux_remplissage (lastNotNull)": 6
             },
             "renameByName": {}
-          }
-        },
-        {
-          "id": "sortBy",
-          "options": {
-            "fields": {},
-            "sort": [
-              {
-                "desc": false,
-                "field": "jours_avant_debut (min)"
-              }
-            ]
           }
         }
       ],
@@ -1427,5 +1370,5 @@
   "timezone": "browser",
   "title": "Global - Overview",
   "uid": "global-main-overview",
-  "version": 1
+  "version": 2
 }
