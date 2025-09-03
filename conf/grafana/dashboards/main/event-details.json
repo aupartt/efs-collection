@@ -944,14 +944,27 @@
     "list": [
       {
         "current": {
+          "text": "93",
+          "value": "93"
+        },
+        "definition": "SELECT g.id FROM collection_groups g WHERE g.end_date >= NOW()ORDER BY g.start_date;",
+        "hide": 2,
+        "name": "collection_id",
+        "options": [],
+        "query": "SELECT g.id FROM collection_groups g WHERE g.end_date >= NOW()ORDER BY g.start_date;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
           "text": "983975",
           "value": "983975"
         },
-        "definition": "SELECT id AS event_id FROM collection_events;",
-        "hide": 2,
+        "definition": "SELECT id AS event_id FROM collection_events WHERE collection_group_id = [[collection_id]] ORDER BY date",
         "name": "event_id",
         "options": [],
-        "query": "SELECT id AS event_id FROM collection_events;",
+        "query": "SELECT id AS event_id FROM collection_events WHERE collection_group_id = [[collection_id]] ORDER BY date",
         "refresh": 1,
         "regex": "",
         "type": "query"
@@ -966,5 +979,5 @@
   "timezone": "browser",
   "title": "Event - Details",
   "uid": "event-main-details",
-  "version": 2
+  "version": 3
 }

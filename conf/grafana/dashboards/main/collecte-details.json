@@ -1,53 +1,4 @@
 {
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "bargauge",
-      "name": "Bar gauge",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "geomap",
-      "name": "Geomap",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "12.1.1"
-    },
-    {
-      "type": "datasource",
-      "uid": "Postgres"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "text",
-      "name": "Text",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -67,10 +18,14 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
+  "id": 8,
   "links": [],
   "panels": [
     {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 2,
         "w": 24,
@@ -88,6 +43,7 @@
         "mode": "markdown"
       },
       "pluginVersion": "12.1.1",
+      "title": "",
       "transparent": true,
       "type": "text"
     },
@@ -223,6 +179,7 @@
           "table": "collection_groups"
         }
       ],
+      "title": "",
       "transformations": [
         {
           "id": "filterByValue",
@@ -407,6 +364,10 @@
       "pluginVersion": "12.1.1",
       "targets": [
         {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
@@ -428,13 +389,10 @@
               }
             ],
             "limit": 50
-          },
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "Postgres"
           }
         }
       ],
+      "title": "",
       "type": "geomap"
     },
     {
@@ -501,7 +459,7 @@
                 "value": [
                   {
                     "title": "Allez à la page de l'évènement",
-                    "url": "/d/event-main-details/event?var-event_id=${__data.fields.id}"
+                    "url": "/d/event-main-details/event?var-collection-id=${collection_id:queryparam}&var-event_id=${__data.fields.id}"
                   }
                 ]
               }
@@ -687,6 +645,10 @@
       "pluginVersion": "12.1.1",
       "targets": [
         {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
@@ -708,13 +670,10 @@
               }
             ],
             "limit": 50
-          },
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "Postgres"
           }
         }
       ],
+      "title": "",
       "transparent": true,
       "type": "bargauge"
     },
@@ -825,6 +784,10 @@
       "repeatDirection": "v",
       "targets": [
         {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
@@ -846,10 +809,6 @@
               }
             ],
             "limit": 50
-          },
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "Postgres"
           }
         }
       ],
@@ -985,6 +944,10 @@
       "pluginVersion": "12.1.1",
       "targets": [
         {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "Postgres"
+          },
           "editorMode": "code",
           "format": "time_series",
           "rawQuery": true,
@@ -1006,10 +969,6 @@
               }
             ],
             "limit": 50
-          },
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "Postgres"
           }
         }
       ],
@@ -1017,6 +976,7 @@
       "type": "timeseries"
     }
   ],
+  "preload": false,
   "schemaVersion": 41,
   "tags": [],
   "templating": {
@@ -1083,6 +1043,5 @@
   "timezone": "browser",
   "title": "Collection - Details",
   "uid": "collection-main-details",
-  "version": 1,
-  "weekStart": ""
+  "version": 2
 }
