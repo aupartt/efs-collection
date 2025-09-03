@@ -17,6 +17,8 @@ services:
       - 3000:3000
     restart: unless-stopped
     environment:
+      - GF_SECURITY_ALLOW_EMBEDDING=true
+      - GF_SECURITY_COOKIE_SAMESITE=none
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
       - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
