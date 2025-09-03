@@ -982,6 +982,21 @@
   "templating": {
     "list": [
       {
+        "allowCustomValue": false,
+        "current": {
+          "text": "2233",
+          "value": "2233"
+        },
+        "definition": "SELECT location_id from collection_groups WHERE end_date >= NOW() ORDER BY start_date;",
+        "hide": 2,
+        "name": "location_id",
+        "options": [],
+        "query": "SELECT location_id from collection_groups WHERE end_date >= NOW() ORDER BY start_date;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
         "current": {},
         "definition": "SELECT id FROM collection_groups WHERE location_id = [[location_id]] end_date >= NOW() ORDER BY end_date;",
         "name": "collection_id",
@@ -1043,5 +1058,5 @@
   "timezone": "browser",
   "title": "Collection - Details",
   "uid": "collection-main-details",
-  "version": 3
+  "version": 4
 }
