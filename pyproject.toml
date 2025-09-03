@@ -6,7 +6,8 @@ collector = { workspace = true }  # Add this
 [tool.uv.workspace]
 members = [
     "packages/*",
-    "collector",  # Add collector to workspace
+    "collector",
+    "app",
 ]
 
 [tool.ruff]
