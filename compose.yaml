@@ -18,7 +18,8 @@ services:
     restart: unless-stopped
     environment:
       - GF_SECURITY_ALLOW_EMBEDDING=true
-      - GF_SECURITY_COOKIE_SAMESITE=none
+      - GF_SECURITY_COOKIE_SAMESITE=lax
+      - GF_PANELS_DISABLE_SANITIZE_HTML=true 
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
       - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
@@ -27,9 +28,7 @@ services:
       - POSTGRES_USER=${POSTGRES_GRAFANA_USER}
       - POSTGRES_PASSWORD=${POSTGRES_GRAFANA_PASSWORD}
     volumes:
-      - ./conf/grafana/dashboards:/etc/grafana/dashboards
-      - ./conf/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ./conf/grafana/provisioning/dashboards/${ENVIRONMENT:-dev}-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml
+      - ./conf/grafana/:/etc/grafana/
       - grafana-storage:/var/lib/grafana
     networks:
       - app_network
