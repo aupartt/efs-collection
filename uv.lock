@@ -212,11 +212,19 @@ name = "app"
 version = "0.1.0"
 source = { virtual = "app" }
 dependencies = [
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "sqlalchemy" },
     { name = "streamlit" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "streamlit", specifier = ">=1.49.1" }]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.11.7" },
+    { name = "pydantic-settings", specifier = ">=2.6.0" },
+    { name = "sqlalchemy", specifier = ">=2.0.43" },
+    { name = "streamlit", specifier = ">=1.49.1" },
+]
 
 [[package]]
 name = "appnope"
