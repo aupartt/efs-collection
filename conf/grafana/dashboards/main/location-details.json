@@ -613,7 +613,7 @@
                   {
                     "oneClick": true,
                     "title": "page de collecte",
-                    "url": "/d/collection-main-details/collection?var-collection_id=${__data.fields.id}"
+                    "url": "/d/collection-main-details/collection?var-location-id=${location_id:queryparam}&var-collection_id=${__data.fields.id}"
                   }
                 ]
               },
@@ -815,5 +815,5 @@
   "timezone": "browser",
   "title": "Location - Details",
   "uid": "location-main-details",
-  "version": 2
+  "version": 3
 }

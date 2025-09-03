@@ -612,7 +612,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 17,
+        "h": 15,
         "w": 1,
         "x": 0,
         "y": 10
@@ -756,7 +756,7 @@
         ]
       },
       "gridPos": {
-        "h": 6,
+        "h": 5,
         "w": 5,
         "x": 1,
         "y": 10
@@ -917,7 +917,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 17,
+        "h": 15,
         "w": 18,
         "x": 6,
         "y": 10
@@ -983,10 +983,10 @@
     "list": [
       {
         "current": {},
-        "definition": "SELECT id FROM collection_groups WHERE end_date >= NOW() ORDER BY end_date;",
+        "definition": "SELECT id FROM collection_groups WHERE location_id = [[location_id]] end_date >= NOW() ORDER BY end_date;",
         "name": "collection_id",
         "options": [],
-        "query": "SELECT id FROM collection_groups WHERE end_date >= NOW() ORDER BY end_date;",
+        "query": "SELECT id FROM collection_groups WHERE location_id = [[location_id]] end_date >= NOW() ORDER BY end_date;",
         "refresh": 1,
         "regex": "",
         "type": "query"
@@ -1043,5 +1043,5 @@
   "timezone": "browser",
   "title": "Collection - Details",
   "uid": "collection-main-details",
-  "version": 2
+  "version": 3
 }
